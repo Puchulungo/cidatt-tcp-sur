@@ -543,6 +543,7 @@
 <script>
 let CLIENTES = [];
 let clienteActivo = null;
+let timeoutBusqueda = null;
 
 async function cargarDatos() {
   try {
@@ -556,6 +557,7 @@ async function cargarDatos() {
 }
 
 function getTipos(c) {
+  if (!c.vehiculos || c.vehiculos.length === 0) return 'camion';
   const clases = new Set(c.vehiculos.map(v => v.clase));
   if (clases.has('CAMION') && clases.has('REMOLCADOR')) return 'both';
   if (clases.has('CAMION')) return 'camion';
@@ -563,7 +565,7 @@ function getTipos(c) {
 }
 
 function getTotalUnidades(c) {
-  return c.vehiculos.length;
+  return c.vehiculos ? c.vehiculos.length : 0;
 }
 
 function renderCard(c) {
@@ -574,7 +576,7 @@ function renderCard(c) {
     rem: '<span class="client-badge badge-rem">REMOLCADOR</span>',
     both: '<span class="client-badge badge-both">CAMIÓN + REM.</span>'
   };
-  return `<div class="client-item${clienteActivo === c.ruc ? ' active' : ''}" onclick="seleccionar('${c.ruc.replace(/'/g,"\\'")}')">
+  return `<div class="client-item${clienteActivo === c.ruc ? ' active' : ''}" data-ruc="${c.ruc}" onclick="seleccionar('${c.ruc}')">
     <div class="client-name">${c.razon}</div>
     <div class="client-meta">
       <span class="client-ruc">${c.ruc}</span>
@@ -584,11 +586,10 @@ function renderCard(c) {
   </div>`;
 }
 
-let filtrados = [];
-let query = '';
-
 function filtrar() {
-  query = document.getElementById('buscar').value.trim().toLowerCase();
+  const query = document.getElementById('buscar').value.trim().toLowerCase();
+  let filtrados = [];
+
   if (!query) {
     filtrados = CLIENTES;
   } else {
@@ -621,8 +622,15 @@ function filtrar() {
   }
 }
 
+// Debounce para evitar que el navegador se congele al escribir rápido
+document.getElementById('buscar').addEventListener('input', () => {
+  clearTimeout(timeoutBusqueda);
+  timeoutBusqueda = setTimeout(filtrar, 250);
+});
+
 function buildTree(vehiculos) {
   const tree = {};
+  if (!vehiculos) return tree;
   for (const v of vehiculos) {
     const clase = v.clase || 'OTRO';
     const marca = v.marca || 'SIN MARCA';
@@ -704,12 +712,12 @@ function seleccionar(ruc) {
   if (!c) return;
   clienteActivo = ruc;
 
-  const items = document.querySelectorAll('.client-item');
-  items.forEach(el => el.classList.remove('active'));
-  event && event.currentTarget && event.currentTarget.classList.add('active');
+  document.querySelectorAll('.client-item').forEach(el => el.classList.remove('active'));
+  const targetItem = document.querySelector(`.client-item[data-ruc="${ruc}"]`);
+  if (targetItem) targetItem.classList.add('active');
 
   const detalle = document.getElementById('detalle');
-  const total = c.vehiculos.length;
+  const total = getTotalUnidades(c);
   const tree = buildTree(c.vehiculos);
 
   const campos = [
@@ -747,17 +755,11 @@ function seleccionar(ruc) {
 
   detalle.classList.add('active');
   detalle.scrollTop = 0;
-
-  filtrar();
-  const activeItem = document.querySelector(`.client-item[onclick*="${ruc}"]`);
-  if (activeItem) activeItem.classList.add('active');
 }
 
 function volverLista() {
   document.getElementById('detalle').classList.remove('active');
 }
-
-document.getElementById('buscar').addEventListener('input', filtrar);
 
 cargarDatos();
 </script>
