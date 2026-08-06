@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIDATT TCP Sur — Perfilador de Clientes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #112240;
+    --navy-light: #1d3461;
+    --accent: #2563eb;
+    --accent-light: #3b82f6;
+    --steel: #94a3b8;
+    --steel-light: #cbd5e1;
+    --white: #f8fafc;
+    --surface: #0f1f3d;
+    --surface2: #162847;
+    --border: rgba(148,163,184,0.15);
+    --border-hover: rgba(59,130,246,0.4);
+    --camion: #2563eb;
+    --remolcador: #0891b2;
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --success: #10b981;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--navy-mid);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: 60px;
+  }
+  .logo-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--accent-light);
+    white-space: nowrap;
+  }
+  .logo-sep { width: 1px; height: 24px; background: var(--border); }
+  .header-sub { font-size: 12px; color: var(--steel); letter-spacing: 0.04em; }
+  .nav-link {
+    margin-left: auto;
+    color: var(--steel-light);
+    text-decoration: none;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .nav-link:hover { border-color: var(--border-hover); color: var(--white); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 0;
+    height: calc(100vh - 60px);
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; height: auto; }
+  }
+
+  .filters {
+    background: var(--navy-mid);
+    border-right: 1px solid var(--border);
+    padding: 1.25rem;
+    overflow-y: auto;
+  }
+  .filter-group { margin-bottom: 1.5rem; }
+  .filter-label {
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--steel);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  select:focus { outline: none; border-color: var(--accent); }
+
+  .chip-group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--steel-light);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s;
+  }
+  .chip.active {
+    background: rgba(37,99,235,0.2);
+    border-color: var(--accent);
+    color: var(--accent-light);
+  }
+
+  .weight-range-values {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-light);
+    margin-bottom: 10px;
+  }
+  .dual-slider { position: relative; height: 34px; }
+  .dual-slider input[type=range] {
+    position: absolute;
+    width: 100%;
+    top: 12px;
+    height: 4px;
+    background: none;
+    pointer-events: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .dual-slider input[type=range]::-webkit-slider-thumb {
+    pointer-events: auto;
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    cursor: pointer;
+    border: 2px solid var(--navy);
+    margin-top: -6px;
+  }
+  .dual-slider input[type=range]::-moz-range-thumb {
+    pointer-events: auto;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    cursor: pointer;
+    border: 2px solid var(--navy);
+  }
+  .slider-track {
+    position: absolute;
+    top: 15px;
+    height: 4px;
+    width: 100%;
+    background: var(--surface2);
+    border-radius: 2px;
+  }
+  .slider-track-fill {
+    position: absolute;
+    top: 15px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .btn-buscar {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: background 0.15s;
+  }
+  .btn-buscar:hover { background: var(--accent-light); }
+  .btn-buscar:disabled { background: var(--surface2); color: var(--text-muted); cursor: not-allowed; }
+
+  .results {
+    padding: 1.25rem 1.5rem;
+    overflow-y: auto;
+  }
+  .results-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    font-size: 13px;
+    color: var(--steel);
+  }
+  .results-count {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--accent-light);
+    font-weight: 600;
+  }
+
+  .client-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .client-row-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .client-row-header:hover { background: var(--surface2); }
+  .client-toggle {
+    color: var(--text-muted);
+    font-size: 10px;
+    transition: transform 0.15s;
+    flex-shrink: 0;
+  }
+  .client-toggle.open { transform: rotate(90deg); }
+  .client-info { flex: 1; min-width: 0; }
+  .client-razon { font-size: 13px; font-weight: 500; color: var(--white); }
+  .client-ruc { font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
+  .client-units {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-light);
+    background: rgba(37,99,235,0.15);
+    border-radius: 6px;
+    padding: 4px 10px;
+    flex-shrink: 0;
+  }
+
+  .client-detail { display: none; border-top: 1px solid var(--border); }
+  .client-detail.open { display: block; }
+  .year-block { border-top: 1px solid var(--border); }
+  .year-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 14px 8px 30px;
+    background: var(--navy);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+  .year-label { color: var(--steel-light); font-weight: 600; }
+  .year-count { color: var(--text-muted); }
+  .marca-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 14px 5px 46px;
+    font-size: 12px;
+    color: var(--steel);
+    border-top: 1px solid rgba(148,163,184,0.06);
+  }
+  .marca-count { color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
+
+  .empty-state, .loading, .no-results {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 3rem 1rem;
+    font-size: 13px;
+  }
+  .status-msg { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+
+  .mini-link { font-size: 10px; color: var(--accent-light); text-decoration: none; font-family: 'IBM Plex Mono', monospace; }
+  .mini-link:hover { text-decoration: underline; }
+  .check-list {
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px;
+    background: var(--surface);
+  }
+  .check-placeholder { color: var(--text-muted); font-size: 12px; padding: 8px 6px; }
+  .check-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; border-radius: 4px; cursor: pointer;
+    font-size: 12px; color: var(--steel-light);
+  }
+  .check-item:hover { background: var(--surface2); }
+  .check-item input { accent-color: var(--accent); cursor: pointer; }
+  .check-item .n { margin-left: auto; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+  .warn-msg { font-size: 11px; color: #f59e0b; margin-top: 6px; display:none; }
+</style>
+</head>
+<body>
+
+<div id="auth-gate">
+  <div class="auth-box" id="auth-box">
+    <div class="auth-logo">
+      <svg width="28" height="28" viewBox="0 0 21 21" fill="none"><rect x="1" y="1" width="9" height="9" fill="#fff"/><rect x="11" y="1" width="9" height="9" fill="#fff" opacity="0.7"/><rect x="1" y="11" width="9" height="9" fill="#fff" opacity="0.7"/><rect x="11" y="11" width="9" height="9" fill="#fff" opacity="0.4"/></svg>
+    </div>
+    <div class="auth-title">CIDATT TCP Sur</div>
+    <div class="auth-sub">Acceso restringido &mdash; Grupo Euromotors</div>
+    <button class="auth-btn" id="btn-login" style="display:none">
+      <svg width="16" height="16" viewBox="0 0 21 21" fill="none"><rect x="1" y="1" width="9" height="9" fill="#F25022"/><rect x="11" y="1" width="9" height="9" fill="#7FBA00"/><rect x="1" y="11" width="9" height="9" fill="#00A4EF"/><rect x="11" y="11" width="9" height="9" fill="#FFB900"/></svg>
+      Iniciar sesión con Microsoft
+    </button>
+    <div class="auth-loading" id="auth-status">Verificando sesión...</div>
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
+<div id="app-content">
+
+<header>
+  <span class="logo-text">CIDATT TCP Sur</span>
+  <div class="logo-sep"></div>
+  <span class="header-sub">Perfilador de Clientes</span>
+  <a class="nav-link" href="index.html">&#8592; Buscar por RUC / Razón Social</a>
+</header>
+
+<div class="layout">
+  <div class="filters">
+    <div class="filter-group">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label class="filter-label" style="margin-bottom:0;">Departamento</label>
+        <a href="#" id="dep-toggle-all" class="mini-link">Marcar todos</a>
+      </div>
+      <div class="check-list" id="f-departamento"></div>
+    </div>
+
+    <div class="filter-group">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label class="filter-label" style="margin-bottom:0;">Provincia</label>
+        <a href="#" id="prov-toggle-all" class="mini-link">Todas</a>
+      </div>
+      <div class="check-list" id="f-provincia">
+        <div class="check-placeholder">Elegí un departamento primero</div>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Clase</label>
+      <div class="chip-group" id="f-clase">
+        <span class="chip active" data-clase="CAMION">Camión</span>
+        <span class="chip active" data-clase="REMOLCADOR">Remolcador</span>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Peso bruto (kg)</label>
+      <div class="weight-range-values">
+        <span id="peso-min-val">1,200</span>
+        <span id="peso-max-val">90,000</span>
+      </div>
+      <div class="dual-slider">
+        <div class="slider-track"></div>
+        <div class="slider-track-fill" id="slider-fill"></div>
+        <input type="range" id="peso-min" min="1200" max="90000" step="100" value="1200">
+        <input type="range" id="peso-max" min="1200" max="90000" step="100" value="90000">
+      </div>
+    </div>
+
+    <button class="btn-buscar" id="btn-buscar" disabled>Seleccioná un departamento</button>
+    <div class="warn-msg" id="warn-msg">Elegiste varios departamentos grandes — puede tardar unos segundos en cargar.</div>
+    <div class="status-msg" id="status-msg"></div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="empty-state">Elegí un departamento y filtros, después dale a Buscar.</div>
+  </div>
+</div>
+
+</div><!-- /#app-content -->
+
+<script src="lib/msal-browser.min.js"></script>
+<script src="auth.js"></script>
+<script>
+let DEPTO_INDEX = [];
+let SHARD_CACHE = {};
+let CURRENT_RESULTS = [];
+
+function getSelectedDeptos() {
+  return Array.from(document.querySelectorAll('#f-departamento input:checked')).map(i => i.value);
+}
+function getSelectedProvincias() {
+  return Array.from(document.querySelectorAll('#f-provincia input:checked')).map(i => i.value);
+}
+
+async function initPerfilador() {
+  const res = await fetch('data/perfilador/_index.json');
+  DEPTO_INDEX = await res.json();
+  const cont = document.getElementById('f-departamento');
+  cont.innerHTML = '';
+  DEPTO_INDEX.forEach(d => {
+    const item = document.createElement('label');
+    item.className = 'check-item';
+    item.innerHTML = `<input type="checkbox" value="${d.slug}"> <span>${d.departamento}</span><span class="n">${d.clientes.toLocaleString()}</span>`;
+    cont.appendChild(item);
+  });
+  cont.addEventListener('change', onDeptoChange);
+}
+
+function onDeptoChange() {
+  const selectedSlugs = getSelectedDeptos();
+  const provCont = document.getElementById('f-provincia');
+  const btn = document.getElementById('btn-buscar');
+  const warn = document.getElementById('warn-msg');
+
+  if (selectedSlugs.length === 0) {
+    provCont.innerHTML = '<div class="check-placeholder">Elegí un departamento primero</div>';
+    btn.disabled = true;
+    btn.textContent = 'Seleccioná un departamento';
+    warn.style.display = 'none';
+    return;
+  }
+
+  // union de provincias de los departamentos seleccionados
+  const provSet = new Set();
+  selectedSlugs.forEach(slug => {
+    const d = DEPTO_INDEX.find(x => x.slug === slug);
+    d.provincias.forEach(p => provSet.add(p));
+  });
+  const prevChecked = new Set(getSelectedProvincias());
+  provCont.innerHTML = '';
+  Array.from(provSet).sort().forEach(p => {
+    const item = document.createElement('label');
+    item.className = 'check-item';
+    const checked = prevChecked.has(p) ? 'checked' : '';
+    item.innerHTML = `<input type="checkbox" value="${p}" ${checked}> <span>${p}</span>`;
+    provCont.appendChild(item);
+  });
+
+  btn.disabled = false;
+  const totalClientes = selectedSlugs.reduce((s, slug) => s + DEPTO_INDEX.find(x => x.slug === slug).clientes, 0);
+  btn.textContent = `Buscar (${selectedSlugs.length} depto${selectedSlugs.length !== 1 ? 's' : ''})`;
+  warn.style.display = (selectedSlugs.length > 5 || totalClientes > 40000) ? 'block' : 'none';
+}
+
+document.getElementById('dep-toggle-all').addEventListener('click', (e) => {
+  e.preventDefault();
+  const boxes = document.querySelectorAll('#f-departamento input');
+  const allChecked = Array.from(boxes).every(b => b.checked);
+  boxes.forEach(b => b.checked = !allChecked);
+  onDeptoChange();
+});
+document.getElementById('prov-toggle-all').addEventListener('click', (e) => {
+  e.preventDefault();
+  const boxes = document.querySelectorAll('#f-provincia input');
+  boxes.forEach(b => b.checked = false); // "Todas" = ninguna marcada = sin filtro
+});
+
+document.querySelectorAll('#f-clase .chip').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('active'));
+});
+
+// --- dual range slider ---
+const minSlider = document.getElementById('peso-min');
+const maxSlider = document.getElementById('peso-max');
+const fill = document.getElementById('slider-fill');
+function updateSliderUI() {
+  let minV = parseInt(minSlider.value), maxV = parseInt(maxSlider.value);
+  if (minV > maxV - 100) { minV = maxV - 100; minSlider.value = minV; }
+  const range = maxSlider.max - maxSlider.min;
+  const leftPct = ((minV - minSlider.min) / range) * 100;
+  const rightPct = ((maxV - minSlider.min) / range) * 100;
+  fill.style.left = leftPct + '%';
+  fill.style.width = (rightPct - leftPct) + '%';
+  document.getElementById('peso-min-val').textContent = minV.toLocaleString();
+  document.getElementById('peso-max-val').textContent = maxV.toLocaleString();
+}
+minSlider.addEventListener('input', updateSliderUI);
+maxSlider.addEventListener('input', updateSliderUI);
+updateSliderUI();
+
+async function loadShard(slug) {
+  if (SHARD_CACHE[slug]) return SHARD_CACHE[slug];
+  const res = await fetch(`data/perfilador/${slug}.json`);
+  const data = await res.json();
+  SHARD_CACHE[slug] = data;
+  return data;
+}
+
+document.getElementById('btn-buscar').addEventListener('click', async () => {
+  const slugs = getSelectedDeptos();
+  if (slugs.length === 0) return;
+  const provincias = getSelectedProvincias(); // vacio = todas
+  const clasesActivas = Array.from(document.querySelectorAll('#f-clase .chip.active')).map(c => c.dataset.clase);
+  const pesoMin = parseInt(minSlider.value);
+  const pesoMax = parseInt(maxSlider.value);
+
+  const statusMsg = document.getElementById('status-msg');
+  const results = document.getElementById('results');
+  results.innerHTML = '<div class="loading">Buscando clientes...</div>';
+
+  const out = [];
+  for (let i = 0; i < slugs.length; i++) {
+    statusMsg.textContent = `Cargando ${i + 1}/${slugs.length}...`;
+    const clientes = await loadShard(slugs[i]);
+    for (const c of clientes) {
+      if (provincias.length > 0 && !provincias.includes(c.provincia)) continue;
+      const matching = c.vehiculos.filter(v =>
+        !v.atipico &&
+        clasesActivas.includes(v.clase) &&
+        v.peso_bruto != null && v.peso_bruto >= pesoMin && v.peso_bruto <= pesoMax
+      );
+      if (matching.length === 0) continue;
+      out.push({ ruc: c.ruc, razon: c.razon, vehiculos: matching });
+    }
+  }
+  statusMsg.textContent = '';
+  out.sort((a, b) => b.vehiculos.length - a.vehiculos.length);
+  CURRENT_RESULTS = out;
+  renderResults(out);
+});
+
+function buildYearBreakdown(vehiculos) {
+  const byYear = {};
+  for (const v of vehiculos) {
+    const y = v.anio || 'S/D';
+    if (!byYear[y]) byYear[y] = {};
+    const m = v.marca || 'SIN MARCA';
+    byYear[y][m] = (byYear[y][m] || 0) + 1;
+  }
+  const years = Object.keys(byYear).sort((a, b) => {
+    if (a === 'S/D') return 1;
+    if (b === 'S/D') return -1;
+    return b - a; // descendente: más reciente primero
+  });
+  return years.map(y => ({
+    year: y,
+    total: Object.values(byYear[y]).reduce((s, n) => s + n, 0),
+    marcas: Object.entries(byYear[y]).sort((a, b) => b[1] - a[1])
+  }));
+}
+
+function renderResults(out) {
+  const results = document.getElementById('results');
+  if (out.length === 0) {
+    results.innerHTML = '<div class="no-results">No hay clientes que coincidan con estos filtros.</div>';
+    return;
+  }
+  results.innerHTML = `
+    <div class="results-header">
+      <span class="results-count">${out.length.toLocaleString()}</span> clientes encontrados
+    </div>
+    <div id="results-list"></div>
+  `;
+  const list = document.getElementById('results-list');
+  out.forEach((c, idx) => {
+    const row = document.createElement('div');
+    row.className = 'client-row';
+    row.innerHTML = `
+      <div class="client-row-header" data-idx="${idx}">
+        <span class="client-toggle">&#9654;</span>
+        <div class="client-info">
+          <div class="client-razon">${c.razon}</div>
+          <div class="client-ruc">RUC ${c.ruc}</div>
+        </div>
+        <span class="client-units">${c.vehiculos.length}</span>
+      </div>
+      <div class="client-detail" id="detail-${idx}"></div>
+    `;
+    list.appendChild(row);
+  });
+
+  list.querySelectorAll('.client-row-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const idx = header.dataset.idx;
+      const detail = document.getElementById(`detail-${idx}`);
+      const toggle = header.querySelector('.client-toggle');
+      const isOpen = detail.classList.toggle('open');
+      toggle.classList.toggle('open', isOpen);
+      if (isOpen && !detail.dataset.loaded) {
+        const breakdown = buildYearBreakdown(CURRENT_RESULTS[idx].vehiculos);
+        detail.innerHTML = breakdown.map(yb => `
+          <div class="year-block">
+            <div class="year-header">
+              <span class="year-label">${yb.year}</span>
+              <span class="year-count">${yb.total} unidad${yb.total !== 1 ? 'es' : ''}</span>
+            </div>
+            ${yb.marcas.map(([marca, count]) => `
+              <div class="marca-row">
+                <span>${marca}</span>
+                <span class="marca-count">${count}</span>
+              </div>
+            `).join('')}
+          </div>
+        `).join('');
+        detail.dataset.loaded = '1';
+      }
+    });
+  });
+}
+
+initPerfilador();
+</script>
+</body>
+</html>

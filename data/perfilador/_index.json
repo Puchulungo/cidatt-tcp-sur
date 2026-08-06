@@ -1,0 +1,446 @@
+[
+  {
+    "departamento": "LIMA",
+    "slug": "lima",
+    "provincias": [
+      "BARRANCA",
+      "CAJATAMBO",
+      "CANTA",
+      "CAÑETE",
+      "HUARAL",
+      "HUAROCHIRI",
+      "HUAURA",
+      "LIMA",
+      "OYON",
+      "SIN DATOS",
+      "YAUYOS"
+    ],
+    "clientes": 36910,
+    "archivo": "data/perfilador/lima.json",
+    "size_kb": 26008.2
+  },
+  {
+    "departamento": "SIN DATOS",
+    "slug": "sin_datos",
+    "provincias": [
+      "SIN DATOS"
+    ],
+    "clientes": 26344,
+    "archivo": "data/perfilador/sin_datos.json",
+    "size_kb": 8830.3
+  },
+  {
+    "departamento": "AREQUIPA",
+    "slug": "arequipa",
+    "provincias": [
+      "AREQUIPA",
+      "CAMANA",
+      "CARAVELI",
+      "CASTILLA",
+      "CAYLLOMA",
+      "CONDESUYOS",
+      "ISLAY",
+      "LA UNION"
+    ],
+    "clientes": 9064,
+    "archivo": "data/perfilador/arequipa.json",
+    "size_kb": 5142.1
+  },
+  {
+    "departamento": "LA LIBERTAD",
+    "slug": "la_libertad",
+    "provincias": [
+      "ASCOPE",
+      "BOLIVAR",
+      "CHEPEN",
+      "GRAN CHIMU",
+      "JULCAN",
+      "OTUZCO",
+      "PACASMAYO",
+      "PATAZ",
+      "SANCHEZ CARRION",
+      "SANTIAGO DE CHUCO",
+      "TRUJILLO",
+      "VIRU"
+    ],
+    "clientes": 8230,
+    "archivo": "data/perfilador/la_libertad.json",
+    "size_kb": 4651.8
+  },
+  {
+    "departamento": "JUNIN",
+    "slug": "junin",
+    "provincias": [
+      "CHANCHAMAYO",
+      "CHUPACA",
+      "CONCEPCION",
+      "HUANCAYO",
+      "JAUJA",
+      "JUNIN",
+      "SATIPO",
+      "TARMA",
+      "YAULI"
+    ],
+    "clientes": 5224,
+    "archivo": "data/perfilador/junin.json",
+    "size_kb": 2222.0
+  },
+  {
+    "departamento": "CUSCO",
+    "slug": "cusco",
+    "provincias": [
+      "ACOMAYO",
+      "ANTA",
+      "CALCA",
+      "CANAS",
+      "CANCHIS",
+      "CHUMBIVILCAS",
+      "CUSCO",
+      "ESPINAR",
+      "LA CONVENCION",
+      "PARURO",
+      "PAUCARTAMBO",
+      "QUISPICANCHI",
+      "URUBAMBA"
+    ],
+    "clientes": 5139,
+    "archivo": "data/perfilador/cusco.json",
+    "size_kb": 2301.5
+  },
+  {
+    "departamento": "PIURA",
+    "slug": "piura",
+    "provincias": [
+      "AYABACA",
+      "HUANCABAMBA",
+      "MORROPON",
+      "PAITA",
+      "PIURA",
+      "SECHURA",
+      "SULLANA",
+      "TALARA"
+    ],
+    "clientes": 5013,
+    "archivo": "data/perfilador/piura.json",
+    "size_kb": 2514.7
+  },
+  {
+    "departamento": "PUNO",
+    "slug": "puno",
+    "provincias": [
+      "AZANGARO",
+      "CARABAYA",
+      "CHUCUITO",
+      "EL COLLAO",
+      "HUACANE",
+      "HUANCANE",
+      "LAMPA",
+      "MELGAR",
+      "MOHO",
+      "PUNO",
+      "SAN ANTONIO DE PUTINA",
+      "SAN ROMAN",
+      "SANDIA",
+      "YUNGUYO"
+    ],
+    "clientes": 4920,
+    "archivo": "data/perfilador/puno.json",
+    "size_kb": 2079.1
+  },
+  {
+    "departamento": "CAJAMARCA",
+    "slug": "cajamarca",
+    "provincias": [
+      "CAJABAMBA",
+      "CAJAMARCA",
+      "CELENDIN",
+      "CHOTA",
+      "CONTUMAZA",
+      "CUTERVO",
+      "HUALGAYOC",
+      "JAEN",
+      "SAN IGNACIO",
+      "SAN MARCOS",
+      "SAN MIGUEL",
+      "SAN PABLO",
+      "SANTA CRUZ"
+    ],
+    "clientes": 4202,
+    "archivo": "data/perfilador/cajamarca.json",
+    "size_kb": 1967.1
+  },
+  {
+    "departamento": "ANCASH",
+    "slug": "ancash",
+    "provincias": [
+      "AIJA",
+      "ANTONIO RAYMONDI",
+      "ASUNCION",
+      "BOLOGNESI",
+      "CARHUAZ",
+      "CARLOS F. FITZCARRALD",
+      "CASMA",
+      "CORONGO",
+      "HAYLAS",
+      "HUARAZ",
+      "HUARI",
+      "HUARMEY",
+      "HUAYLAS",
+      "MARISCAL LUZURIAGA",
+      "OCROS",
+      "PALLASCA",
+      "POMABAMBA",
+      "RECUAY",
+      "SANTA",
+      "SIHUAS",
+      "YUNGAY"
+    ],
+    "clientes": 3782,
+    "archivo": "data/perfilador/ancash.json",
+    "size_kb": 1701.8
+  },
+  {
+    "departamento": "ICA",
+    "slug": "ica",
+    "provincias": [
+      "CHINCHA",
+      "ICA",
+      "NASCA",
+      "NAZCA",
+      "PALPA",
+      "PISCO"
+    ],
+    "clientes": 3216,
+    "archivo": "data/perfilador/ica.json",
+    "size_kb": 1652.2
+  },
+  {
+    "departamento": "PROV. CONST. DEL CALLAO",
+    "slug": "prov_const_del_callao",
+    "provincias": [
+      "PROV. CONST. DEL CALLAO"
+    ],
+    "clientes": 3209,
+    "archivo": "data/perfilador/prov_const_del_callao.json",
+    "size_kb": 2634.9
+  },
+  {
+    "departamento": "LAMBAYEQUE",
+    "slug": "lambayeque",
+    "provincias": [
+      "CHICLAYO",
+      "FERREÑAFE",
+      "LAMBAYEQUE"
+    ],
+    "clientes": 3193,
+    "archivo": "data/perfilador/lambayeque.json",
+    "size_kb": 1528.5
+  },
+  {
+    "departamento": "APURIMAC",
+    "slug": "apurimac",
+    "provincias": [
+      "ABANCAY",
+      "ANDAHUAYLAS",
+      "ANTABAMBA",
+      "AYMARAES",
+      "CHINCHEROS",
+      "COTABAMBAS",
+      "GRAU"
+    ],
+    "clientes": 2510,
+    "archivo": "data/perfilador/apurimac.json",
+    "size_kb": 1095.7
+  },
+  {
+    "departamento": "HUANUCO",
+    "slug": "huanuco",
+    "provincias": [
+      "AMBO",
+      "DOS DE MAYO",
+      "HUACAYBAMBA",
+      "HUAMALIES",
+      "HUANUCO",
+      "LAURICOCHA",
+      "LEONCIO PRADO",
+      "MARAÑON",
+      "PACHITEA",
+      "PUERTO INCA",
+      "YAROWILCA"
+    ],
+    "clientes": 2308,
+    "archivo": "data/perfilador/huanuco.json",
+    "size_kb": 925.7
+  },
+  {
+    "departamento": "AYACUCHO",
+    "slug": "ayacucho",
+    "provincias": [
+      "CANGALLO",
+      "HUAMANGA",
+      "HUANCA SANCOS",
+      "HUANTA",
+      "LA MAR",
+      "LUCANAS",
+      "PARINACOCHAS",
+      "PAUCAR DEL SARA SARA",
+      "SUCRE",
+      "VICTOR FAJARDO",
+      "VILCAS HUAMAN"
+    ],
+    "clientes": 2092,
+    "archivo": "data/perfilador/ayacucho.json",
+    "size_kb": 855.9
+  },
+  {
+    "departamento": "TACNA",
+    "slug": "tacna",
+    "provincias": [
+      "CANDARAVE",
+      "JORGE BASADRE",
+      "TACNA",
+      "TARATA"
+    ],
+    "clientes": 1830,
+    "archivo": "data/perfilador/tacna.json",
+    "size_kb": 833.9
+  },
+  {
+    "departamento": "SAN MARTIN",
+    "slug": "san_martin",
+    "provincias": [
+      "BELLAVISTA",
+      "EL DORADO",
+      "HUALLAGA",
+      "LAMAS",
+      "MARISCAL CACERES",
+      "MOYOBAMBA",
+      "PICOTA",
+      "RIOJA",
+      "SAN MARTIN",
+      "SIN DATOS",
+      "TOCACHE"
+    ],
+    "clientes": 1823,
+    "archivo": "data/perfilador/san_martin.json",
+    "size_kb": 917.6
+  },
+  {
+    "departamento": "UCAYALI",
+    "slug": "ucayali",
+    "provincias": [
+      "ATALAYA",
+      "CORONEL PORTILLO",
+      "PADRE ABAD"
+    ],
+    "clientes": 1119,
+    "archivo": "data/perfilador/ucayali.json",
+    "size_kb": 590.0
+  },
+  {
+    "departamento": "PASCO",
+    "slug": "pasco",
+    "provincias": [
+      "DANIEL ALCIDES CARRION",
+      "OXAPAMPA",
+      "PASCO"
+    ],
+    "clientes": 1109,
+    "archivo": "data/perfilador/pasco.json",
+    "size_kb": 553.6
+  },
+  {
+    "departamento": "MOQUEGUA",
+    "slug": "moquegua",
+    "provincias": [
+      "GENERAL SANCHEZ CERRO",
+      "ILO",
+      "MARISCAL NIETO"
+    ],
+    "clientes": 1090,
+    "archivo": "data/perfilador/moquegua.json",
+    "size_kb": 570.9
+  },
+  {
+    "departamento": "AMAZONAS",
+    "slug": "amazonas",
+    "provincias": [
+      "BAGUA",
+      "BONGARA",
+      "CHACHAPOYAS",
+      "CONDORCANQUI",
+      "LUYA",
+      "RODRIGUEZ DE MENDOZA",
+      "UTCUBAMBA"
+    ],
+    "clientes": 981,
+    "archivo": "data/perfilador/amazonas.json",
+    "size_kb": 412.5
+  },
+  {
+    "departamento": "HUANCAVELICA",
+    "slug": "huancavelica",
+    "provincias": [
+      "ACOBAMBA",
+      "ANFARAES",
+      "ANGARAES",
+      "CASTROVIRREYNA",
+      "CHURCAMPA",
+      "HUANCAVELICA",
+      "HUAYTARA",
+      "TAYACAJA"
+    ],
+    "clientes": 927,
+    "archivo": "data/perfilador/huancavelica.json",
+    "size_kb": 351.9
+  },
+  {
+    "departamento": "MADRE DE DIOS",
+    "slug": "madre_de_dios",
+    "provincias": [
+      "MANU",
+      "TAHUAMANU",
+      "TAMBOPATA"
+    ],
+    "clientes": 926,
+    "archivo": "data/perfilador/madre_de_dios.json",
+    "size_kb": 449.9
+  },
+  {
+    "departamento": "TUMBES",
+    "slug": "tumbes",
+    "provincias": [
+      "CONTRALMIRANTE VILLAR",
+      "TUMBES",
+      "ZARUMILLA"
+    ],
+    "clientes": 690,
+    "archivo": "data/perfilador/tumbes.json",
+    "size_kb": 317.4
+  },
+  {
+    "departamento": "SIN DATO",
+    "slug": "sin_dato",
+    "provincias": [
+      "SIN DATO"
+    ],
+    "clientes": 380,
+    "archivo": "data/perfilador/sin_dato.json",
+    "size_kb": 275.9
+  },
+  {
+    "departamento": "LORETO",
+    "slug": "loreto",
+    "provincias": [
+      "ALTO AMAZONAS",
+      "DATEM DEL MARAÑON",
+      "LORETO",
+      "MAYNAS",
+      "REQUENA",
+      "UCAYALI"
+    ],
+    "clientes": 194,
+    "archivo": "data/perfilador/loreto.json",
+    "size_kb": 104.4
+  }
+]
