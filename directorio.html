@@ -784,6 +784,26 @@ async function getEnrichedClient(c) {
   return shard.find(x => x.ruc === c.ruc) || null;
 }
 
+const CATEGORIA_RANGOS = {
+  CAMION: {
+    'Ligero': 'hasta 7 t',
+    'Semiliviano': '7 – 10.5 t',
+    'Mediano': '10.5 – 25 t',
+    'Pesado': '25 – 33 t',
+    'Extra pesado': 'desde 33 t',
+  },
+  REMOLCADOR: {
+    'Estándar': 'hasta 25 t',
+    'Semipesado': '25 – 28 t',
+    'Pesado': '28 – 32 t',
+    'Extra pesado': 'desde 32 t',
+  },
+};
+function rangoCategoria(clase, cat) {
+  const r = (CATEGORIA_RANGOS[clase] || {})[cat];
+  return r ? ` (${r})` : '';
+}
+
 function buildTreeEnriched(vehiculos) {
   const tree = {};
   for (const v of vehiculos) {
@@ -824,7 +844,7 @@ function renderTreeEnriched(tree) {
       html += `<div class="tree-marca">
         <div class="tree-marca-header" onclick="toggleNode('${catId}', this)">
           <span class="tree-toggle">&#9654;</span>
-          <span class="marca-label">${cat}</span>
+          <span class="marca-label">${cat}${rangoCategoria(clase, cat)}</span>
           <span class="marca-count">${totalCat}</span>
         </div>
         <div class="tree-marca-body" id="${catId}">`;
