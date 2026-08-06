@@ -17,7 +17,7 @@
     ],
     "clientes": 36910,
     "archivo": "data/perfilador/lima.json",
-    "size_kb": 26008.2
+    "size_kb": 26027.5
   },
   {
     "departamento": "SIN DATOS",
@@ -27,7 +27,7 @@
     ],
     "clientes": 26344,
     "archivo": "data/perfilador/sin_datos.json",
-    "size_kb": 8830.3
+    "size_kb": 8843.2
   },
   {
     "departamento": "AREQUIPA",
@@ -44,7 +44,7 @@
     ],
     "clientes": 9064,
     "archivo": "data/perfilador/arequipa.json",
-    "size_kb": 5142.1
+    "size_kb": 5145.9
   },
   {
     "departamento": "LA LIBERTAD",
@@ -65,7 +65,7 @@
     ],
     "clientes": 8230,
     "archivo": "data/perfilador/la_libertad.json",
-    "size_kb": 4651.8
+    "size_kb": 4657.5
   },
   {
     "departamento": "JUNIN",
@@ -83,7 +83,7 @@
     ],
     "clientes": 5224,
     "archivo": "data/perfilador/junin.json",
-    "size_kb": 2222.0
+    "size_kb": 2223.4
   },
   {
     "departamento": "CUSCO",
@@ -105,7 +105,7 @@
     ],
     "clientes": 5139,
     "archivo": "data/perfilador/cusco.json",
-    "size_kb": 2301.5
+    "size_kb": 2308.0
   },
   {
     "departamento": "PIURA",
@@ -122,7 +122,7 @@
     ],
     "clientes": 5013,
     "archivo": "data/perfilador/piura.json",
-    "size_kb": 2514.7
+    "size_kb": 2518.9
   },
   {
     "departamento": "PUNO",
@@ -145,7 +145,7 @@
     ],
     "clientes": 4920,
     "archivo": "data/perfilador/puno.json",
-    "size_kb": 2079.1
+    "size_kb": 2085.1
   },
   {
     "departamento": "CAJAMARCA",
@@ -167,7 +167,7 @@
     ],
     "clientes": 4202,
     "archivo": "data/perfilador/cajamarca.json",
-    "size_kb": 1967.1
+    "size_kb": 1971.6
   },
   {
     "departamento": "ANCASH",
@@ -197,7 +197,7 @@
     ],
     "clientes": 3782,
     "archivo": "data/perfilador/ancash.json",
-    "size_kb": 1701.8
+    "size_kb": 1703.6
   },
   {
     "departamento": "ICA",
@@ -212,7 +212,7 @@
     ],
     "clientes": 3216,
     "archivo": "data/perfilador/ica.json",
-    "size_kb": 1652.2
+    "size_kb": 1653.6
   },
   {
     "departamento": "PROV. CONST. DEL CALLAO",
@@ -222,7 +222,7 @@
     ],
     "clientes": 3209,
     "archivo": "data/perfilador/prov_const_del_callao.json",
-    "size_kb": 2634.9
+    "size_kb": 2636.6
   },
   {
     "departamento": "LAMBAYEQUE",
@@ -234,7 +234,7 @@
     ],
     "clientes": 3193,
     "archivo": "data/perfilador/lambayeque.json",
-    "size_kb": 1528.5
+    "size_kb": 1532.0
   },
   {
     "departamento": "APURIMAC",
@@ -250,7 +250,7 @@
     ],
     "clientes": 2510,
     "archivo": "data/perfilador/apurimac.json",
-    "size_kb": 1095.7
+    "size_kb": 1097.4
   },
   {
     "departamento": "HUANUCO",
@@ -270,7 +270,7 @@
     ],
     "clientes": 2308,
     "archivo": "data/perfilador/huanuco.json",
-    "size_kb": 925.7
+    "size_kb": 926.4
   },
   {
     "departamento": "AYACUCHO",
@@ -290,7 +290,7 @@
     ],
     "clientes": 2092,
     "archivo": "data/perfilador/ayacucho.json",
-    "size_kb": 855.9
+    "size_kb": 856.6
   },
   {
     "departamento": "TACNA",
@@ -303,7 +303,7 @@
     ],
     "clientes": 1830,
     "archivo": "data/perfilador/tacna.json",
-    "size_kb": 833.9
+    "size_kb": 835.2
   },
   {
     "departamento": "SAN MARTIN",
@@ -323,7 +323,7 @@
     ],
     "clientes": 1823,
     "archivo": "data/perfilador/san_martin.json",
-    "size_kb": 917.6
+    "size_kb": 920.0
   },
   {
     "departamento": "UCAYALI",
@@ -335,7 +335,7 @@
     ],
     "clientes": 1119,
     "archivo": "data/perfilador/ucayali.json",
-    "size_kb": 590.0
+    "size_kb": 590.5
   },
   {
     "departamento": "PASCO",
@@ -347,7 +347,7 @@
     ],
     "clientes": 1109,
     "archivo": "data/perfilador/pasco.json",
-    "size_kb": 553.6
+    "size_kb": 553.9
   },
   {
     "departamento": "MOQUEGUA",
@@ -359,7 +359,7 @@
     ],
     "clientes": 1090,
     "archivo": "data/perfilador/moquegua.json",
-    "size_kb": 570.9
+    "size_kb": 571.4
   },
   {
     "departamento": "AMAZONAS",
@@ -375,7 +375,7 @@
     ],
     "clientes": 981,
     "archivo": "data/perfilador/amazonas.json",
-    "size_kb": 412.5
+    "size_kb": 413.9
   },
   {
     "departamento": "HUANCAVELICA",
@@ -392,7 +392,7 @@
     ],
     "clientes": 927,
     "archivo": "data/perfilador/huancavelica.json",
-    "size_kb": 351.9
+    "size_kb": 352.1
   },
   {
     "departamento": "MADRE DE DIOS",
@@ -404,7 +404,7 @@
     ],
     "clientes": 926,
     "archivo": "data/perfilador/madre_de_dios.json",
-    "size_kb": 449.9
+    "size_kb": 450.7
   },
   {
     "departamento": "TUMBES",
@@ -416,7 +416,7 @@
     ],
     "clientes": 690,
     "archivo": "data/perfilador/tumbes.json",
-    "size_kb": 317.4
+    "size_kb": 317.8
   },
   {
     "departamento": "SIN DATO",
@@ -426,7 +426,7 @@
     ],
     "clientes": 380,
     "archivo": "data/perfilador/sin_dato.json",
-    "size_kb": 275.9
+    "size_kb": 276.1
   },
   {
     "departamento": "LORETO",
@@ -441,6 +441,6 @@
     ],
     "clientes": 194,
     "archivo": "data/perfilador/loreto.json",
-    "size_kb": 104.4
+    "size_kb": 104.6
   }
 ]
