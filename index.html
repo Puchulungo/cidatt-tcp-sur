@@ -503,9 +503,54 @@
   @media (max-width: 768px) {
     .back-btn { display: flex; }
   }
+
+  /* --- Auth Gate --- */
+  #auth-gate {
+    position: fixed; inset: 0; z-index: 1000;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .auth-box {
+    text-align: center; max-width: 360px; padding: 2rem;
+  }
+  .auth-logo {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: var(--accent); display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+  .auth-title { font-size: 1.4rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; }
+  .auth-sub { font-size: 0.85rem; color: var(--steel); margin-bottom: 2rem; }
+  .auth-btn {
+    width: 100%; background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; padding: 12px 20px; font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+    font-family: 'IBM Plex Sans', sans-serif; transition: background 0.15s;
+  }
+  .auth-btn:hover { background: var(--accent-light); }
+  .auth-error { margin-top: 1rem; color: #f87171; font-size: 0.8rem; }
+  .auth-loading { color: var(--steel); font-size: 0.85rem; }
+  #app-content { display: none; }
 </style>
 </head>
 <body>
+
+<div id="auth-gate">
+  <div class="auth-box" id="auth-box">
+    <div class="auth-logo">
+      <svg width="28" height="28" viewBox="0 0 21 21" fill="none"><rect x="1" y="1" width="9" height="9" fill="#fff"/><rect x="11" y="1" width="9" height="9" fill="#fff" opacity="0.7"/><rect x="1" y="11" width="9" height="9" fill="#fff" opacity="0.7"/><rect x="11" y="11" width="9" height="9" fill="#fff" opacity="0.4"/></svg>
+    </div>
+    <div class="auth-title">CIDATT TCP Sur</div>
+    <div class="auth-sub">Acceso restringido &mdash; Grupo Euromotors</div>
+    <button class="auth-btn" id="btn-login" style="display:none">
+      <svg width="16" height="16" viewBox="0 0 21 21" fill="none"><rect x="1" y="1" width="9" height="9" fill="#F25022"/><rect x="11" y="1" width="9" height="9" fill="#7FBA00"/><rect x="1" y="11" width="9" height="9" fill="#00A4EF"/><rect x="11" y="11" width="9" height="9" fill="#FFB900"/></svg>
+      Iniciar sesión con Microsoft
+    </button>
+    <div class="auth-loading" id="auth-status">Verificando sesión...</div>
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
+<div id="app-content">
 
 <header>
   <span class="logo-text">CIDATT TCP Sur</span>
@@ -761,7 +806,12 @@ function volverLista() {
   document.getElementById('detalle').classList.remove('active');
 }
 
-cargarDatos();
+// cargarDatos() ahora se dispara desde auth.js una vez logueado
 </script>
+
+</div><!-- /#app-content -->
+
+<script src="lib/msal-browser.min.js"></script>
+<script src="auth.js"></script>
 </body>
 </html>
