@@ -754,6 +754,22 @@ function toggleNode(id, header) {
   toggle.classList.toggle('open', isOpen);
 }
 
+// Al abrir una categoria de peso, despliega automaticamente todos los años debajo
+// (evita tener que hacer click año por año)
+function toggleCategoria(id, header) {
+  const body = document.getElementById(id);
+  const toggle = header.querySelector('.tree-toggle');
+  const isOpen = body.classList.toggle('open');
+  toggle.classList.toggle('open', isOpen);
+
+  body.querySelectorAll('.tree-modelo-body').forEach(yearBody => {
+    yearBody.classList.toggle('open', isOpen);
+  });
+  body.querySelectorAll('.tree-modelo-header .tree-toggle').forEach(yearToggle => {
+    yearToggle.classList.toggle('open', isOpen);
+  });
+}
+
 
 // --- Enriquecimiento de ficha con datos del perfilador (peso, provincia, categoria) ---
 const PERFILADOR_CACHE = {};
@@ -842,7 +858,7 @@ function renderTreeEnriched(tree) {
       const totalCat = Object.values(catData).reduce((s, anioData) => s + Object.values(anioData).reduce((a, b) => a + b, 0), 0);
       const catId = 'cat_' + Math.random().toString(36).slice(2);
       html += `<div class="tree-marca">
-        <div class="tree-marca-header" onclick="toggleNode('${catId}', this)">
+        <div class="tree-marca-header" onclick="toggleCategoria('${catId}', this)">
           <span class="tree-toggle">&#9654;</span>
           <span class="marca-label">${cat}${rangoCategoria(clase, cat)}</span>
           <span class="marca-count">${totalCat}</span>
