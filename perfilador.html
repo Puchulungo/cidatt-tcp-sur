@@ -353,6 +353,34 @@
     </div>
 
     <div class="filter-group">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label class="filter-label" style="margin-bottom:0;">Distrito</label>
+        <a href="#" id="dist-toggle-all" class="mini-link">Todos</a>
+      </div>
+      <div class="check-list" id="f-distrito">
+        <div class="check-placeholder">Elegí un departamento primero</div>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label class="filter-label" style="margin-bottom:0;">Sector Económico</label>
+        <a href="#" id="sec-toggle-all" class="mini-link">Todos</a>
+      </div>
+      <div class="check-list" id="f-sector"></div>
+    </div>
+
+    <div class="filter-group">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label class="filter-label" style="margin-bottom:0;">CIIU</label>
+        <a href="#" id="ciiu-toggle-all" class="mini-link">Todos</a>
+      </div>
+      <div class="check-list" id="f-ciiu">
+        <div class="check-placeholder">Elegí un sector primero</div>
+      </div>
+    </div>
+
+    <div class="filter-group">
       <label class="filter-label">Clase</label>
       <div class="chip-group" id="f-clase">
         <span class="chip active" data-clase="CAMION">Camión</span>
@@ -377,6 +405,7 @@
     <button class="btn-buscar" id="btn-buscar" disabled>Seleccioná un departamento</button>
     <div class="warn-msg" id="warn-msg">Elegiste varios departamentos grandes — puede tardar unos segundos en cargar.</div>
     <div class="status-msg" id="status-msg"></div>
+    <div class="status-msg" style="margin-top:4px;">Solo se muestran empresas con RUC activo.</div>
   </div>
 
   <div class="results" id="results">
@@ -390,6 +419,7 @@
 <script src="auth.js"></script>
 <script>
 let DEPTO_INDEX = [];
+let SECTOR_INDEX = [];
 let SHARD_CACHE = {};
 let CURRENT_RESULTS = [];
 
@@ -399,10 +429,24 @@ function getSelectedDeptos() {
 function getSelectedProvincias() {
   return Array.from(document.querySelectorAll('#f-provincia input:checked')).map(i => i.value);
 }
+function getSelectedDistritos() {
+  return Array.from(document.querySelectorAll('#f-distrito input:checked')).map(i => i.value);
+}
+function getSelectedSectores() {
+  return Array.from(document.querySelectorAll('#f-sector input:checked')).map(i => i.value);
+}
+function getSelectedCiius() {
+  return Array.from(document.querySelectorAll('#f-ciiu input:checked')).map(i => i.value);
+}
 
 async function initPerfilador() {
-  const res = await fetch('data/perfilador/_index.json');
-  DEPTO_INDEX = await res.json();
+  const [resDep, resSec] = await Promise.all([
+    fetch('data/perfilador/_index.json'),
+    fetch('data/perfilador/_sectores.json'),
+  ]);
+  DEPTO_INDEX = await resDep.json();
+  SECTOR_INDEX = await resSec.json();
+
   const cont = document.getElementById('f-departamento');
   cont.innerHTML = '';
   DEPTO_INDEX.forEach(d => {
@@ -412,16 +456,28 @@ async function initPerfilador() {
     cont.appendChild(item);
   });
   cont.addEventListener('change', onDeptoChange);
+
+  const secCont = document.getElementById('f-sector');
+  secCont.innerHTML = '';
+  SECTOR_INDEX.forEach(s => {
+    const item = document.createElement('label');
+    item.className = 'check-item';
+    item.innerHTML = `<input type="checkbox" value="${s.sector}"> <span>${s.sector}</span><span class="n">${s.clientes.toLocaleString()}</span>`;
+    secCont.appendChild(item);
+  });
+  secCont.addEventListener('change', onSectorChange);
 }
 
 function onDeptoChange() {
   const selectedSlugs = getSelectedDeptos();
   const provCont = document.getElementById('f-provincia');
+  const distCont = document.getElementById('f-distrito');
   const btn = document.getElementById('btn-buscar');
   const warn = document.getElementById('warn-msg');
 
   if (selectedSlugs.length === 0) {
     provCont.innerHTML = '<div class="check-placeholder">Elegí un departamento primero</div>';
+    distCont.innerHTML = '<div class="check-placeholder">Elegí un departamento primero</div>';
     btn.disabled = true;
     btn.textContent = 'Seleccioná un departamento';
     warn.style.display = 'none';
@@ -430,9 +486,11 @@ function onDeptoChange() {
 
   // union de provincias de los departamentos seleccionados
   const provSet = new Set();
+  const distSet = new Set();
   selectedSlugs.forEach(slug => {
     const d = DEPTO_INDEX.find(x => x.slug === slug);
     d.provincias.forEach(p => provSet.add(p));
+    (d.distritos || []).forEach(dist => distSet.add(dist));
   });
   const prevChecked = new Set(getSelectedProvincias());
   provCont.innerHTML = '';
@@ -444,10 +502,49 @@ function onDeptoChange() {
     provCont.appendChild(item);
   });
 
+  const prevDistChecked = new Set(getSelectedDistritos());
+  distCont.innerHTML = '';
+  if (distSet.size === 0) {
+    distCont.innerHTML = '<div class="check-placeholder">Sin distritos disponibles</div>';
+  } else {
+    Array.from(distSet).sort().forEach(dist => {
+      const item = document.createElement('label');
+      item.className = 'check-item';
+      const checked = prevDistChecked.has(dist) ? 'checked' : '';
+      item.innerHTML = `<input type="checkbox" value="${dist}" ${checked}> <span>${dist}</span>`;
+      distCont.appendChild(item);
+    });
+  }
+
   btn.disabled = false;
   const totalClientes = selectedSlugs.reduce((s, slug) => s + DEPTO_INDEX.find(x => x.slug === slug).clientes, 0);
   btn.textContent = `Buscar (${selectedSlugs.length} depto${selectedSlugs.length !== 1 ? 's' : ''})`;
   warn.style.display = (selectedSlugs.length > 5 || totalClientes > 40000) ? 'block' : 'none';
+}
+
+function onSectorChange() {
+  const selectedSectores = getSelectedSectores();
+  const ciiuCont = document.getElementById('f-ciiu');
+
+  if (selectedSectores.length === 0) {
+    ciiuCont.innerHTML = '<div class="check-placeholder">Elegí un sector primero</div>';
+    return;
+  }
+
+  const ciiuSet = new Set();
+  selectedSectores.forEach(sec => {
+    const s = SECTOR_INDEX.find(x => x.sector === sec);
+    if (s) s.ciiu.forEach(c => ciiuSet.add(c.desc));
+  });
+  const prevChecked = new Set(getSelectedCiius());
+  ciiuCont.innerHTML = '';
+  Array.from(ciiuSet).sort().forEach(desc => {
+    const item = document.createElement('label');
+    item.className = 'check-item';
+    const checked = prevChecked.has(desc) ? 'checked' : '';
+    item.innerHTML = `<input type="checkbox" value="${desc}" ${checked}> <span>${desc}</span>`;
+    ciiuCont.appendChild(item);
+  });
 }
 
 document.getElementById('dep-toggle-all').addEventListener('click', (e) => {
@@ -461,6 +558,23 @@ document.getElementById('prov-toggle-all').addEventListener('click', (e) => {
   e.preventDefault();
   const boxes = document.querySelectorAll('#f-provincia input');
   boxes.forEach(b => b.checked = false); // "Todas" = ninguna marcada = sin filtro
+});
+document.getElementById('dist-toggle-all').addEventListener('click', (e) => {
+  e.preventDefault();
+  const boxes = document.querySelectorAll('#f-distrito input');
+  boxes.forEach(b => b.checked = false); // "Todos" = ninguno marcado = sin filtro
+});
+document.getElementById('sec-toggle-all').addEventListener('click', (e) => {
+  e.preventDefault();
+  const boxes = document.querySelectorAll('#f-sector input');
+  const allChecked = boxes.length > 0 && Array.from(boxes).every(b => b.checked);
+  boxes.forEach(b => b.checked = !allChecked);
+  onSectorChange();
+});
+document.getElementById('ciiu-toggle-all').addEventListener('click', (e) => {
+  e.preventDefault();
+  const boxes = document.querySelectorAll('#f-ciiu input');
+  boxes.forEach(b => b.checked = false); // "Todos" = ninguno marcado = sin filtro
 });
 
 document.querySelectorAll('#f-clase .chip').forEach(chip => {
@@ -498,6 +612,9 @@ document.getElementById('btn-buscar').addEventListener('click', async () => {
   const slugs = getSelectedDeptos();
   if (slugs.length === 0) return;
   const provincias = getSelectedProvincias(); // vacio = todas
+  const distritos = getSelectedDistritos(); // vacio = todos
+  const sectores = getSelectedSectores(); // vacio = todos
+  const ciius = getSelectedCiius(); // vacio = todos
   const clasesActivas = Array.from(document.querySelectorAll('#f-clase .chip.active')).map(c => c.dataset.clase);
   const pesoMin = parseInt(minSlider.value);
   const pesoMax = parseInt(maxSlider.value);
@@ -511,14 +628,19 @@ document.getElementById('btn-buscar').addEventListener('click', async () => {
     statusMsg.textContent = `Cargando ${i + 1}/${slugs.length}...`;
     const clientes = await loadShard(slugs[i]);
     for (const c of clientes) {
+      // Estado = ACTIVO es obligatorio: no se muestran empresas de baja/suspendidas
+      if (c.estado !== 'ACTIVO') continue;
       if (provincias.length > 0 && !provincias.includes(c.provincia)) continue;
+      if (distritos.length > 0 && !distritos.includes(c.distrito)) continue;
+      if (sectores.length > 0 && !sectores.includes(c.sector_economico)) continue;
+      if (ciius.length > 0 && !ciius.includes(c.ciiu_desc)) continue;
       const matching = c.vehiculos.filter(v =>
         !v.atipico &&
         clasesActivas.includes(v.clase) &&
         v.peso_bruto != null && v.peso_bruto >= pesoMin && v.peso_bruto <= pesoMax
       );
       if (matching.length === 0) continue;
-      out.push({ ruc: c.ruc, razon: c.razon, vehiculos: matching });
+      out.push({ ruc: c.ruc, razon: c.razon, sector: c.sector_economico, ciiu: c.ciiu_desc, vehiculos: matching });
     }
   }
   statusMsg.textContent = '';
@@ -568,7 +690,7 @@ function renderResults(out) {
         <span class="client-toggle">&#9654;</span>
         <div class="client-info">
           <div class="client-razon">${c.razon}</div>
-          <div class="client-ruc">RUC ${c.ruc}</div>
+          <div class="client-ruc">RUC ${c.ruc}${c.sector && c.sector !== 'SIN DATOS' ? ' · ' + c.sector : ''}</div>
         </div>
         <span class="client-units">${c.vehiculos.length}</span>
       </div>

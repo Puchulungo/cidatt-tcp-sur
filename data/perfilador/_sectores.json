@@ -1,0 +1,1100 @@
+[
+  {
+    "sector": "TRANSPORTE Y COMUNICACIONES",
+    "clientes": 96769,
+    "ciiu": [
+      {
+        "desc": "TRANSPORTE  DE CARGA POR CARRETERA.",
+        "clientes": 94845
+      },
+      {
+        "desc": "OTROS TIPOS TRANSPORTE REG. VIA TER.",
+        "clientes": 1009
+      },
+      {
+        "desc": "OTRAS ACTIVIDADES DE TRANSPORTES.",
+        "clientes": 479
+      },
+      {
+        "desc": "TELECOMUNICACIONES",
+        "clientes": 91
+      },
+      {
+        "desc": "ORGANIZACION DEL TRANSPORTE",
+        "clientes": 81
+      },
+      {
+        "desc": "MANIPULACION DE LA CARGA",
+        "clientes": 80
+      },
+      {
+        "desc": "ALMACENAMIENTO Y DEPOSITO",
+        "clientes": 58
+      },
+      {
+        "desc": "ACTIVIDADES DE CORREO DISTINTAS",
+        "clientes": 39
+      },
+      {
+        "desc": "AGENCIAS DE VIAJES Y GUIAS TURISTIC.",
+        "clientes": 30
+      },
+      {
+        "desc": "OTROS TIPOS  TRANSPORTE NO REG. VIA TER.",
+        "clientes": 19
+      },
+      {
+        "desc": "TRANSPORTE VIAS NAVEGACION INTERIOR.",
+        "clientes": 10
+      },
+      {
+        "desc": "ACTIVIDADES POSTALES NACIONALES",
+        "clientes": 9
+      },
+      {
+        "desc": "TRANSPORTE  REGULAR VIA AEREA.",
+        "clientes": 8
+      },
+      {
+        "desc": "TRANSPORTE MARITIMO Y DE CABOTAJE.",
+        "clientes": 8
+      },
+      {
+        "desc": "TRANSPORTE POR VIA FERREA.",
+        "clientes": 3
+      }
+    ]
+  },
+  {
+    "sector": "COMERCIO",
+    "clientes": 17414,
+    "ciiu": [
+      {
+        "desc": "VTA. MAY. MATERIALES DE CONSTRUCCION.",
+        "clientes": 2970
+      },
+      {
+        "desc": "VTA. MAY. ALIMENTOS, BEBIDAS Y TABACO.",
+        "clientes": 2589
+      },
+      {
+        "desc": "VTA. MIN. ARTICULOS DE FERRETERIA.",
+        "clientes": 1647
+      },
+      {
+        "desc": "VTA.  MIN. ALIMENTOS, BEBIDAS, TABACO.",
+        "clientes": 1474
+      },
+      {
+        "desc": "VTA. MAY. DE OTROS PRODUCTOS.",
+        "clientes": 1118
+      },
+      {
+        "desc": "OTROS TIPOS DE VENTA AL POR MENOR.",
+        "clientes": 1006
+      },
+      {
+        "desc": "OTROS TIPOS DE VENTA POR MENOR.",
+        "clientes": 612
+      },
+      {
+        "desc": "VENTA AL POR MENOR COMBUSTIBLES.",
+        "clientes": 607
+      },
+      {
+        "desc": "VTA.  MAY. DE MATERIAS PRIMAS AGROPEC.",
+        "clientes": 572
+      },
+      {
+        "desc": "VTA. MIN. EN ALMACENES NO ESPECIALIZ.",
+        "clientes": 505
+      },
+      {
+        "desc": "VTA. MIN. EN PUESTOS DE VENTA.",
+        "clientes": 495
+      },
+      {
+        "desc": "VTA. AL POR MAYOR DE COMBUSTIBLES.",
+        "clientes": 479
+      },
+      {
+        "desc": "VTA.  MIN. OTROS PRODUCTOS EN ALMACEN.",
+        "clientes": 468
+      },
+      {
+        "desc": "VENTA PARTES, PIEZAS, ACCESORIOS.",
+        "clientes": 437
+      },
+      {
+        "desc": "VTA. MAY. DE METALES Y MINERALES MET.",
+        "clientes": 319
+      },
+      {
+        "desc": "VTA. MAY. MAQUINARIA, EQUIPO Y MATER.",
+        "clientes": 299
+      },
+      {
+        "desc": "MANTENIMIENTO Y REPARAC. VEHICULOS.",
+        "clientes": 285
+      },
+      {
+        "desc": "VTA. MAY. OTROS PRODUCTOS INTERMEDIOS.",
+        "clientes": 231
+      },
+      {
+        "desc": "VTA. MAY. OTROS ENSERES DOMESTICOS.",
+        "clientes": 196
+      },
+      {
+        "desc": "VTA. MIN. PRODUCTOS TEXTILES, CALZADO.",
+        "clientes": 190
+      },
+      {
+        "desc": "VTA. MIN. EQUIPO DE USO DOMESTICO.",
+        "clientes": 179
+      },
+      {
+        "desc": "VTA.  MIN. PROD. FARMAC. Y ART. TOCADOR.",
+        "clientes": 176
+      },
+      {
+        "desc": "VTA.  MAY. A CAMBIO DE UNA RETRIBUCION.",
+        "clientes": 167
+      },
+      {
+        "desc": "VTA. MAY. PRODUCTOS TEXTILES.",
+        "clientes": 150
+      },
+      {
+        "desc": "VENTA DE VEHICULOS AUTOMOTORES.",
+        "clientes": 129
+      },
+      {
+        "desc": "VENTA, MANTEN. Y REPARAC. MOTOCICLETAS.",
+        "clientes": 88
+      },
+      {
+        "desc": "VTA. MIN. DE CASAS DE VENTA POR CORREO.",
+        "clientes": 13
+      },
+      {
+        "desc": "VTA. MIN. DE ALMACENES DE ART. USADOS.",
+        "clientes": 11
+      },
+      {
+        "desc": "VENTA DE VEHÍCULOS AUTOMOTORES",
+        "clientes": 1
+      },
+      {
+        "desc": "ELAB. DE PRODUCTOS DE TABACO.",
+        "clientes": 1
+      }
+    ]
+  },
+  {
+    "sector": "SERVICIOS",
+    "clientes": 6083,
+    "ciiu": [
+      {
+        "desc": "ALQUILER OTROS TIPOS MAQ.Y EQUI. NCP.",
+        "clientes": 1493
+      },
+      {
+        "desc": "ALQUILER EQUIPO TRANSPORTE V. TERRES.",
+        "clientes": 1194
+      },
+      {
+        "desc": "ACTIV.DE ARQUITECTURA E INGENIERIA",
+        "clientes": 956
+      },
+      {
+        "desc": "ACTIVIDADES INMOBILIARIAS",
+        "clientes": 935
+      },
+      {
+        "desc": "OTRAS ACTIVIDADES EMPRESARIALES NCP.",
+        "clientes": 611
+      },
+      {
+        "desc": "ALQUILER ENSERES DOMESTICOS NCP.",
+        "clientes": 188
+      },
+      {
+        "desc": "ACTIV.DE ASESORAMIENTO EMPRESARIAL",
+        "clientes": 130
+      },
+      {
+        "desc": "ACTIV. INMOBILIARIAS POR RETRIBUCION.",
+        "clientes": 100
+      },
+      {
+        "desc": "ACTIVIDADES LIMPIEZA DE EDIFICIOS",
+        "clientes": 83
+      },
+      {
+        "desc": "PUBLICIDAD",
+        "clientes": 81
+      },
+      {
+        "desc": "ACTIVIDADES DE CONTABILIDAD",
+        "clientes": 54
+      },
+      {
+        "desc": "ALQUILER MAQUI. Y EQUIP.CONSTRUCCION.",
+        "clientes": 51
+      },
+      {
+        "desc": "ACTIVIDADES JURIDICAS",
+        "clientes": 43
+      },
+      {
+        "desc": "ACTIV. DE INVESTIGACION Y SEGURIDAD.",
+        "clientes": 23
+      },
+      {
+        "desc": "ENSAYOS Y ANALISIS TECNICOS",
+        "clientes": 22
+      },
+      {
+        "desc": "OBTENCION Y DOTACION PERSONAL",
+        "clientes": 22
+      },
+      {
+        "desc": "ACTIVIDADES DE ENVASE Y EMPAQUE",
+        "clientes": 20
+      },
+      {
+        "desc": "ACTIVIDADES DE RADIO Y TELEVISION.",
+        "clientes": 20
+      },
+      {
+        "desc": "CONSULTORES  PROG. Y SUMIN. INFORMATIC.",
+        "clientes": 16
+      },
+      {
+        "desc": "OTRAS ACTIVIDADES DE INFORMATICA.",
+        "clientes": 15
+      },
+      {
+        "desc": "INVESTIGACION DE CIENCIAS NATURALES.",
+        "clientes": 6
+      },
+      {
+        "desc": "ALQUILER MAQUI. Y EQUIP.AGROPECUARIO.",
+        "clientes": 5
+      },
+      {
+        "desc": "INVESTIGACION DE CIENCIAS SOCIALES.",
+        "clientes": 3
+      },
+      {
+        "desc": "ACTIVIDADES DE FOTOGRAFIA",
+        "clientes": 3
+      },
+      {
+        "desc": "INVESTIGACION DE MERCADOS",
+        "clientes": 3
+      },
+      {
+        "desc": "ALQUILER MAQUI.Y EQUIP.DE OFICINA.",
+        "clientes": 2
+      },
+      {
+        "desc": "PRODUCCION Y DIST.FILMES Y VIDEOS",
+        "clientes": 2
+      },
+      {
+        "desc": "CONSULTORES EN EQUIPO INFORMATICA.",
+        "clientes": 1
+      },
+      {
+        "desc": "FAB. RECEPTORES DE RADIO Y TV.",
+        "clientes": 1
+      }
+    ]
+  },
+  {
+    "sector": "OTROS",
+    "clientes": 4418,
+    "ciiu": [
+      {
+        "desc": "OTRAS ACTIVID.DE TIPO SERVICIO NCP",
+        "clientes": 3127
+      },
+      {
+        "desc": "ACTIV. ADMINIST. PUBLICA EN GENERAL",
+        "clientes": 409
+      },
+      {
+        "desc": "OTRAS ACTIVID.ENTRETENIMIENTO NCP.",
+        "clientes": 181
+      },
+      {
+        "desc": "ELIMINACION DE DESPERDICIOS",
+        "clientes": 141
+      },
+      {
+        "desc": "ACTIVIDADES OTRAS ASOCIACIONES NCP.",
+        "clientes": 83
+      },
+      {
+        "desc": "OTRAS ACTIV.RELAC. CON SALUD HUMANA",
+        "clientes": 68
+      },
+      {
+        "desc": "ACTIVIDADES DE MEDICOS Y ODONTOLOGO",
+        "clientes": 45
+      },
+      {
+        "desc": "PELUQUERIA Y OTROS",
+        "clientes": 34
+      },
+      {
+        "desc": "LAVADO, LIMPIEZA Y TE%IDO TELA",
+        "clientes": 31
+      },
+      {
+        "desc": "ENSEÑANZA SUPERIOR",
+        "clientes": 30
+      },
+      {
+        "desc": "ACTIV.ORGANIZACIONES RELIGIOSAS",
+        "clientes": 25
+      },
+      {
+        "desc": "POMPAS FUNEBRES Y ACTIVID.CONEXAS",
+        "clientes": 24
+      },
+      {
+        "desc": "ACTIVIDADES DEPORTIVAS",
+        "clientes": 20
+      },
+      {
+        "desc": "EDUCACION DE ADULTOS Y OTROS",
+        "clientes": 17
+      },
+      {
+        "desc": "OTRAS ACTIVIDADES DE ESPARCIMIENTO",
+        "clientes": 16
+      },
+      {
+        "desc": "REPARACION DE EFECTOS PERSONALES.",
+        "clientes": 14
+      },
+      {
+        "desc": "ACTIVIDADES VETERINARIAS",
+        "clientes": 14
+      },
+      {
+        "desc": "ENSEÑANZA PRIMARIA",
+        "clientes": 13
+      },
+      {
+        "desc": "OTROS TIPOS DE INTERMEDIACION  FINANC.",
+        "clientes": 11
+      },
+      {
+        "desc": "SERVIC. AUXIL.PARA ADMINIST.PUBLICA.",
+        "clientes": 11
+      },
+      {
+        "desc": "ACTIVIDADES DE HOSPITALES",
+        "clientes": 10
+      },
+      {
+        "desc": "ACTIV.ORGANIZACIONES EMPRESARIALES",
+        "clientes": 10
+      },
+      {
+        "desc": "ACTIV.ORGANIZACIONES PROFESIONALES.",
+        "clientes": 9
+      },
+      {
+        "desc": "REGULACION DE ACTIVID.ORGANISMOS",
+        "clientes": 8
+      },
+      {
+        "desc": "ACTIV.JARDINES BOTANICOS Y ZOOLOGIC.",
+        "clientes": 7
+      },
+      {
+        "desc": "SERVICIOS SOCIALES SIN ALOJAMIENTO",
+        "clientes": 7
+      },
+      {
+        "desc": "ENSEÑANZA SECUNDARIA FORMAC. TECNICA.",
+        "clientes": 6
+      },
+      {
+        "desc": "OTROS TIPOS INTERMEDIACION MONETARIA.",
+        "clientes": 6
+      },
+      {
+        "desc": "ACTIV. AUXIL ARES DE INTERM. FINANC.",
+        "clientes": 6
+      },
+      {
+        "desc": "OTROS TRABAJOS DE EDICION.",
+        "clientes": 5
+      },
+      {
+        "desc": "MANTEN.Y REPAR.MAQUIN. DE OFICINA.",
+        "clientes": 5
+      },
+      {
+        "desc": "ENSEÑANZA SECUNDARIA  FORMACION GRAL.",
+        "clientes": 4
+      },
+      {
+        "desc": "ACTIV. FINANC. PLANES SEGUROS Y PENS.",
+        "clientes": 4
+      },
+      {
+        "desc": "REGULAC. Y FACILITAC. ACTIV.ECONOMIC.",
+        "clientes": 4
+      },
+      {
+        "desc": "SERVICIOS SOCIALES CON ALOJAMIENTO",
+        "clientes": 3
+      },
+      {
+        "desc": "ACTIVIDADES DE DEFENSA",
+        "clientes": 3
+      },
+      {
+        "desc": "ACTIV.TEATRALES,  MUSICALES Y OTRAS.",
+        "clientes": 2
+      },
+      {
+        "desc": "PLANES DE SEGUROS GENERALES",
+        "clientes": 1
+      },
+      {
+        "desc": "ACTIV.MUSEOS Y LUGARES HISTORICOS.",
+        "clientes": 1
+      },
+      {
+        "desc": "RELACIONES EXTERIORES",
+        "clientes": 1
+      },
+      {
+        "desc": "ORGANIZACIONES INTERNACIONALES",
+        "clientes": 1
+      },
+      {
+        "desc": "ACTIVIDADES DE SINDICATOS",
+        "clientes": 1
+      }
+    ]
+  },
+  {
+    "sector": "MANUFACTURA",
+    "clientes": 4166,
+    "ciiu": [
+      {
+        "desc": "FAB. PROD. METAL. USO ESTRUCTURAL.",
+        "clientes": 500
+      },
+      {
+        "desc": "FAB. DE PRODUCTOS DE PLASTICOS.",
+        "clientes": 269
+      },
+      {
+        "desc": "FAB. DE MUEBLES.",
+        "clientes": 249
+      },
+      {
+        "desc": "OTRAS INDUSTRIAS  MANUFACTURERAS NCP.",
+        "clientes": 182
+      },
+      {
+        "desc": "ELAB DE OTROS PROD. ALIMENTICIOS.",
+        "clientes": 154
+      },
+      {
+        "desc": "ASERRADO Y ACEPILLADURA MADERA.",
+        "clientes": 143
+      },
+      {
+        "desc": "FAB.  ART. DE HORMIGON, CEMENTO Y YESO.",
+        "clientes": 141
+      },
+      {
+        "desc": "ELAB. PROD. DE PANADERIA.",
+        "clientes": 135
+      },
+      {
+        "desc": "FAB. OTROS PROD. DE METAL NCP.",
+        "clientes": 120
+      },
+      {
+        "desc": "ELAB. DE BEBIDAS NO ALCOHOLICAS.",
+        "clientes": 109
+      },
+      {
+        "desc": "FAB. DE PRENDAS DE VESTIR.",
+        "clientes": 106
+      },
+      {
+        "desc": "ELAB. FRUTAS, LEG. Y HORTALIZAS.",
+        "clientes": 105
+      },
+      {
+        "desc": "RECICLAMIENTO DESPERDICIOS METALIC.",
+        "clientes": 101
+      },
+      {
+        "desc": "ELAB. Y CONS DE PESCADO.",
+        "clientes": 85
+      },
+      {
+        "desc": "ELAB. DE PRODUCTOS DE MOLINERIA.",
+        "clientes": 84
+      },
+      {
+        "desc": "FAB. PROD. CERAMICA NO REFRACT. N. EST.",
+        "clientes": 70
+      },
+      {
+        "desc": "FAB. DE OTROS PROD. QUIMICOS NEOP.",
+        "clientes": 68
+      },
+      {
+        "desc": "PREP Y TEJ DE FIBRAS TEXTILES.",
+        "clientes": 65
+      },
+      {
+        "desc": "ACTIVIDADES DE IMPRESION.",
+        "clientes": 63
+      },
+      {
+        "desc": "FAB.  MOTORES,  GENERADORES ELECTRICOS.",
+        "clientes": 62
+      },
+      {
+        "desc": "PRODUC. CARNE Y PROD. CARNICOS.",
+        "clientes": 56
+      },
+      {
+        "desc": "FAB. DE PINTURAS Y BARNICES.",
+        "clientes": 50
+      },
+      {
+        "desc": "ELAB DE PRODUCTOS LACTEOS.",
+        "clientes": 49
+      },
+      {
+        "desc": "FAB. DE CEMENTO, CAL Y YESO.",
+        "clientes": 48
+      },
+      {
+        "desc": "ELAB. DE PIENSOS PREPARADOS.",
+        "clientes": 44
+      },
+      {
+        "desc": "FAB. OTROS PRODUCTOS DE MADERA.",
+        "clientes": 44
+      },
+      {
+        "desc": "FAB. PARTES Y PIEZAS CARPINTERIA.",
+        "clientes": 44
+      },
+      {
+        "desc": "OBRAS DE INGENIERIA MECANICA.",
+        "clientes": 37
+      },
+      {
+        "desc": "FAB. JABONES Y DETERGENTES.",
+        "clientes": 37
+      },
+      {
+        "desc": "ELAB. DE ACEITE Y GRASAS.",
+        "clientes": 34
+      },
+      {
+        "desc": "FAB. DE OTROS ARTICULOS.",
+        "clientes": 34
+      },
+      {
+        "desc": "FAB. OTROS PROD. MIN. NO METALIC. NCP.",
+        "clientes": 33
+      },
+      {
+        "desc": "ACABADO DE PROD. TEXTILES.",
+        "clientes": 33
+      },
+      {
+        "desc": "FAB. CARROCERIAS PARA VEHICULOS.",
+        "clientes": 32
+      },
+      {
+        "desc": "FAB. DE PROD. FARMACEUTICOS.",
+        "clientes": 31
+      },
+      {
+        "desc": "FAB. DE SUSTANCIAS QUIMICAS BASICAS.",
+        "clientes": 30
+      },
+      {
+        "desc": "FAB. VIDRIO Y PROD. DE VIDRIO",
+        "clientes": 30
+      },
+      {
+        "desc": "FAB. OTRO TIPO MAQUINARIA USO GRAL.",
+        "clientes": 28
+      },
+      {
+        "desc": "FAB. OTROS PROD. TEXTILES NEOP.",
+        "clientes": 28
+      },
+      {
+        "desc": "FAB. DE CALZADO.",
+        "clientes": 25
+      },
+      {
+        "desc": "FAB. ART. CONFECCIONADOS.",
+        "clientes": 24
+      },
+      {
+        "desc": "FAB.  ENVASES DE PAPEL Y CARTON.",
+        "clientes": 23
+      },
+      {
+        "desc": "FAB. ABONO  Y COMP. DE NITROGENO.",
+        "clientes": 23
+      },
+      {
+        "desc": "FAB. PRODUCTOS DE HIERRO Y ACERO.",
+        "clientes": 22
+      },
+      {
+        "desc": "FAB. PARTES, PIEZAS Y ACCESORIOS.",
+        "clientes": 21
+      },
+      {
+        "desc": "FAB. TEJIDOS Y ART DE PUNTO.",
+        "clientes": 20
+      },
+      {
+        "desc": "FAB. OTRO TIPO MAQUIN. USO ESPECIAL.",
+        "clientes": 19
+      },
+      {
+        "desc": "CONSTRUCCION Y REPARACION  DE BUQUES.",
+        "clientes": 19
+      },
+      {
+        "desc": "FAB. TANQUES, DEPOSITOS Y RECIP. METAL.",
+        "clientes": 19
+      },
+      {
+        "desc": "FAB. MAQUIN MINERA Y OBRAS DE CONST.",
+        "clientes": 18
+      },
+      {
+        "desc": "ELAB. CACAO, CHOCOLATE Y CONFIT.",
+        "clientes": 18
+      },
+      {
+        "desc": "FAB. RECIPIENTES DE MADERA.",
+        "clientes": 18
+      },
+      {
+        "desc": "FAB. DE PLASTICOS Y DE CAUCHO.",
+        "clientes": 17
+      },
+      {
+        "desc": "MEZCLA DE BEBIDAS ALCOHOLICAS.",
+        "clientes": 15
+      },
+      {
+        "desc": "FAB. OTROS PRODUCTOS DE CAUCHO.",
+        "clientes": 14
+      },
+      {
+        "desc": "FUNDICION DE HIERRO Y DE ACERO.",
+        "clientes": 14
+      },
+      {
+        "desc": "MANTENIMIENTO DEL ORDEN PUBLICO",
+        "clientes": 13
+      },
+      {
+        "desc": "FAB. OTRO TIPO EQUIPO ELECTRICO NCP.",
+        "clientes": 12
+      },
+      {
+        "desc": "FAB. DE CUBIERTOS DE CAUCHO.",
+        "clientes": 12
+      },
+      {
+        "desc": "ED. LIBROS, FOLLETOS Y OTROS.",
+        "clientes": 12
+      },
+      {
+        "desc": "FAB. DE PLAGUICIDAS Y OTROS PROD. QUIM.",
+        "clientes": 11
+      },
+      {
+        "desc": "ELAB. DE AZUCAR.",
+        "clientes": 11
+      },
+      {
+        "desc": "RECICLAMIENTO DESPERDICIOS NO METAL.",
+        "clientes": 11
+      },
+      {
+        "desc": "SERVICIOS RDOS CON IMPRESION.",
+        "clientes": 10
+      },
+      {
+        "desc": "SUMINISTRO DE VAPOR Y AGUA CALIENTE.",
+        "clientes": 10
+      },
+      {
+        "desc": "FAB. PROD. CERAMICA NO REFRACT. EST.",
+        "clientes": 10
+      },
+      {
+        "desc": "FUNDICION DE METALES NO FERROSOS.",
+        "clientes": 10
+      },
+      {
+        "desc": "FAB. MAQUIN. ELAB. ALIMENTOS, BEBIDAS.",
+        "clientes": 10
+      },
+      {
+        "desc": "CURTIDO Y ADOBO DE CUEROS.",
+        "clientes": 9
+      },
+      {
+        "desc": "FAB. DE MAQUINAS HERRAMIENTA.",
+        "clientes": 8
+      },
+      {
+        "desc": "FAB. DE BOMBAS,  COMPRESORAS, GRIFOS.",
+        "clientes": 8
+      },
+      {
+        "desc": "CORTE, TALLADO Y ACABADO DE PIEDRA.",
+        "clientes": 8
+      },
+      {
+        "desc": "FAB. DE HOJAS DE MADERA.",
+        "clientes": 8
+      },
+      {
+        "desc": "FAB. PROD. MET. ACABADOS O SEMIACABAD.",
+        "clientes": 7
+      },
+      {
+        "desc": "FAB. PRODUCTOS DE MET. PRECIOSOS.",
+        "clientes": 7
+      },
+      {
+        "desc": "FAB. DE PAPEL Y CARTON.",
+        "clientes": 7
+      },
+      {
+        "desc": "FAB. PROD. CERAMICA REFACTARIA.",
+        "clientes": 7
+      },
+      {
+        "desc": "FAB.  ART. CUCHILLERIA, FERRETERIA.",
+        "clientes": 7
+      },
+      {
+        "desc": "FAB. PROD.  REFINACION DEL PETROLEO.",
+        "clientes": 6
+      },
+      {
+        "desc": "FAB. DE MAQUINARIA  METALURGICA.",
+        "clientes": 6
+      },
+      {
+        "desc": "ELAB. DE VINOS.",
+        "clientes": 6
+      },
+      {
+        "desc": "FAB. DE FIBRAS SINTETICAS O ARTIFIC.",
+        "clientes": 6
+      },
+      {
+        "desc": "FAB. DE HILOS Y CABLES AISLADOS.",
+        "clientes": 5
+      },
+      {
+        "desc": "FAB. EQUIPO MEDICO Y QUIRURGICO.",
+        "clientes": 5
+      },
+      {
+        "desc": "FAB.  APARATOS DE USO DOMESTICO NCP.",
+        "clientes": 5
+      },
+      {
+        "desc": "ELAB. DE BEBIDAS MALTEADAS.",
+        "clientes": 5
+      },
+      {
+        "desc": "ELAB. MACARRONES, FIDEOS Y OTROS.",
+        "clientes": 4
+      },
+      {
+        "desc": "FAB. EQUIP.  ELEVACION Y MANIPULACION.",
+        "clientes": 4
+      },
+      {
+        "desc": "FAB. DE ACUMULADORES Y BATERIAS.",
+        "clientes": 4
+      },
+      {
+        "desc": "HOGARES PRIVADOS C. SERV.DOMESTICO",
+        "clientes": 4
+      },
+      {
+        "desc": "FAB. DE MOTOCICLETAS.",
+        "clientes": 3
+      },
+      {
+        "desc": "FAB. HORNOS, HOGUERAS, QUEMADORES.",
+        "clientes": 3
+      },
+      {
+        "desc": "FAB. ARTICULOS DEPORTIVOS.",
+        "clientes": 3
+      },
+      {
+        "desc": "FAB. DE MAQUINARIA  AGROPECUARIA.",
+        "clientes": 3
+      },
+      {
+        "desc": "ED. DE PERIODICOS Y REVISTAS.",
+        "clientes": 3
+      },
+      {
+        "desc": "FAB. INSTRUMENTOS MUSICALES.",
+        "clientes": 2
+      },
+      {
+        "desc": "FAB. CUERDAS, CORDELES Y REDES.",
+        "clientes": 2
+      },
+      {
+        "desc": "FAB. DE JUEGOS Y JUGUETES.",
+        "clientes": 2
+      },
+      {
+        "desc": "FAB. BICICLETAS Y SILLONES DE RUEDAS.",
+        "clientes": 1
+      },
+      {
+        "desc": "FAB. DE LAMPARAS ELECTRICAS.",
+        "clientes": 1
+      },
+      {
+        "desc": "ELAB DE ALMIDONES Y DERIVADOS.",
+        "clientes": 1
+      },
+      {
+        "desc": "SERVICIOS PUBLICOS SEGURIDAD SOCIAL",
+        "clientes": 1
+      },
+      {
+        "desc": "ACTIVIDADES BIBLIOTECAS Y ARCHIVOS",
+        "clientes": 1
+      },
+      {
+        "desc": "FAB.  DE GENERADORES DE VAPOR.",
+        "clientes": 1
+      },
+      {
+        "desc": "ACTIV.RELACIONADAS.CON BASE DE DATO.",
+        "clientes": 1
+      },
+      {
+        "desc": "FAB. DE MALETAS Y OTROS.",
+        "clientes": 1
+      },
+      {
+        "desc": "FAB. DE TAPICES Y ALFOMBRAS.",
+        "clientes": 1
+      },
+      {
+        "desc": "FAB. PROD. DE HORNOS DE COQUE.",
+        "clientes": 1
+      },
+      {
+        "desc": "FAB.  COJINETES Y ENGRANAJES.",
+        "clientes": 1
+      },
+      {
+        "desc": "FAB. MAQUINARIA ELAB. TEXTILES.",
+        "clientes": 1
+      },
+      {
+        "desc": "CONSTRUC. Y REPARAC. DE EMBARCACIONES.",
+        "clientes": 1
+      },
+      {
+        "desc": "FAB. LOCOMOTORAS Y MATERIAL RODANTE.",
+        "clientes": 1
+      },
+      {
+        "desc": "FAB. VEHICULOS AUTOMOTORES.",
+        "clientes": 1
+      }
+    ]
+  },
+  {
+    "sector": "CONSTRUCCIÓN",
+    "clientes": 2529,
+    "ciiu": [
+      {
+        "desc": "CONSTRUCCION EDIFICIOS COMPLETOS.",
+        "clientes": 2306
+      },
+      {
+        "desc": "ACONDICIONAMIENTO DE EDIFICIOS.",
+        "clientes": 142
+      },
+      {
+        "desc": "PREPARACION DEL TERRENO.",
+        "clientes": 43
+      },
+      {
+        "desc": "TERMINACION DE EDIFICIOS.",
+        "clientes": 35
+      },
+      {
+        "desc": "ALQUILER DE CONSTRUCCION.",
+        "clientes": 3
+      }
+    ]
+  },
+  {
+    "sector": "AGROPECUARIO",
+    "clientes": 1914,
+    "ciiu": [
+      {
+        "desc": "CULTIVOS DE CEREALES.",
+        "clientes": 436
+      },
+      {
+        "desc": "CRIA DE ANIMALES DOMESTICOS.",
+        "clientes": 332
+      },
+      {
+        "desc": "CULTIVO DE FRUTAS.",
+        "clientes": 323
+      },
+      {
+        "desc": "CULTIVO DE HORTALIZAS Y LEGUMBRES.",
+        "clientes": 223
+      },
+      {
+        "desc": "SERVICIOS AGRICOLAS, GANADERAS.",
+        "clientes": 212
+      },
+      {
+        "desc": "EXPLOTACION MIXTA.",
+        "clientes": 140
+      },
+      {
+        "desc": "SILVICULTURA Y EXT. DE MADERA.",
+        "clientes": 132
+      },
+      {
+        "desc": "CRIA DE GANADO.",
+        "clientes": 115
+      },
+      {
+        "desc": "CAZA ORDINARIA Y SERVICIOS CONEXOS.",
+        "clientes": 1
+      }
+    ]
+  },
+  {
+    "sector": "MINERIA E HIDROCARBUROS",
+    "clientes": 1449,
+    "ciiu": [
+      {
+        "desc": "EXT. DE MIN. METALIFEROS NO FERROSOS.",
+        "clientes": 797
+      },
+      {
+        "desc": "EXP. OTRAS MINAS Y CANTERAS NIA.",
+        "clientes": 315
+      },
+      {
+        "desc": "EXT. DE PIEDRA, ARENA Y ARCILLA.",
+        "clientes": 239
+      },
+      {
+        "desc": "EXTRAC. Y  AGLOMERAC. CARBON DE PIEDRA.",
+        "clientes": 50
+      },
+      {
+        "desc": "SERV. PETROLEROS Y DE GAS..",
+        "clientes": 37
+      },
+      {
+        "desc": "EXT. PETROLEO CRUDO Y GAS NATURAL.",
+        "clientes": 5
+      },
+      {
+        "desc": "EXT. DE MIN. DE HIERRO",
+        "clientes": 3
+      },
+      {
+        "desc": "EXT. MIN FABRIC. ABONO Y PROD. QUIMIC.",
+        "clientes": 2
+      },
+      {
+        "desc": "EXTRAC. Y AGLOMERAC. LIGNITO.",
+        "clientes": 1
+      }
+    ]
+  },
+  {
+    "sector": "RESTAURANTES Y HOTELES",
+    "clientes": 1031,
+    "ciiu": [
+      {
+        "desc": "RESTAURANTES, BARES Y CANTINAS.",
+        "clientes": 748
+      },
+      {
+        "desc": "HOTELES, CAMPAMENTOS Y OTROS.",
+        "clientes": 283
+      }
+    ]
+  },
+  {
+    "sector": "PESCA",
+    "clientes": 433,
+    "ciiu": [
+      {
+        "desc": "PESCA, EXPLOT. CRIADEROS DE PECES.",
+        "clientes": 433
+      }
+    ]
+  },
+  {
+    "sector": "ELECTRICIDAD Y AGUA",
+    "clientes": 219,
+    "ciiu": [
+      {
+        "desc": "CAPTACION ,  DEPURACION  Y DIST. DE AGUA",
+        "clientes": 130
+      },
+      {
+        "desc": "GENERACION  Y DIST. ENERGIA ELECTRICA.",
+        "clientes": 73
+      },
+      {
+        "desc": "FAB. DE GAS, DISTRIBUCION COMBUSTIBLE.",
+        "clientes": 16
+      }
+    ]
+  }
+]

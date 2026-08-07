@@ -190,6 +190,12 @@
   .badge-camion { background: rgba(37,99,235,0.2); color: #60a5fa; }
   .badge-rem { background: rgba(8,145,178,0.2); color: #22d3ee; }
   .badge-both { background: rgba(16,185,129,0.15); color: #34d399; }
+  .badge-baja { background: rgba(248,113,113,0.15); color: #f87171; }
+
+  .estado-tag { display: inline-flex; align-items: center; gap: 4px; }
+  .estado-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .estado-activo { color: #34d399; }
+  .estado-baja { color: #f87171; }
 
   .client-units {
     margin-left: auto;
@@ -601,7 +607,7 @@
   <span class="header-sub">Directorio de Clientes</span>
   <div class="search-wrap">
     <svg class="search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input id="buscar" type="text" placeholder="Buscar por RUC o razón social..." autocomplete="off" spellcheck="false">
+    <input id="buscar" type="text" placeholder="Buscar por RUC, razón social o nombre comercial..." autocomplete="off" spellcheck="false">
   </div>
   <a href="perfilador.html" style="margin-left:12px; color:#94a3b8; text-decoration:none; font-size:12px; font-family:'IBM Plex Mono',monospace; padding:6px 12px; border:1px solid rgba(148,163,184,0.15); border-radius:6px; white-space:nowrap;">Perfilador &#8594;</a>
   <a href="index.html" style="margin-left:6px; color:#94a3b8; text-decoration:none; font-size:12px; font-family:'IBM Plex Mono',monospace; padding:6px 12px; border:1px solid rgba(148,163,184,0.15); border-radius:6px; white-space:nowrap;">&#8962; Inicio</a>
@@ -666,11 +672,14 @@ function renderCard(c) {
     rem: '<span class="client-badge badge-rem">REMOLCADOR</span>',
     both: '<span class="client-badge badge-both">CAMIÓN + REM.</span>'
   };
+  const deBaja = c.estado && c.estado !== 'SIN DATOS' && c.estado !== 'ACTIVO';
+  const bajaBadge = deBaja ? '<span class="client-badge badge-baja" title="' + c.estado + '">DE BAJA</span>' : '';
   return `<div class="client-item${clienteActivo === c.ruc ? ' active' : ''}" data-ruc="${c.ruc}" onclick="seleccionar('${c.ruc}')">
     <div class="client-name">${c.razon}</div>
     <div class="client-meta">
       <span class="client-ruc">${c.ruc}</span>
       ${badgeMap[tipo]}
+      ${bajaBadge}
     </div>
     <span class="client-units">${total}</span>
   </div>`;
@@ -685,7 +694,8 @@ function filtrar() {
   } else {
     filtrados = CLIENTES.filter(c =>
       c.ruc.toLowerCase().includes(query) ||
-      c.razon.toLowerCase().includes(query)
+      c.razon.toLowerCase().includes(query) ||
+      (c.nombre_comercial && c.nombre_comercial !== 'SIN DATOS' && c.nombre_comercial.toLowerCase().includes(query))
     );
   }
 
@@ -932,6 +942,18 @@ function renderTreeEnriched(tree) {
   return html;
 }
 
+function formatAntiguedad(fechaIso) {
+  if (!fechaIso || fechaIso === 'SIN DATOS') return 'SIN DATOS';
+  const inicio = new Date(fechaIso);
+  if (isNaN(inicio.getTime())) return 'SIN DATOS';
+  const hoy = new Date();
+  let anos = hoy.getFullYear() - inicio.getFullYear();
+  const m = hoy.getMonth() - inicio.getMonth();
+  if (m < 0 || (m === 0 && hoy.getDate() < inicio.getDate())) anos--;
+  const fechaTexto = inicio.toLocaleDateString('es-PE', { year: 'numeric', month: 'long', day: 'numeric' });
+  return `${anos} año${anos !== 1 ? 's' : ''} (desde ${fechaTexto})`;
+}
+
 async function seleccionar(ruc) {
   const c = CLIENTES.find(x => x.ruc === ruc);
   if (!c) return;
@@ -949,20 +971,34 @@ async function seleccionar(ruc) {
   const enriched = await getEnrichedClient(c);
 
   const departamento = c.ciudad || 'SIN DATOS';
-  const provincia = enriched ? enriched.provincia : 'SIN DATOS';
+  const provincia = enriched ? enriched.provincia : (c.provincia || 'SIN DATOS');
+  const distrito = c.distrito || 'SIN DATOS';
   const total = enriched ? enriched.vehiculos.filter(v => !v.atipico).length : getTotalUnidades(c);
   const treeHtml = enriched ? renderTreeEnriched(buildTreeEnriched(enriched.vehiculos)) : renderTree(buildTree(c.vehiculos));
 
+  const esActivo = c.estado === 'ACTIVO';
+  const estadoHtml = c.estado && c.estado !== 'SIN DATOS'
+    ? `<span class="estado-tag ${esActivo ? 'estado-activo' : 'estado-baja'}"><span class="estado-dot" style="background:currentColor"></span>${c.estado}</span>`
+    : 'SIN DATOS';
+
   const campos = [
     { label: 'RUC', value: c.ruc, full: false },
+    { label: 'Estado', value: estadoHtml, full: false, raw: true },
+    { label: 'Antigüedad del negocio', value: formatAntiguedad(c.fecha_inicio_actividades), full: false },
+    { label: 'Tipo de Contribuyente', value: c.tipo_contribuyente, full: false },
+    { label: 'Sector Económico', value: c.sector_economico, full: false },
+    { label: 'Principal CIIU', value: c.ciiu, full: true },
     { label: 'Departamento', value: departamento, full: false },
     { label: 'Provincia', value: provincia, full: false },
-    { label: 'Principal CIIU', value: c.ciiu, full: true },
+    { label: 'Distrito', value: distrito, full: false },
     { label: 'Dirección', value: c.direccion, full: true },
     { label: 'Teléfono', value: c.telefono, full: false },
     { label: 'Email', value: c.email, full: false },
     { label: 'Representante Legal', value: c.representante, full: true },
   ];
+
+  const nombreComercialHtml = (c.nombre_comercial && c.nombre_comercial !== 'SIN DATOS' && c.nombre_comercial !== c.razon)
+    ? `<div class="ficha-ruc" style="margin-top:2px;">Nombre comercial: ${c.nombre_comercial}</div>` : '';
 
   detalle.innerHTML = `
     <div class="ficha">
@@ -970,12 +1006,13 @@ async function seleccionar(ruc) {
       <div class="ficha-header">
         <div class="ficha-razon">${c.razon}</div>
         <div class="ficha-ruc">RUC ${c.ruc}</div>
+        ${nombreComercialHtml}
       </div>
       <div class="info-grid">
         ${campos.map(f => `
           <div class="info-card${f.full ? ' full' : ''}">
             <div class="info-label">${f.label}</div>
-            <div class="info-value">${f.value || 'SIN DATOS'}</div>
+            <div class="info-value">${f.raw ? (f.value || 'SIN DATOS') : ((f.value && f.value !== 'SIN DATOS') ? f.value : 'SIN DATOS')}</div>
           </div>
         `).join('')}
       </div>
