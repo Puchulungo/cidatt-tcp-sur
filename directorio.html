@@ -530,6 +530,49 @@
   .auth-error { margin-top: 1rem; color: #f87171; font-size: 0.8rem; }
   .auth-loading { color: var(--steel); font-size: 0.85rem; }
   #app-content { display: none; }
+
+  .flota-anio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 14px 6px 30px;
+    border-top: 1px solid var(--border);
+    background: var(--navy);
+  }
+  .flota-anio-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--steel-light);
+  }
+  .flota-anio-count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .flota-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 14px 6px 46px;
+    font-size: 12px;
+    color: var(--steel);
+    border-top: 1px solid rgba(148,163,184,0.06);
+  }
+  .flota-row-label { color: var(--steel-light); }
+  .flota-row-rango {
+    color: var(--text-muted);
+    font-size: 11px;
+    margin-left: 6px;
+  }
+  .flota-row-count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: #60a5fa;
+    flex-shrink: 0;
+    margin-left: 10px;
+  }
 </style>
 </head>
 <body>
@@ -825,26 +868,31 @@ function buildTreeEnriched(vehiculos) {
   for (const v of vehiculos) {
     if (v.atipico) continue;
     const clase = v.clase || 'OTRO';
-    const cat = v.categoria_peso || 'SIN DATOS';
     const anio = v.anio || 'S/D';
     const marca = v.marca || 'SIN MARCA';
+    const cat = v.categoria_peso || 'SIN DATOS';
     if (!tree[clase]) tree[clase] = {};
-    if (!tree[clase][cat]) tree[clase][cat] = {};
-    if (!tree[clase][cat][anio]) tree[clase][cat][anio] = {};
-    tree[clase][cat][anio][marca] = (tree[clase][cat][anio][marca] || 0) + 1;
+    if (!tree[clase][anio]) tree[clase][anio] = {};
+    const key = marca + '|||' + cat;
+    tree[clase][anio][key] = (tree[clase][anio][key] || 0) + 1;
   }
   return tree;
+}
+
+function rangoTexto(clase, cat) {
+  const r = (CATEGORIA_RANGOS[clase] || {})[cat];
+  return r || cat;
 }
 
 function renderTreeEnriched(tree) {
   let html = '<div class="tree">';
   for (const clase of Object.keys(tree).sort()) {
-    const claseData = tree[clase];
-    const totalClase = Object.values(claseData).reduce((s, catData) =>
-      s + Object.values(catData).reduce((s2, anioData) =>
-        s2 + Object.values(anioData).reduce((a, b) => a + b, 0), 0), 0);
+    const aniosData = tree[clase];
+    const totalClase = Object.values(aniosData).reduce((s, filas) =>
+      s + Object.values(filas).reduce((a, b) => a + b, 0), 0);
     const claseClass = clase === 'CAMION' ? 'clase-camion' : 'clase-rem';
     const claseId = 'clase_' + Math.random().toString(36).slice(2);
+
     html += `<div class="tree-clase">
       <div class="tree-clase-header" onclick="toggleNode('${claseId}', this)">
         <span class="tree-toggle">&#9654;</span>
@@ -853,45 +901,31 @@ function renderTreeEnriched(tree) {
       </div>
       <div class="tree-clase-body" id="${claseId}">`;
 
-    for (const cat of Object.keys(claseData).sort()) {
-      const catData = claseData[cat];
-      const totalCat = Object.values(catData).reduce((s, anioData) => s + Object.values(anioData).reduce((a, b) => a + b, 0), 0);
-      const catId = 'cat_' + Math.random().toString(36).slice(2);
-      html += `<div class="tree-marca">
-        <div class="tree-marca-header" onclick="toggleCategoria('${catId}', this)">
-          <span class="tree-toggle">&#9654;</span>
-          <span class="marca-label">${cat}${rangoCategoria(clase, cat)}</span>
-          <span class="marca-count">${totalCat}</span>
-        </div>
-        <div class="tree-marca-body" id="${catId}">`;
+    const anios = Object.keys(aniosData).sort((a, b) => {
+      if (a === 'S/D') return 1;
+      if (b === 'S/D') return -1;
+      return b - a; // año descendente: mas reciente primero
+    });
 
-      const anios = Object.keys(catData).sort((a, b) => {
-        if (a === 'S/D') return 1;
-        if (b === 'S/D') return -1;
-        return b - a; // año descendente: mas reciente primero
-      });
-      for (const anio of anios) {
-        const marcasData = catData[anio];
-        const totalAnio = Object.values(marcasData).reduce((a, b) => a + b, 0);
-        const anioId = 'anio_' + Math.random().toString(36).slice(2);
-        html += `<div class="tree-modelo">
-          <div class="tree-modelo-header" onclick="toggleNode('${anioId}', this)">
-            <span class="tree-toggle">&#9654;</span>
-            <span class="modelo-label">${anio}</span>
-            <span class="modelo-count">${totalAnio}</span>
-          </div>
-          <div class="tree-modelo-body" id="${anioId}">`;
+    for (const anio of anios) {
+      const filas = aniosData[anio];
+      const totalAnio = Object.values(filas).reduce((a, b) => a + b, 0);
 
-        for (const marca of Object.keys(marcasData).sort((a,b) => marcasData[b]-marcasData[a])) {
-          html += `<div class="tree-year">
-            <span class="year-label">${marca}</span>
-            <span class="year-count">${marcasData[marca]}</span>
-          </div>`;
-        }
-        html += `</div></div>`;
+      html += `<div class="flota-anio-header">
+        <span class="flota-anio-label">${anio}</span>
+        <span class="flota-anio-count">${totalAnio} unidad${totalAnio !== 1 ? 'es' : ''}</span>
+      </div>`;
+
+      const filasOrdenadas = Object.entries(filas).sort((a, b) => b[1] - a[1]); // mayor cantidad primero
+      for (const [key, count] of filasOrdenadas) {
+        const [marca, cat] = key.split('|||');
+        html += `<div class="flota-row">
+          <span class="flota-row-label">${marca} <span class="flota-row-rango">&mdash; ${rangoTexto(clase, cat)}</span></span>
+          <span class="flota-row-count">${count}</span>
+        </div>`;
       }
-      html += `</div></div>`;
     }
+
     html += `</div></div>`;
   }
   html += '</div>';
