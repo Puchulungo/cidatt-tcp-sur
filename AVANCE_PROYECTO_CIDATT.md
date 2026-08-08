@@ -2,8 +2,31 @@
 
 **Repo:** https://github.com/Puchulungo/cidatt-tcp-sur
 **Producción:** https://cidatt-tcp-sur.vercel.app/
-**Última actualización de este documento:** 2026-08-07 (noche) — motor de scoring del
-Perfilador **implementado y en producción**, sección 6
+**Última actualización de este documento:** 2026-08-07 (noche) — fix de geo de 380
+clientes y score por marca en la ficha del Directorio, sección 9
+
+---
+
+## Estado actual (leer esto primero al retomar)
+
+**Todo lo de las secciones 1-4 y 6 está implementado, pusheado a `main` y en producción.**
+No hay código pendiente de escribir salvo que el usuario pida algo nuevo. Lo único
+realmente abierto:
+
+1. La fórmula de recencia del Paso 1 del Eje 2 (¿ya es cliente nuestro?) se implementó con
+   criterio propio porque el diseño original no la cerró del todo — ver el aviso al final
+   de la sección 6. No es un bug ni algo a medio hacer, es una decisión tomada que el
+   usuario todavía no confirmó viendo resultados reales.
+2. Lo de la sección 5 (Carterización de asesores, unificar Directorio+Perfilador
+   visualmente): son ideas a futuro, nunca se empezaron a construir.
+3. `clientes_v2.json` pesa ~91MB, por encima del límite recomendado de GitHub (nota
+   técnica en sección 4, no bloquea nada hoy).
+4. Fix de geo de 380 clientes y tabla de Score por marca en la ficha del Directorio
+   (sección 9) — implementados y pusheados hoy (commits `c455cdc` y `30dc394`), sin
+   validar aún visualmente en producción por el usuario.
+
+Si el usuario dice que algo de este documento ya está resuelto y el texto dice lo
+contrario, confiar en lo que dice el usuario y corregir el documento — no al revés.
 
 ---
 
@@ -101,15 +124,11 @@ Landing (`index.html`) con logo de Truck Center Peru y 3 accesos:
     cliente no aparece en la matriz nueva.
 
 ### `perfilador.html` (nuevo)
-- Filtros: **Departamento** (multi-selección), **Provincia** (multi, se filtra según los
-  departamentos elegidos), **Clase** (Camión/Remolcador), **Peso bruto** (slider de rango
-  doble en kg, 1,200 – 90,000 kg).
-- Si se seleccionan varios departamentos grandes (o varios a la vez), aparece un aviso de
-  que puede tardar más en cargar.
-- Resultados: razón social + RUC + cantidad de unidades que matchean el filtro, ordenados
-  de mayor a menor cantidad.
-- Al hacer click en un cliente se despliega por **año (descendente) → marca + cantidad**
-  de las unidades que matchean el filtro (no todas las unidades del cliente).
+- Versión original (2026-08, primera etapa): filtros por Departamento/Provincia/Clase/Peso
+  bruto (slider manual), resultados con cantidad de unidades que matchean.
+- **Esta versión quedó reemplazada por completo** al implementar el motor de scoring — ver
+  sección 6 para el diseño y la versión actual de los filtros y resultados (Marca+Clase
+  obligatorios, Score/Urgencia/Afinidad, Tamaño de cuenta, ficha auditable).
 
 ---
 
@@ -199,8 +218,8 @@ LFS.
 
 Objetivo: convertir el Perfilador en una herramienta de priorización real. Para cada
 combinación **cliente × marca × clase (Camión o Tractocamión/Remolcador)** se calculan 3
-ejes independientes + 1 etiqueta aparte. Nada de esto está programado todavía — es diseño
-puro, discutido a fondo con el usuario, pendiente de traducir a código.
+ejes independientes + 1 etiqueta aparte. Diseñado a fondo con el usuario y **ya implementado
+y en producción** (ver estado al final de esta sección).
 
 Fuente de datos nueva usada en este diseño: `Bandas_PBV_por_modelo.xlsx` (carpeta del
 proyecto), con 2 hojas: `Bandas_por_modelo` (75 modelos reales de MAN/Dongfeng/FAW/
@@ -259,21 +278,22 @@ de compras en la banda con **ponderación por recencia** (se descartó una venta
 - **Paso 0.5 (amortiguador de confianza, no es arquetipo propio):** cuántas unidades tiene
   en total en la banda. Pocas unidades → el score final se amortigua hacia 50; muchas
   unidades → se confía en el score calculado tal cual. Se aplica al final, no decide solo.
-  *(Falta definir el mínimo de unidades exacto.)*
+  Umbral cerrado, ver fórmula abajo.
 - **Paso 1 (Arquetipo 5 — ¿ya es cliente nuestro?):** binario (tiene o no unidades de la
-  marca evaluada) + recencia (misma rampa que Urgencia). Si sí y reciente → score muy alto.
+  marca evaluada) + recencia (misma rampa que Urgencia, invertida). Si sí y reciente →
+  score muy alto.
 - **Paso 2 (Arquetipo 1 — monomarca de un competidor puntual):** Métrica A = % de
   concentración en su marca más comprada, ponderado por recencia. Si domina fuerte una
   marca específica que no es la nuestra → score bajo. Dato de referencia (histórico
   nacional, clientes con 3+ unidades): 16.4% tiene 100% de su flota en una marca, pero solo
-  0.6% cae en 90-99% — la concentración es bimodal, casi nadie queda "casi puro". *(Falta
-  definir el umbral exacto: 100% vs ≥70-80%.)*
+  0.6% cae en 90-99% — la concentración es bimodal, casi nadie queda "casi puro". Umbral
+  cerrado en 80%, ver fórmula abajo.
 - **Paso 3 (Arquetipo 3 — pivote):** detección de secuencia cronológica — compró del bloque
   no-compatible con la marca evaluada, y TODO lo posterior (hasta hoy) es del bloque
   compatible. Medición: sí/no + magnitud (cantidad de compras que confirman la vuelta +
   qué tan reciente fue el pivote). El par de bloques relevante cambia según marca+clase (ver
-  tabla de bloques abajo). *(Falta definir si hace falta la versión espejo: pivote EN
-  CONTRA, del bloque compatible hacia uno no-compatible, como señal negativa.)*
+  tabla de bloques abajo). Sí se implementó la versión espejo (pivote EN CONTRA, señal
+  negativa) — ver fórmula abajo.
 - **Paso 4 (Arquetipos 2 y 4, Métrica B — bloque de origen):** si nada de lo anterior se
   activó, se usa la distribución por bloque de origen (columna `ORIGEN SUGERIDO` del Excel,
   ya validada: EUROPEO/CHINO/AMERICANO/JAPONES/COREANO/OTRO, 100% consistente salvo 1 marca
@@ -488,3 +508,74 @@ distribución de scores de 0 a 100 con mediana 40).
    Distrito en el Perfilador; Estado=ACTIVO obligatorio en resultados del Perfilador;
    `clientes_v2.json` regenerado desde `operaciones` + `Hoja1` (136,425 clientes, cruce 100%
    tras corregir prefijo `XX` mal cargado en 380 RUCs).
+9. `4bb28ce` — Motor de scoring del Perfilador: filtros Marca+Clase obligatorios
+   (reemplazan Clase multi-selección + slider de peso), Eje 0 (elegibilidad por banda de
+   peso), Eje 1 (Urgencia), Eje 2 (Afinidad — cascada de 4 pasos + amortiguador de
+   confianza), Score final = Urgencia×Afinidad con reordenamiento por eje individual,
+   Tamaño de cuenta (Retail/Medium Fish/Big Fish/Mega Fish) y ficha auditable por cliente.
+   Detalle completo del diseño y de la implementación en la sección 6.
+
+---
+
+## 9. Fix de geo (380 clientes) y Score por marca en el Directorio (agosto 2026)
+
+### Fix de geo: los 380 clientes "SIN DATO" (antes RUC con prefijo XX)
+
+El commit `e74994e` (sección 4) había limpiado el prefijo `XX` del RUC de 380 clientes
+para que el cruce con SUNAT diera 100%, pero dejó su Departamento/Provincia como
+`"SIN DATO"` (singular) en vez de usar el valor real — un bucket separado del genérico
+`"SIN DATOS"` (plural, ~26,344 clientes sin ubicación real). El Perfilador mostraba
+entonces dos departamentos casi idénticos en el filtro, algo que el usuario notó.
+
+Causa encontrada: esos 380 clientes sí tienen distrito real (148 distritos distintos)
+y el Excel `Hoja1` sí trae su Departamento/Provincia real por RUC — el script de cruce
+original no lo usó para ese grupo. Se recuperó el dato real de `Hoja1` por RUC y se
+reasignó cada uno de los 380 a su departamento correcto (177 Lima, 33 Arequipa, 21
+Cusco, 16 La Libertad, 16 Piura, etc.; solo 3 de los 380 no tienen dato en ningún lado
+y quedaron en `"SIN DATOS"` genérico). El bucket `"SIN DATO"` (singular) desapareció
+por completo.
+
+Archivos actualizados: `clientes_v2.json` (campos `ciudad`/`provincia`) y los shards de
+`data/perfilador/` (se eliminó `sin_dato.json`, sus 380 registros se repartieron entre
+los shards correctos, y `_index.json` se regeneró con los conteos/provincias/distritos
+correctos). Verificado antes de pushear: 136,425 clientes totales, sin duplicados ni
+pérdidas. Commit `c455cdc`.
+
+### Score por marca en la ficha del Directorio
+
+Objetivo: que la ficha de cada cliente en el Directorio muestre el mismo score que
+calcula el Perfilador (Score final / Urgencia / Afinidad), para las 6 marcas y las
+clases aplicables, sin tener que ir al Perfilador a buscarlo. El motor de cálculo es
+exactamente el mismo que `perfilador.html` (Eje 0 elegibilidad, Eje 1 urgencia, Eje 2
+afinidad con cascada de 4 pasos) — se ejecuta al vuelo en el navegador sobre los datos
+ya enriquecidos del cliente (`data/perfilador/*.json`, cargados igual que para la ficha
+de flota existente), sin llamadas a servidor ni datos precalculados/guardados. No hay
+score "guardado" en ningún JSON, se recalcula cada vez que se abre la ficha.
+
+**Diseño (definido junto con el usuario antes de implementar, iterando con mockups):**
+en la parte derecha de la ficha (junto al árbol de flota), una grilla de 6 botones, uno
+por marca, sin color (neutros hasta que el asesor hace click — se descartó un punto de
+color de preview por decisión explícita del usuario). Al abrir un botón, se despliega
+una tabla con filas Camión/Tracto y columnas Score final/Urgencia/Afinidad, más el
+motivo de auditoría de la Afinidad (mismo texto que ya usa el Perfilador internamente,
+ej. "Ya compró MAN hace 1 año", "62% de su flota es Europeo"). Para UD y Volkswagen, la
+fila Tracto no aparece (no tienen catálogo en esa clase — igual que en el Perfilador).
+Si el cliente no tiene unidades elegibles en la banda de esa marca+clase, la fila
+muestra "Sin unidades en esta banda" en vez de inventar un score. Si el cliente no está
+enriquecido con datos del Perfilador (no aparece en `data/perfilador/`), la sección
+completa muestra "No hay datos suficientes para calcular el score de este cliente".
+
+Implementado en `directorio.html`: CSS nuevo (`.ficha-columns`, `.score-section`,
+`.score-grid`, `.score-brand-btn`, `.score-panel`, `.score-table`), motor de scoring
+copiado 1:1 de `perfilador.html` (mismas fórmulas y constantes `BANDAS`/`MARCA_LABELS`,
+renombradas con sufijo `_SCORE`/`_SCORE` para no chocar con nada existente en el
+archivo), y la función `seleccionar(ruc)` ahora calcula `scoreHtml` y lo agrega junto
+al árbol de flota dentro de un contenedor `.ficha-columns` (flota a la izquierda, score
+a la derecha; se apilan verticalmente en pantallas angostas). Probado con Node antes de
+pushear, corriendo el motor contra un cliente real del shard de Arequipa (27 vehículos)
+— resultados coherentes con la lógica ya validada del Perfilador (mismo Eje 0/1/2, sin
+diferencias). Commit `30dc394`.
+
+**Pendiente:** el usuario todavía no lo vio funcionando en producción (Vercel debería
+haber redesplegado ambos commits en 1-2 min desde el push) — falta la validación visual
+final antes de darlo por cerrado.
