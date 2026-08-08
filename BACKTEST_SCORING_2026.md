@@ -128,3 +128,68 @@ El caso de Molino Las Mercedes es real (visto en `perfilador.html` en producció
 - **No se tocó el eje de Afinidad** (quedó pendiente a pedido explícito del usuario — hay dos grietas conocidas ahí, ver conversación del 2026-08-08: el amortiguador no distingue consistencia con pocas unidades, y la multiplicación anula el Score cuando Afinidad es 0 aunque el resto de las señales sean fuertes). Se revisará con el equipo de la oficina más adelante.
 - **Limitación que sigue abierta:** todo el backtest se corrió sobre un solo período (ene-ago 2026) y sobre una foto fija de la flota (`cidatt a marz 2026.xlsx`). La validación cruzada (dividir la muestra al azar) confirma que no es un ajuste a casos sueltos, pero no reemplaza probarlo contra un período de ventas distinto al que se usó para diseñar la fórmula — el usuario va a pedir los históricos de CIDATT de años anteriores para poder hacer esa validación real más adelante.
 - Los umbrales de "alto/medio/bajo" (70/40) para colorear los scores en la UI **no se recalibraron** — se mantienen los mismos cortes que ya existían. Los datos del backtest sugieren que siguen siendo razonables con la fórmula nueva (24% de los compradores reales caen en "alto" vs. 0% con la fórmula vieja), pero vale la pena revisarlos con uso real.
+
+---
+
+## 6. Afinidad — Paso 1 corregido (2026-08-08, implementado)
+
+Revisando el Perfilador con casos reales del asesor de MAN en Apurímac, se detectaron
+clientes con una sola unidad de la marca evaluada (ej. "Empresa Comunal de Servicios
+Múltiples Huancuire", 1 camión MAN 2024) que mostraban Afinidad = 50 (neutral puro) en vez
+de un score alto, pese a tener evidencia directa de haber comprado la marca.
+
+**Causa 1 — el amortiguador de confianza no distinguía la marca evaluada del resto de la
+banda.** El Paso 1 (¿ya es cliente?) calculaba correctamente un score alto según la recencia
+de la compra, pero después ese resultado pasaba por el mismo amortiguador que los Pasos 2-4
+(que sí necesitan volumen para confiar en una inferencia estadística). Con 1 sola unidad en
+la banda —sin importar de qué marca— el amortiguador aplastaba cualquier resultado a 50. Caso
+extremo verificado: un cliente con 1 camión MAN + 3 Volvo en la misma banda (4 unidades
+elegibles en total) daba Afinidad 86, mientras uno con solo el camión MAN (1 unidad) daba 50 —
+la misma evidencia de MAN, resultado distinto, solo por tener unidades de OTRA marca al lado.
+
+**Causa 2 — el piso de 50 aplastaba compras viejas de la marca a neutral.** Un cliente con una
+compra de la marca evaluada hace 14 años (caso real: "Emp Const Apurímac Contrat Grales",
+MAN 2012) calculaba un score que decaía hasta 50 con el paso del tiempo — igual que un cliente
+que nunca compró esa marca.
+
+**Fix aplicado:** el Paso 1 ya no pasa por el amortiguador (es un hecho directo — compró o no
+compró la marca — no una inferencia estadística que necesite volumen para confiar), y su piso
+subió de 50 a 60 (nunca cae a neutral puro, aunque la compra haya sido muy vieja). Techo se
+mantiene en 95 para compras muy recientes.
+
+```
+Paso 1 (nuevo): si el cliente tiene unidades de la marca evaluada en la banda:
+  factor_recencia = max(0, 1 - años_desde_ultima_compra_de_la_marca / 5)
+  score = 60 + factor_recencia × (95 - 60)          [rango 60-95, SIN amortiguar]
+```
+
+**Validado contra las 153 ventas del backtest** (probando distintos pisos entre 50 y 75):
+
+| Piso | Delta Afinidad | % arriba del promedio | Delta Score combinado (con Recurrencia) | % Score arriba |
+|---|---|---|---|---|
+| 50 (solo quitar amortiguador) | +7.6 | 80% | +29.5 | 87% |
+| **60 (elegido)** | **+10.3** | **80%** | **+32.0** | **82%** |
+| 65 | +11.6 | 73% | +33.2 | 80% |
+| 70 | +12.9 | 73% | +34.5 | 80% |
+
+Se eligió 60 como balance: mejora sustancial sobre el neutral (60 vs 50) sin sacrificar casi
+nada de poder predictivo (82% vs 87% de score arriba del promedio con piso 50). Subir más el
+piso sigue mejorando el delta promedio pero empieza a perder discriminación entre compradores
+buenos y regulares.
+
+**Casos de validación (verificados con Node antes de pushear):**
+
+| Caso | Antes | Después |
+|---|---|---|
+| 1 unidad MAN, compra reciente (Huancuire, Aysa) | 50 | **81** |
+| 1 unidad MAN + 3 Volvo en la misma banda | 86 (inconsistente con el caso de arriba) | **88** |
+| 1 unidad MAN, compra de hace 14 años (Emp Const Apurímac) | 50 | **60** |
+
+**Nota importante:** este fix solo ayuda cuando el cliente YA tiene la marca evaluada. No
+resuelve el caso de conquista de competencia (MAN seguía en Afinidad promedio 11.6 entre sus
+compradores reales, sin cambios) ni el caso de clientes grandes con muchas unidades viejas de
+la marca cuya última compra no fue reciente (ej. clientes con 100+ unidades International
+donde la recencia sigue siendo la única variable del Paso 1, sin crédito extra por volumen —
+queda pendiente si se quiere sumar también volumen al Paso 1, no solo recencia).
+
+Implementado en `perfilador.html` y `directorio.html`. Commit `d81a9b1`.

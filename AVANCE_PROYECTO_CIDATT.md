@@ -2,9 +2,8 @@
 
 **Repo:** https://github.com/Puchulungo/cidatt-tcp-sur
 **Producción:** https://cidatt-tcp-sur.vercel.app/
-**Última actualización de este documento:** 2026-08-08 — Eje 1 del motor de scoring
-rediseñado de "Urgencia" a "Recurrencia" (Frecuencia+Recencia), validado con backtest de
-ventas reales y desplegado en Perfilador y Directorio, sección 10
+**Última actualización de este documento:** 2026-08-08 (noche) — Eje 1 (Urgencia
+→ Recurrencia) y Afinidad Paso 1 corregidos y desplegados, ver secciones 10 y 11
 
 ---
 
@@ -614,3 +613,22 @@ el equipo de la oficina más adelante, no en esta sesión.
 **Pendiente:** todo el backtest se corrió sobre un solo período (ene-ago 2026). El usuario va
 a pedir los históricos de CIDATT de años anteriores para poder validar la fórmula contra un
 período de ventas distinto al que se usó para diseñarla.
+
+---
+
+## 11. Afinidad — Paso 1 corregido (2026-08-08)
+
+Revisando el Perfilador con casos reales (asesor de MAN en Apurímac), se detectó que clientes
+con evidencia directa de haber comprado la marca evaluada (aunque sea 1 sola unidad) mostraban
+Afinidad neutral (50) en vez de un score alto. Dos causas: el amortiguador de confianza
+diluía la señal con solo 1 unidad en la banda (sin importar si esa unidad era de la marca
+evaluada u otra), y el piso de 50 aplastaba a neutral cualquier compra de la marca de hace más
+de 5 años. Se corrigió: el Paso 1 (¿ya es cliente?) ya no pasa por el amortiguador —es un
+hecho directo, no una inferencia estadística— y su piso subió de 50 a 60. Validado contra el
+mismo backtest de 153 ventas reales (delta de Afinidad +7.6 a +10.3 según el piso probado, se
+eligió 60 como mejor balance). Detalle completo, fórmulas y casos de validación en
+`BACKTEST_SCORING_2026.md`, sección 6. Commit `d81a9b1`.
+
+No se tocó nada más del eje de Afinidad — el problema de clientes grandes con muchas unidades
+viejas de la marca (donde la recencia sigue siendo la única variable del Paso 1, sin crédito
+por volumen) queda identificado pero pendiente.
