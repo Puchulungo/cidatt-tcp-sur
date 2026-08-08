@@ -696,7 +696,7 @@ async function loadShard(slug) {
 }
 
 /* ============================================================
-   MOTOR DE SCORING — Eje 0 (elegibilidad), Eje 1 (urgencia), Eje 2 (afinidad)
+   MOTOR DE SCORING — Eje 0 (elegibilidad), Eje 1 (recurrencia), Eje 2 (afinidad)
    ============================================================ */
 const ANIO_ACTUAL = new Date().getFullYear();
 
@@ -728,14 +728,34 @@ function pesoEje2(v, banda) {
   return Math.max(0.3, 1 - (dist / ancho) * 0.7);
 }
 
-// Eje 1: Urgencia — rampa lineal 0-5 años desde la ultima compra (cualquier marca), meseta en 100.
-function calcularUrgencia(unidades) {
-  if (unidades.length === 0) return null;
+// Eje 1: Recurrencia — Frecuencia (85%: cuantas unidades compro historicamente en esta
+// banda, cualquier marca) + Recencia (15%: que tan reciente fue su ultima compra en la banda).
+// Reemplaza a la vieja "Urgencia" (que medía solo antigüedad y premiaba a clientes dormidos).
+// Validado contra 293 ventas reales de 2026 (ver BACKTEST_SCORING_2026.md): la vieja formula
+// daba delta -22.5 contra el promedio nacional del segmento (miraba para el lado contrario de
+// la demanda real); esta da +48.9, con 83% de los compradores reales por encima del promedio.
+function calcularFrecuencia(unidades) {
+  const n = unidades.filter(v => typeof v.anio === 'number').length;
+  if (n === 0) return null;
+  if (n === 1) return 0;
+  return Math.min(100, ((n - 1) / (5 - 1)) * 100);
+}
+
+function calcularRecencia(unidades, ventana = 8) {
   const conAnio = unidades.filter(v => typeof v.anio === 'number');
   if (conAnio.length === 0) return null;
   const anioReciente = Math.max(...conAnio.map(v => v.anio));
   const anios = Math.max(0, ANIO_ACTUAL - anioReciente);
-  return Math.min(100, (anios / 5) * 100);
+  if (anios > ventana) return 0;
+  return 100 - (anios / ventana) * 100;
+}
+
+function calcularUrgencia(unidades) {
+  if (unidades.length === 0) return null;
+  const frecuencia = calcularFrecuencia(unidades);
+  const recencia = calcularRecencia(unidades);
+  if (frecuencia === null || recencia === null) return null;
+  return Math.round((0.85 * frecuencia + 0.15 * recencia) * 10) / 10;
 }
 
 // Amortiguador de confianza generico: 1 unidad -> 0% confianza (score->50), 4+ -> 100% confianza.
@@ -908,7 +928,7 @@ function renderResults(out) {
       <div class="sort-controls">
         <span class="sort-label">Ordenar por:</span>
         <button class="sort-btn ${SORT_MODE === 'final' ? 'active' : ''}" data-sort="final">Score final</button>
-        <button class="sort-btn ${SORT_MODE === 'urgencia' ? 'active' : ''}" data-sort="urgencia">Urgencia</button>
+        <button class="sort-btn ${SORT_MODE === 'urgencia' ? 'active' : ''}" data-sort="urgencia">Recurrencia</button>
         <button class="sort-btn ${SORT_MODE === 'afinidad' ? 'active' : ''}" data-sort="afinidad">Afinidad</button>
       </div>
     </div>
@@ -939,7 +959,7 @@ function renderResults(out) {
         </div>
         <div class="score-grid">
           <div class="score-item">
-            <div class="score-item-label">Urg.</div>
+            <div class="score-item-label">Recur.</div>
             <div class="score-item-value ${scoreClass(c.urgencia)}">${c.urgencia}</div>
           </div>
           <div class="score-item">

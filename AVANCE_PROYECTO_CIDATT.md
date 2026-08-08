@@ -2,8 +2,9 @@
 
 **Repo:** https://github.com/Puchulungo/cidatt-tcp-sur
 **Producción:** https://cidatt-tcp-sur.vercel.app/
-**Última actualización de este documento:** 2026-08-07 (noche) — fix de geo de 380
-clientes y score por marca en la ficha del Directorio, sección 9
+**Última actualización de este documento:** 2026-08-08 — Eje 1 del motor de scoring
+rediseñado de "Urgencia" a "Recurrencia" (Frecuencia+Recencia), validado con backtest de
+ventas reales y desplegado en Perfilador y Directorio, sección 10
 
 ---
 
@@ -579,3 +580,37 @@ diferencias). Commit `30dc394`.
 **Pendiente:** el usuario todavía no lo vio funcionando en producción (Vercel debería
 haber redesplegado ambos commits en 1-2 min desde el push) — falta la validación visual
 final antes de darlo por cerrado.
+
+---
+
+## 10. Eje 1 del scoring: de "Urgencia" a "Recurrencia" (2026-08-08)
+
+Se hizo un backtest completo contra las ventas reales de 2026 (`INCAPESA - Venta VN.xlsx`,
+293 ventas) para medir qué tan bien predecía el motor de scoring del Perfilador. Resultado
+completo, metodología y todas las variantes probadas en `BACKTEST_SCORING_2026.md`.
+
+**Hallazgo central:** el eje de Urgencia original medía antigüedad (hace cuánto no compra en
+esa banda) y funcionaba al revés de lo esperado — los compradores reales tenían Urgencia por
+debajo del promedio de su segmento, no por encima. Un cliente con una sola unidad de 1988 y
+nunca más marcaba Urgencia=100 (el "más urgente" del país); un cliente que compra todos los
+años marcaba solo 20. Se reemplazó por **Recurrencia = Frecuencia histórica de compra en esa
+banda (85%) + Recencia de la última compra (15%)** — un cliente con varias unidades compradas
+a lo largo del tiempo en ese segmento es mejor prospecto que uno con una sola compra vieja,
+sin importar hace cuánto fue esa única compra.
+
+Validado con backtest (delta contra el promedio nacional del segmento pasó de -22.5 a +48.9,
+83% de los compradores reales por encima del promedio) y validación cruzada (dividiendo la
+muestra en dos mitades al azar, ambas mitades sostienen el mismo patrón). Implementado en
+`perfilador.html` y `directorio.html` (funciones `calcularFrecuencia`/`calcularRecencia`
+nuevas; `calcularUrgencia` ahora calcula la mezcla en vez de la rampa de antigüedad; UI
+actualizada de "Urgencia" a "Recurrencia").
+
+**No se tocó el eje de Afinidad** — quedó pendiente a pedido explícito del usuario. El
+backtest encontró dos grietas ahí (el amortiguador no distingue consistencia con pocas
+unidades — caso real "Transportes Corval"; la multiplicación anula el Score cuando Afinidad
+es 0 aunque el resto de las señales sean fuertes — caso real "Dimarza") que se revisarán con
+el equipo de la oficina más adelante, no en esta sesión.
+
+**Pendiente:** todo el backtest se corrió sobre un solo período (ene-ago 2026). El usuario va
+a pedir los históricos de CIDATT de años anteriores para poder validar la fórmula contra un
+período de ventas distinto al que se usó para diseñarla.
