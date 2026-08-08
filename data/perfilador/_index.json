@@ -164,9 +164,9 @@
       "YAUYOS",
       "ZUÑIGA"
     ],
-    "clientes": 36910,
+    "clientes": 37087,
     "archivo": "data/perfilador/lima.json",
-    "size_kb": 38249.1
+    "size_kb": 41585.6
   },
   {
     "departamento": "SIN DATOS",
@@ -174,10 +174,12 @@
     "provincias": [
       "SIN DATOS"
     ],
-    "distritos": [],
-    "clientes": 26344,
+    "distritos": [
+      "SIN DATOS"
+    ],
+    "clientes": 26347,
     "archivo": "data/perfilador/sin_datos.json",
-    "size_kb": 16699.8
+    "size_kb": 17924.0
   },
   {
     "departamento": "AREQUIPA",
@@ -302,9 +304,9 @@
       "YAUCA",
       "YURA"
     ],
-    "clientes": 9064,
+    "clientes": 9097,
     "archivo": "data/perfilador/arequipa.json",
-    "size_kb": 8038.9
+    "size_kb": 8696.3
   },
   {
     "departamento": "LA LIBERTAD",
@@ -413,9 +415,9 @@
       "VICTOR LARCO HERRERA",
       "VIRU"
     ],
-    "clientes": 8230,
+    "clientes": 8246,
     "archivo": "data/perfilador/la_libertad.json",
-    "size_kb": 7277.6
+    "size_kb": 7860.9
   },
   {
     "departamento": "JUNIN",
@@ -553,9 +555,9 @@
       "YAULI",
       "YAUYOS"
     ],
-    "clientes": 5224,
+    "clientes": 5239,
     "archivo": "data/perfilador/junin.json",
-    "size_kb": 3820.7
+    "size_kb": 4123.3
   },
   {
     "departamento": "CUSCO",
@@ -693,9 +695,9 @@
       "YUCAY",
       "ZURITE"
     ],
-    "clientes": 5139,
+    "clientes": 5160,
     "archivo": "data/perfilador/cusco.json",
-    "size_kb": 3881.5
+    "size_kb": 4196.2
   },
   {
     "departamento": "PIURA",
@@ -774,9 +776,9 @@
       "VICHAYAL",
       "YAMANGO"
     ],
-    "clientes": 5013,
+    "clientes": 5029,
     "archivo": "data/perfilador/piura.json",
-    "size_kb": 4081.7
+    "size_kb": 4411.6
   },
   {
     "departamento": "PUNO",
@@ -914,9 +916,9 @@
       "YUNGUYO",
       "ZEPITA"
     ],
-    "clientes": 4920,
+    "clientes": 4933,
     "archivo": "data/perfilador/puno.json",
-    "size_kb": 3576.8
+    "size_kb": 3862.6
   },
   {
     "departamento": "CAJAMARCA",
@@ -1059,9 +1061,9 @@
       "YAUYUCAN",
       "YONAN"
     ],
-    "clientes": 4202,
+    "clientes": 4214,
     "archivo": "data/perfilador/cajamarca.json",
-    "size_kb": 3269.1
+    "size_kb": 3533.0
   },
   {
     "departamento": "ANCASH",
@@ -1232,9 +1234,9 @@
       "YURACMARCA",
       "ÑEPENA"
     ],
-    "clientes": 3782,
+    "clientes": 3790,
     "archivo": "data/perfilador/ancash.json",
-    "size_kb": 2866.9
+    "size_kb": 3091.8
   },
   {
     "departamento": "ICA",
@@ -1291,9 +1293,9 @@
       "VISTA ALEGRE",
       "YAUCA DEL ROSARIO"
     ],
-    "clientes": 3216,
+    "clientes": 3219,
     "archivo": "data/perfilador/ica.json",
-    "size_kb": 2664.0
+    "size_kb": 2874.8
   },
   {
     "departamento": "PROV. CONST. DEL CALLAO",
@@ -1311,9 +1313,9 @@
       "MIPERU",
       "VENTANILLA"
     ],
-    "clientes": 3209,
+    "clientes": 3218,
     "archivo": "data/perfilador/prov_const_del_callao.json",
-    "size_kb": 3722.3
+    "size_kb": 4026.4
   },
   {
     "departamento": "LAMBAYEQUE",
@@ -1363,9 +1365,9 @@
       "TUCUME",
       "TUMAN"
     ],
-    "clientes": 3193,
+    "clientes": 3200,
     "archivo": "data/perfilador/lambayeque.json",
-    "size_kb": 2533.0
+    "size_kb": 2738.8
   },
   {
     "departamento": "APURIMAC",
@@ -1465,9 +1467,9 @@
       "URANMARCA",
       "VILCABAMBA"
     ],
-    "clientes": 2510,
+    "clientes": 2523,
     "archivo": "data/perfilador/apurimac.json",
-    "size_kb": 1867.0
+    "size_kb": 2018.9
   },
   {
     "departamento": "HUANUCO",
@@ -1566,9 +1568,9 @@
       "YATUMAYO",
       "YUYAPICHIS"
     ],
-    "clientes": 2308,
+    "clientes": 2313,
     "archivo": "data/perfilador/huanuco.json",
-    "size_kb": 1625.1
+    "size_kb": 1750.7
   },
   {
     "departamento": "AYACUCHO",
@@ -1683,9 +1685,9 @@
       "VINCHOS",
       "VISCHONGO"
     ],
-    "clientes": 2092,
+    "clientes": 2094,
     "archivo": "data/perfilador/ayacucho.json",
-    "size_kb": 1490.8
+    "size_kb": 1604.6
   },
   {
     "departamento": "TACNA",
@@ -1724,9 +1726,9 @@
       "TARATA",
       "TICACO"
     ],
-    "clientes": 1830,
+    "clientes": 1833,
     "archivo": "data/perfilador/tacna.json",
-    "size_kb": 1411.0
+    "size_kb": 1519.8
   },
   {
     "departamento": "SAN MARTIN",
@@ -1809,9 +1811,9 @@
       "YURACYACU",
       "ZAPATERO"
     ],
-    "clientes": 1823,
+    "clientes": 1826,
     "archivo": "data/perfilador/san_martin.json",
-    "size_kb": 1487.3
+    "size_kb": 1604.0
   },
   {
     "departamento": "UCAYALI",
@@ -1836,9 +1838,9 @@
       "TAHUANIA",
       "YARINACOCHA"
     ],
-    "clientes": 1119,
+    "clientes": 1120,
     "archivo": "data/perfilador/ucayali.json",
-    "size_kb": 938.3
+    "size_kb": 1012.5
   },
   {
     "departamento": "PASCO",
@@ -1880,9 +1882,9 @@
       "YANACOCHA",
       "YANAHUANCA"
     ],
-    "clientes": 1109,
+    "clientes": 1113,
     "archivo": "data/perfilador/pasco.json",
-    "size_kb": 902.7
+    "size_kb": 976.1
   },
   {
     "departamento": "MOQUEGUA",
@@ -1914,9 +1916,9 @@
       "UBINAS",
       "YUNGA"
     ],
-    "clientes": 1090,
+    "clientes": 1094,
     "archivo": "data/perfilador/moquegua.json",
-    "size_kb": 907.3
+    "size_kb": 982.6
   },
   {
     "departamento": "AMAZONAS",
@@ -2004,9 +2006,9 @@
       "YAMBRASBAMBA",
       "YAMON"
     ],
-    "clientes": 981,
+    "clientes": 983,
     "archivo": "data/perfilador/amazonas.json",
-    "size_kb": 712.8
+    "size_kb": 767.7
   },
   {
     "departamento": "HUANCAVELICA",
@@ -2124,9 +2126,9 @@
       "TAMBO",
       "TAMBOPATA"
     ],
-    "clientes": 926,
+    "clientes": 928,
     "archivo": "data/perfilador/madre_de_dios.json",
-    "size_kb": 737.5
+    "size_kb": 794.9
   },
   {
     "departamento": "TUMBES",
@@ -2151,168 +2153,9 @@
       "ZARUMILLA",
       "ZORRITOS"
     ],
-    "clientes": 690,
+    "clientes": 696,
     "archivo": "data/perfilador/tumbes.json",
-    "size_kb": 529.2
-  },
-  {
-    "departamento": "SIN DATO",
-    "slug": "sin_dato",
-    "provincias": [
-      "SIN DATO"
-    ],
-    "distritos": [
-      "ABANCAY",
-      "ALTO LARAN",
-      "ALTO SELVA ALEGRE",
-      "AMARILIS",
-      "ANCO-HUALLO",
-      "ANCON",
-      "ANDAHUAYLAS",
-      "APLAO",
-      "AREQUIPA",
-      "ATE",
-      "BARRANCO",
-      "BREÑA",
-      "CABANA",
-      "CAJABAMBA",
-      "CAJAMARCA",
-      "CALLAO",
-      "CALLERIA",
-      "CAMANA",
-      "CARABAYLLO",
-      "CARAVELI",
-      "CARAZ",
-      "CASTILLA",
-      "CAYMA",
-      "CERRO COLORADO",
-      "CHACHAPOYAS",
-      "CHALA",
-      "CHALHUANCA",
-      "CHALLHUAHUACHO",
-      "CHANCHAMAYO",
-      "CHAO",
-      "CHAUPIMARCA",
-      "CHICLAYO",
-      "CHILCA",
-      "CHIMBOTE",
-      "CHINCHERO",
-      "CHORRILLOS",
-      "CHUGAY",
-      "CIENEGUILLA",
-      "CIUDAD NUEVA",
-      "COLAN",
-      "COMAS",
-      "CONCEPCION",
-      "CONDEBAMBA",
-      "CRL. GREG. ALBARRACIN LANCHIPA",
-      "CUSCO",
-      "EL AGUSTINO",
-      "EL ALTO",
-      "EL TAMBO",
-      "ELIAS SOPLIN VARGAS",
-      "ESPINAR",
-      "HUALMAY",
-      "HUANCANE",
-      "HUANCAYO",
-      "HUANTA",
-      "HUANUCO",
-      "HUARAL",
-      "HUARAZ",
-      "ILO",
-      "INDEPENDENCIA",
-      "IQUITOS",
-      "JACOBO HUNTER",
-      "JAEN",
-      "JESUS MARIA",
-      "JOSE LEONARDO ORTIZ",
-      "JOSE LUIS BUSTAMANTE Y RIVERO",
-      "JULIACA",
-      "JUNIN",
-      "LA ESPERANZA",
-      "LA MOLINA",
-      "LA VICTORIA",
-      "LIMA",
-      "LINCE",
-      "LOMAS",
-      "LOS BAÑOS DEL INCA",
-      "LOS OLIVOS",
-      "LURIGANCHO",
-      "LURIN",
-      "MAGDALENA DEL MAR",
-      "MARCAVELICA",
-      "MARIANO MELGAR",
-      "MIRAFLORES",
-      "MOLLENDO",
-      "MONSEFU",
-      "MOQUEGUA",
-      "NASCA",
-      "NUEVO CHIMBOTE",
-      "OLLACHEA",
-      "PACASMAYO",
-      "PALLPATA",
-      "PANGOA",
-      "PAUCARPATA",
-      "PAUCARTAMBO",
-      "PILLCO MARCA",
-      "PIMENTEL",
-      "PISCO",
-      "PIURA",
-      "PUEBLO LIBRE (MAGDALENA VIEJA)",
-      "PUENTE PIEDRA",
-      "PULLO",
-      "PUNO",
-      "QUERECOTILLO",
-      "RIMAC",
-      "RIO GRANDE",
-      "RIOJA",
-      "RUPA-RUPA",
-      "SACHACA",
-      "SALPO",
-      "SAN ANTONIO",
-      "SAN BORJA",
-      "SAN ISIDRO",
-      "SAN JERONIMO",
-      "SAN JOAQUIN",
-      "SAN JUAN DE LURIGANCHO",
-      "SAN JUAN DE MIRAFLORES",
-      "SAN LUIS",
-      "SAN MARTIN DE PORRES",
-      "SAN MIGUEL",
-      "SAN RAMON",
-      "SAN SEBASTIAN",
-      "SANTA ANITA",
-      "SANTIAGO",
-      "SANTIAGO DE CAO",
-      "SANTIAGO DE SURCO",
-      "SAYLLA",
-      "SICUANI",
-      "SOCABAYA",
-      "SULLANA",
-      "SURQUILLO",
-      "SUYCKUTAMBO",
-      "TABACONAS",
-      "TALAVERA",
-      "TAMBOBAMBA",
-      "TAMBOPATA",
-      "TARAPOTO",
-      "TARMA",
-      "TIABAYA",
-      "TRUJILLO",
-      "TUMBES",
-      "URCOS",
-      "VEINTISEIS DE OCTUBRE",
-      "VENTANILLA",
-      "VILLA EL SALVADOR",
-      "WANCHAQ",
-      "YANACANCHA",
-      "YANAHUARA",
-      "YANAQUIHUA",
-      "ZORRITOS"
-    ],
-    "clientes": 380,
-    "archivo": "data/perfilador/sin_dato.json",
-    "size_kb": 397.2
+    "size_kb": 576.3
   },
   {
     "departamento": "LORETO",
@@ -2337,8 +2180,8 @@
       "SAN JUAN BAUTISTA",
       "YURIMAGUAS"
     ],
-    "clientes": 194,
+    "clientes": 196,
     "archivo": "data/perfilador/loreto.json",
-    "size_kb": 164.8
+    "size_kb": 180.3
   }
 ]
