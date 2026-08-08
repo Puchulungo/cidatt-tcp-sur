@@ -25,6 +25,8 @@
     --text: #e2e8f0;
     --text-muted: #64748b;
     --success: #10b981;
+    --warn: #f59e0b;
+    --danger: #f87171;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -73,7 +75,7 @@
 
   .layout {
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 320px 1fr;
     gap: 0;
     height: calc(100vh - 60px);
   }
@@ -88,6 +90,12 @@
     overflow-y: auto;
   }
   .filter-group { margin-bottom: 1.5rem; }
+  .filter-group.required {
+    border: 1px solid rgba(37,99,235,0.35);
+    border-radius: 10px;
+    padding: 12px;
+    background: rgba(37,99,235,0.06);
+  }
   .filter-label {
     font-size: 11px;
     font-family: 'IBM Plex Mono', monospace;
@@ -97,88 +105,22 @@
     margin-bottom: 0.5rem;
     display: block;
   }
+  .filter-label .req-tag {
+    color: var(--accent-light);
+    margin-left: 4px;
+  }
   select {
     width: 100%;
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text);
     border-radius: 6px;
-    padding: 8px 10px;
+    padding: 9px 10px;
     font-size: 13px;
     font-family: 'IBM Plex Sans', sans-serif;
   }
   select:focus { outline: none; border-color: var(--accent); }
-
-  .chip-group { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip {
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--steel-light);
-    border-radius: 20px;
-    padding: 6px 12px;
-    font-size: 12px;
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.15s;
-  }
-  .chip.active {
-    background: rgba(37,99,235,0.2);
-    border-color: var(--accent);
-    color: var(--accent-light);
-  }
-
-  .weight-range-values {
-    display: flex;
-    justify-content: space-between;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    color: var(--accent-light);
-    margin-bottom: 10px;
-  }
-  .dual-slider { position: relative; height: 34px; }
-  .dual-slider input[type=range] {
-    position: absolute;
-    width: 100%;
-    top: 12px;
-    height: 4px;
-    background: none;
-    pointer-events: none;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  .dual-slider input[type=range]::-webkit-slider-thumb {
-    pointer-events: auto;
-    -webkit-appearance: none;
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: var(--accent-light);
-    cursor: pointer;
-    border: 2px solid var(--navy);
-    margin-top: -6px;
-  }
-  .dual-slider input[type=range]::-moz-range-thumb {
-    pointer-events: auto;
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: var(--accent-light);
-    cursor: pointer;
-    border: 2px solid var(--navy);
-  }
-  .slider-track {
-    position: absolute;
-    top: 15px;
-    height: 4px;
-    width: 100%;
-    background: var(--surface2);
-    border-radius: 2px;
-  }
-  .slider-track-fill {
-    position: absolute;
-    top: 15px;
-    height: 4px;
-    background: var(--accent);
-    border-radius: 2px;
-  }
+  select:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .btn-buscar {
     width: 100%;
@@ -203,8 +145,15 @@
   .results-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 1rem;
+  }
+  .results-count-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 13px;
     color: var(--steel);
   }
@@ -212,6 +161,34 @@
     font-family: 'IBM Plex Mono', monospace;
     color: var(--accent-light);
     font-weight: 600;
+  }
+
+  .sort-controls {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .sort-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-right: 2px;
+  }
+  .sort-btn {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--steel-light);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sort-btn.active {
+    background: rgba(37,99,235,0.2);
+    border-color: var(--accent);
+    color: var(--accent-light);
   }
 
   .client-row {
@@ -239,40 +216,85 @@
   .client-toggle.open { transform: rotate(90deg); }
   .client-info { flex: 1; min-width: 0; }
   .client-razon { font-size: 13px; font-weight: 500; color: var(--white); }
+  .client-meta-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 2px;
+  }
   .client-ruc { font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
-  .client-units {
+  .size-tag {
+    font-size: 10px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    border: 1px solid var(--border);
+  }
+  .size-retail { color: var(--text-muted); }
+  .size-medium { color: #60a5fa; border-color: rgba(96,165,250,0.35); }
+  .size-big { color: var(--warn); border-color: rgba(245,158,11,0.35); }
+  .size-mega { color: #f472b6; border-color: rgba(244,114,182,0.4); }
+
+  .score-grid {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  .score-item { text-align: center; min-width: 46px; }
+  .score-item-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .score-item-value {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 13px;
     font-weight: 600;
-    color: var(--accent-light);
-    background: rgba(37,99,235,0.15);
+  }
+  .score-final .score-item-value {
+    font-size: 16px;
+    color: var(--white);
+    background: rgba(37,99,235,0.18);
     border-radius: 6px;
-    padding: 4px 10px;
-    flex-shrink: 0;
+    padding: 3px 8px;
   }
+  .score-hi { color: #34d399; }
+  .score-mid { color: var(--warn); }
+  .score-lo { color: var(--danger); }
 
-  .client-detail { display: none; border-top: 1px solid var(--border); }
+  .client-detail { display: none; border-top: 1px solid var(--border); padding: 10px 14px 14px; }
   .client-detail.open { display: block; }
-  .year-block { border-top: 1px solid var(--border); }
-  .year-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 14px 8px 30px;
-    background: var(--navy);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
+  .detail-section-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin: 10px 0 6px;
   }
-  .year-label { color: var(--steel-light); font-weight: 600; }
-  .year-count { color: var(--text-muted); }
-  .marca-row {
+  .unidad-row {
     display: flex;
     justify-content: space-between;
-    padding: 5px 14px 5px 46px;
+    padding: 5px 8px;
     font-size: 12px;
     color: var(--steel);
     border-top: 1px solid rgba(148,163,184,0.06);
   }
-  .marca-count { color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
+  .unidad-row .peso-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-left: 6px;
+  }
+  .explica-box {
+    background: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: var(--steel);
+    line-height: 1.5;
+  }
 
   .empty-state, .loading, .no-results {
     text-align: center;
@@ -285,7 +307,7 @@
   .mini-link { font-size: 10px; color: var(--accent-light); text-decoration: none; font-family: 'IBM Plex Mono', monospace; }
   .mini-link:hover { text-decoration: underline; }
   .check-list {
-    max-height: 180px;
+    max-height: 160px;
     overflow-y: auto;
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -301,7 +323,32 @@
   .check-item:hover { background: var(--surface2); }
   .check-item input { accent-color: var(--accent); cursor: pointer; }
   .check-item .n { margin-left: auto; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
-  .warn-msg { font-size: 11px; color: #f59e0b; margin-top: 6px; display:none; }
+  .warn-msg { font-size: 11px; color: var(--warn); margin-top: 6px; display:none; }
+
+  /* --- Auth Gate --- */
+  #auth-gate {
+    position: fixed; inset: 0; z-index: 1000;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .auth-box { text-align: center; max-width: 360px; padding: 2rem; }
+  .auth-logo {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: var(--accent); display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+  .auth-title { font-size: 1.4rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; }
+  .auth-sub { font-size: 0.85rem; color: var(--steel); margin-bottom: 2rem; }
+  .auth-btn {
+    width: 100%; background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; padding: 12px 20px; font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+    font-family: 'IBM Plex Sans', sans-serif; transition: background 0.15s;
+  }
+  .auth-btn:hover { background: var(--accent-light); }
+  .auth-error { margin-top: 1rem; color: #f87171; font-size: 0.8rem; }
+  .auth-loading { color: var(--steel); font-size: 0.85rem; }
+  #app-content { display: none; }
 </style>
 </head>
 <body>
@@ -334,6 +381,21 @@
 
 <div class="layout">
   <div class="filters">
+
+    <div class="filter-group required">
+      <label class="filter-label">Marca <span class="req-tag">* obligatorio</span></label>
+      <select id="f-marca">
+        <option value="">Elegí una marca…</option>
+      </select>
+    </div>
+
+    <div class="filter-group required">
+      <label class="filter-label">Clase <span class="req-tag">* obligatorio</span></label>
+      <select id="f-clase" disabled>
+        <option value="">Elegí una marca primero…</option>
+      </select>
+    </div>
+
     <div class="filter-group">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <label class="filter-label" style="margin-bottom:0;">Departamento</label>
@@ -380,36 +442,14 @@
       </div>
     </div>
 
-    <div class="filter-group">
-      <label class="filter-label">Clase</label>
-      <div class="chip-group" id="f-clase">
-        <span class="chip active" data-clase="CAMION">Camión</span>
-        <span class="chip active" data-clase="REMOLCADOR">Remolcador</span>
-      </div>
-    </div>
-
-    <div class="filter-group">
-      <label class="filter-label">Peso bruto (kg)</label>
-      <div class="weight-range-values">
-        <span id="peso-min-val">1,200</span>
-        <span id="peso-max-val">90,000</span>
-      </div>
-      <div class="dual-slider">
-        <div class="slider-track"></div>
-        <div class="slider-track-fill" id="slider-fill"></div>
-        <input type="range" id="peso-min" min="1200" max="90000" step="100" value="1200">
-        <input type="range" id="peso-max" min="1200" max="90000" step="100" value="90000">
-      </div>
-    </div>
-
-    <button class="btn-buscar" id="btn-buscar" disabled>Seleccioná un departamento</button>
+    <button class="btn-buscar" id="btn-buscar" disabled>Elegí Marca y Clase</button>
     <div class="warn-msg" id="warn-msg">Elegiste varios departamentos grandes — puede tardar unos segundos en cargar.</div>
     <div class="status-msg" id="status-msg"></div>
     <div class="status-msg" style="margin-top:4px;">Solo se muestran empresas con RUC activo.</div>
   </div>
 
   <div class="results" id="results">
-    <div class="empty-state">Elegí un departamento y filtros, después dale a Buscar.</div>
+    <div class="empty-state">Elegí Marca y Clase, agregá filtros si querés, y dale a Buscar.</div>
   </div>
 </div>
 
@@ -418,28 +458,70 @@
 <script src="lib/msal-browser.min.js"></script>
 <script src="auth.js"></script>
 <script>
+/* ============================================================
+   CONFIG: bandas de peso y bloque de origen compatible por marca+clase
+   Núcleo = rango real de los modelos. Tolerancia = núcleo_min*0.75 a núcleo_max*1.25.
+   Camión sin "nucleoMin" = no tiene catálogo en esa clase (ej. UD/VW en Tracto).
+   ============================================================ */
+const BANDAS = {
+  'MAN': {
+    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 30750, tolMax: 62500, bloque: 'EUROPEO' },
+    REMOLCADOR: { bloque: 'EUROPEO' },
+  },
+  'DONGFENG': {
+    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 30750, tolMax: 62500, bloque: 'CHINO' },
+    REMOLCADOR: { bloque: 'CHINO' },
+  },
+  'FAW': {
+    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 30750, tolMax: 62500, bloque: 'CHINO' },
+    REMOLCADOR: { bloque: 'CHINO' },
+  },
+  'INTERNATIONAL': {
+    CAMION:     { nucleoMin: 30000, nucleoMax: 30000, tolMin: 22500, tolMax: 37500, bloque: 'AMERICANO' },
+    REMOLCADOR: { bloque: 'AMERICANO' },
+  },
+  'UD TRUCKS': {
+    CAMION:     { nucleoMin: 11700, nucleoMax: 18500, tolMin: 8775, tolMax: 23125, bloque: 'JAPONES' },
+  },
+  'VOLKSWAGEN': {
+    CAMION:     { nucleoMin: 6000, nucleoMax: 31000, tolMin: 4500, tolMax: 38750, bloque: 'EUROPEO' },
+  },
+};
+const MARCA_LABELS = {
+  'MAN': 'MAN', 'DONGFENG': 'Dongfeng', 'FAW': 'FAW',
+  'INTERNATIONAL': 'International', 'UD TRUCKS': 'UD', 'VOLKSWAGEN': 'Volkswagen',
+};
+const CLASE_LABELS = { CAMION: 'Camión (volquete)', REMOLCADOR: 'Tractocamión (remolcador)' };
+
+/* ============================================================
+   ESTADO GLOBAL
+   ============================================================ */
 let DEPTO_INDEX = [];
 let SECTOR_INDEX = [];
 let SHARD_CACHE = {};
 let CURRENT_RESULTS = [];
+let SORT_MODE = 'final'; // 'final' | 'urgencia' | 'afinidad'
 
-function getSelectedDeptos() {
-  return Array.from(document.querySelectorAll('#f-departamento input:checked')).map(i => i.value);
-}
-function getSelectedProvincias() {
-  return Array.from(document.querySelectorAll('#f-provincia input:checked')).map(i => i.value);
-}
-function getSelectedDistritos() {
-  return Array.from(document.querySelectorAll('#f-distrito input:checked')).map(i => i.value);
-}
-function getSelectedSectores() {
-  return Array.from(document.querySelectorAll('#f-sector input:checked')).map(i => i.value);
-}
-function getSelectedCiius() {
-  return Array.from(document.querySelectorAll('#f-ciiu input:checked')).map(i => i.value);
-}
+function getSelectedDeptos() { return Array.from(document.querySelectorAll('#f-departamento input:checked')).map(i => i.value); }
+function getSelectedProvincias() { return Array.from(document.querySelectorAll('#f-provincia input:checked')).map(i => i.value); }
+function getSelectedDistritos() { return Array.from(document.querySelectorAll('#f-distrito input:checked')).map(i => i.value); }
+function getSelectedSectores() { return Array.from(document.querySelectorAll('#f-sector input:checked')).map(i => i.value); }
+function getSelectedCiius() { return Array.from(document.querySelectorAll('#f-ciiu input:checked')).map(i => i.value); }
 
+/* ============================================================
+   INIT
+   ============================================================ */
 async function initPerfilador() {
+  const marcaSel = document.getElementById('f-marca');
+  Object.keys(BANDAS).forEach(marca => {
+    const opt = document.createElement('option');
+    opt.value = marca;
+    opt.textContent = MARCA_LABELS[marca] || marca;
+    marcaSel.appendChild(opt);
+  });
+  marcaSel.addEventListener('change', onMarcaChange);
+  document.getElementById('f-clase').addEventListener('change', onClaseChange);
+
   const [resDep, resSec] = await Promise.all([
     fetch('data/perfilador/_index.json'),
     fetch('data/perfilador/_sectores.json'),
@@ -468,23 +550,58 @@ async function initPerfilador() {
   secCont.addEventListener('change', onSectorChange);
 }
 
+function onMarcaChange() {
+  const marca = document.getElementById('f-marca').value;
+  const claseSel = document.getElementById('f-clase');
+  claseSel.innerHTML = '';
+  if (!marca) {
+    claseSel.disabled = true;
+    claseSel.innerHTML = '<option value="">Elegí una marca primero…</option>';
+    actualizarBotonBuscar();
+    return;
+  }
+  claseSel.disabled = false;
+  const opt0 = document.createElement('option');
+  opt0.value = '';
+  opt0.textContent = 'Elegí una clase…';
+  claseSel.appendChild(opt0);
+  Object.keys(BANDAS[marca]).forEach(clase => {
+    const opt = document.createElement('option');
+    opt.value = clase;
+    opt.textContent = CLASE_LABELS[clase];
+    claseSel.appendChild(opt);
+  });
+  actualizarBotonBuscar();
+}
+
+function onClaseChange() { actualizarBotonBuscar(); }
+
+function actualizarBotonBuscar() {
+  const marca = document.getElementById('f-marca').value;
+  const clase = document.getElementById('f-clase').value;
+  const btn = document.getElementById('btn-buscar');
+  if (marca && clase) {
+    btn.disabled = false;
+    btn.textContent = `Buscar — ${MARCA_LABELS[marca]} / ${CLASE_LABELS[clase]}`;
+  } else {
+    btn.disabled = true;
+    btn.textContent = 'Elegí Marca y Clase';
+  }
+}
+
 function onDeptoChange() {
   const selectedSlugs = getSelectedDeptos();
   const provCont = document.getElementById('f-provincia');
   const distCont = document.getElementById('f-distrito');
-  const btn = document.getElementById('btn-buscar');
   const warn = document.getElementById('warn-msg');
 
   if (selectedSlugs.length === 0) {
     provCont.innerHTML = '<div class="check-placeholder">Elegí un departamento primero</div>';
     distCont.innerHTML = '<div class="check-placeholder">Elegí un departamento primero</div>';
-    btn.disabled = true;
-    btn.textContent = 'Seleccioná un departamento';
     warn.style.display = 'none';
     return;
   }
 
-  // union de provincias de los departamentos seleccionados
   const provSet = new Set();
   const distSet = new Set();
   selectedSlugs.forEach(slug => {
@@ -516,21 +633,17 @@ function onDeptoChange() {
     });
   }
 
-  btn.disabled = false;
   const totalClientes = selectedSlugs.reduce((s, slug) => s + DEPTO_INDEX.find(x => x.slug === slug).clientes, 0);
-  btn.textContent = `Buscar (${selectedSlugs.length} depto${selectedSlugs.length !== 1 ? 's' : ''})`;
   warn.style.display = (selectedSlugs.length > 5 || totalClientes > 40000) ? 'block' : 'none';
 }
 
 function onSectorChange() {
   const selectedSectores = getSelectedSectores();
   const ciiuCont = document.getElementById('f-ciiu');
-
   if (selectedSectores.length === 0) {
     ciiuCont.innerHTML = '<div class="check-placeholder">Elegí un sector primero</div>';
     return;
   }
-
   const ciiuSet = new Set();
   selectedSectores.forEach(sec => {
     const s = SECTOR_INDEX.find(x => x.sector === sec);
@@ -556,13 +669,11 @@ document.getElementById('dep-toggle-all').addEventListener('click', (e) => {
 });
 document.getElementById('prov-toggle-all').addEventListener('click', (e) => {
   e.preventDefault();
-  const boxes = document.querySelectorAll('#f-provincia input');
-  boxes.forEach(b => b.checked = false); // "Todas" = ninguna marcada = sin filtro
+  document.querySelectorAll('#f-provincia input').forEach(b => b.checked = false);
 });
 document.getElementById('dist-toggle-all').addEventListener('click', (e) => {
   e.preventDefault();
-  const boxes = document.querySelectorAll('#f-distrito input');
-  boxes.forEach(b => b.checked = false); // "Todos" = ninguno marcado = sin filtro
+  document.querySelectorAll('#f-distrito input').forEach(b => b.checked = false);
 });
 document.getElementById('sec-toggle-all').addEventListener('click', (e) => {
   e.preventDefault();
@@ -573,32 +684,8 @@ document.getElementById('sec-toggle-all').addEventListener('click', (e) => {
 });
 document.getElementById('ciiu-toggle-all').addEventListener('click', (e) => {
   e.preventDefault();
-  const boxes = document.querySelectorAll('#f-ciiu input');
-  boxes.forEach(b => b.checked = false); // "Todos" = ninguno marcado = sin filtro
+  document.querySelectorAll('#f-ciiu input').forEach(b => b.checked = false);
 });
-
-document.querySelectorAll('#f-clase .chip').forEach(chip => {
-  chip.addEventListener('click', () => chip.classList.toggle('active'));
-});
-
-// --- dual range slider ---
-const minSlider = document.getElementById('peso-min');
-const maxSlider = document.getElementById('peso-max');
-const fill = document.getElementById('slider-fill');
-function updateSliderUI() {
-  let minV = parseInt(minSlider.value), maxV = parseInt(maxSlider.value);
-  if (minV > maxV - 100) { minV = maxV - 100; minSlider.value = minV; }
-  const range = maxSlider.max - maxSlider.min;
-  const leftPct = ((minV - minSlider.min) / range) * 100;
-  const rightPct = ((maxV - minSlider.min) / range) * 100;
-  fill.style.left = leftPct + '%';
-  fill.style.width = (rightPct - leftPct) + '%';
-  document.getElementById('peso-min-val').textContent = minV.toLocaleString();
-  document.getElementById('peso-max-val').textContent = maxV.toLocaleString();
-}
-minSlider.addEventListener('input', updateSliderUI);
-maxSlider.addEventListener('input', updateSliderUI);
-updateSliderUI();
 
 async function loadShard(slug) {
   if (SHARD_CACHE[slug]) return SHARD_CACHE[slug];
@@ -608,79 +695,233 @@ async function loadShard(slug) {
   return data;
 }
 
+/* ============================================================
+   MOTOR DE SCORING — Eje 0 (elegibilidad), Eje 1 (urgencia), Eje 2 (afinidad)
+   ============================================================ */
+const ANIO_ACTUAL = new Date().getFullYear();
+
+// Eje 0: unidades de CUALQUIER marca que caen dentro de la banda tolerada (Camion)
+// o cualquier unidad REMOLCADOR (Tracto, sin banda de peso).
+function unidadesElegibles(vehiculos, clase, banda) {
+  return vehiculos.filter(v => {
+    if (v.clase !== clase || v.atipico) return false;
+    if (!banda.nucleoMin) return true; // Tracto: sin banda
+    if (typeof v.peso_bruto !== 'number') return false;
+    return v.peso_bruto >= banda.tolMin && v.peso_bruto <= banda.tolMax;
+  });
+}
+
+// Peso ponderado por unidad para Eje 2 (nucleo=100%, decae lineal a 30% en el borde de tolerancia).
+function pesoEje2(v, banda) {
+  if (!banda.nucleoMin) return 1; // Tracto: sin nucleo/tolerancia, todo pesa igual
+  const p = v.peso_bruto;
+  if (p >= banda.nucleoMin && p <= banda.nucleoMax) return 1;
+  if (p < banda.nucleoMin) {
+    const ancho = banda.nucleoMin - banda.tolMin;
+    if (ancho <= 0) return 1;
+    const dist = banda.nucleoMin - p;
+    return Math.max(0.3, 1 - (dist / ancho) * 0.7);
+  }
+  const ancho = banda.tolMax - banda.nucleoMax;
+  if (ancho <= 0) return 1;
+  const dist = p - banda.nucleoMax;
+  return Math.max(0.3, 1 - (dist / ancho) * 0.7);
+}
+
+// Eje 1: Urgencia — rampa lineal 0-5 años desde la ultima compra (cualquier marca), meseta en 100.
+function calcularUrgencia(unidades) {
+  if (unidades.length === 0) return null;
+  const conAnio = unidades.filter(v => typeof v.anio === 'number');
+  if (conAnio.length === 0) return null;
+  const anioReciente = Math.max(...conAnio.map(v => v.anio));
+  const anios = Math.max(0, ANIO_ACTUAL - anioReciente);
+  return Math.min(100, (anios / 5) * 100);
+}
+
+// Amortiguador de confianza generico: 1 unidad -> 0% confianza (score->50), 4+ -> 100% confianza.
+function amortiguar(scoreCalculado, nUnidades, techo) {
+  const confianza = Math.min(1, Math.max(0, (nUnidades - 1) / (techo - 1)));
+  return 50 + confianza * (scoreCalculado - 50);
+}
+
+// Eje 2: cascada de Afinidad. Devuelve { score, motivo }.
+function calcularAfinidad(unidades, marcaEvaluada, banda) {
+  // Paso 0 (guardia)
+  if (unidades.length === 0) {
+    return { score: 50, motivo: 'Sin historial en esta banda' };
+  }
+
+  // pesos por unidad (nucleo/tolerancia) para pasos 2 y 4
+  const pesos = unidades.map(v => pesoEje2(v, banda));
+  const pesoTotal = pesos.reduce((a, b) => a + b, 0);
+
+  // ordenar cronologicamente para Paso 3 (pivote)
+  const ordenadas = unidades
+    .map((v, i) => ({ ...v, _peso: pesos[i] }))
+    .filter(v => typeof v.anio === 'number')
+    .sort((a, b) => a.anio - b.anio || (a.placa || '').localeCompare(b.placa || ''));
+
+  let scoreBruto, motivo;
+
+  // Paso 1: ¿ya es cliente nuestro?
+  const propias = unidades.filter(v => v.marca === marcaEvaluada);
+  if (propias.length > 0) {
+    const conAnio = propias.filter(v => typeof v.anio === 'number');
+    const anioReciente = conAnio.length ? Math.max(...conAnio.map(v => v.anio)) : null;
+    const anios = anioReciente !== null ? Math.max(0, ANIO_ACTUAL - anioReciente) : 5;
+    const factorRecencia = Math.max(0, 1 - anios / 5);
+    scoreBruto = 50 + factorRecencia * (95 - 50);
+    motivo = `Ya compró ${MARCA_LABELS[marcaEvaluada] || marcaEvaluada} (última hace ${anios} año${anios !== 1 ? 's' : ''})`;
+  } else {
+    // Paso 2: monomarca de un competidor puntual (>=80% del peso ponderado)
+    const porMarca = {};
+    unidades.forEach((v, i) => { porMarca[v.marca] = (porMarca[v.marca] || 0) + pesos[i]; });
+    const marcaDominante = Object.entries(porMarca).sort((a, b) => b[1] - a[1])[0];
+    const pctDominante = pesoTotal > 0 ? marcaDominante[1] / pesoTotal : 0;
+
+    if (marcaDominante && marcaDominante[0] !== marcaEvaluada && pctDominante >= 0.8) {
+      scoreBruto = 10;
+      motivo = `Monomarca: ${Math.round(pctDominante * 100)}% de su flota en esta banda es ${marcaDominante[0]}`;
+    } else {
+      // Paso 3: pivote (compatible vs no-compatible, generalizado — cualquier bloque que no
+      // sea el nuestro cuenta como "no-compatible", sin distinguir rival de ruido)
+      const labels = ordenadas.map(v => v.origen === banda.bloque ? 'C' : 'N');
+      let pivote = null;
+      if (labels.length > 0) {
+        const labelFinal = labels[labels.length - 1];
+        let magnitud = 0;
+        for (let i = labels.length - 1; i >= 0; i--) {
+          if (labels[i] === labelFinal) magnitud++;
+          else break;
+        }
+        const hayQuiebre = magnitud < labels.length; // hubo al menos 1 distinto antes
+        if (hayQuiebre) {
+          const confianzaPivote = Math.min(1, Math.max(0, (magnitud - 1) / (3 - 1)));
+          if (labelFinal === 'C') {
+            scoreBruto = 50 + confianzaPivote * (85 - 50);
+            motivo = `Pivote positivo: volvió a comprar ${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
+          } else {
+            scoreBruto = 50 + confianzaPivote * (30 - 50);
+            motivo = `Pivote espejo: se pasó a un bloque no-${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
+          }
+          pivote = true;
+        }
+      }
+
+      if (!pivote) {
+        // Paso 4: bloque de origen — % ponderado directo
+        const pesoCompatible = unidades.reduce((s, v, i) => s + (v.origen === banda.bloque ? pesos[i] : 0), 0);
+        scoreBruto = pesoTotal > 0 ? (pesoCompatible / pesoTotal) * 100 : 50;
+        motivo = `${Math.round(scoreBruto)}% de su flota en esta banda es del bloque ${banda.bloque}`;
+      }
+    }
+  }
+
+  const scoreFinal = amortiguar(scoreBruto, unidades.length, 4);
+  return { score: Math.round(scoreFinal * 10) / 10, motivo };
+}
+
+function tamanoCuenta(vehiculosTotales) {
+  const n = vehiculosTotales;
+  if (n <= 5) return { label: 'Retail', cls: 'size-retail' };
+  if (n <= 29) return { label: 'Medium Fish', cls: 'size-medium' };
+  if (n <= 99) return { label: 'Big Fish', cls: 'size-big' };
+  return { label: 'Mega Fish', cls: 'size-mega' };
+}
+
+function scoreClass(v) {
+  if (v >= 70) return 'score-hi';
+  if (v >= 40) return 'score-mid';
+  return 'score-lo';
+}
+
+/* ============================================================
+   BUSQUEDA
+   ============================================================ */
 document.getElementById('btn-buscar').addEventListener('click', async () => {
-  const slugs = getSelectedDeptos();
-  if (slugs.length === 0) return;
-  const provincias = getSelectedProvincias(); // vacio = todas
-  const distritos = getSelectedDistritos(); // vacio = todos
-  const sectores = getSelectedSectores(); // vacio = todos
-  const ciius = getSelectedCiius(); // vacio = todos
-  const clasesActivas = Array.from(document.querySelectorAll('#f-clase .chip.active')).map(c => c.dataset.clase);
-  const pesoMin = parseInt(minSlider.value);
-  const pesoMax = parseInt(maxSlider.value);
+  const marca = document.getElementById('f-marca').value;
+  const clase = document.getElementById('f-clase').value;
+  if (!marca || !clase) return;
+  const banda = BANDAS[marca][clase];
+
+  let slugs = getSelectedDeptos();
+  if (slugs.length === 0) slugs = DEPTO_INDEX.map(d => d.slug); // sin filtro geo = busca en todo el pais
+
+  const provincias = getSelectedProvincias();
+  const distritos = getSelectedDistritos();
+  const sectores = getSelectedSectores();
+  const ciius = getSelectedCiius();
 
   const statusMsg = document.getElementById('status-msg');
   const results = document.getElementById('results');
-  results.innerHTML = '<div class="loading">Buscando clientes...</div>';
+  results.innerHTML = '<div class="loading">Buscando y calculando scores...</div>';
 
   const out = [];
   for (let i = 0; i < slugs.length; i++) {
-    statusMsg.textContent = `Cargando ${i + 1}/${slugs.length}...`;
+    statusMsg.textContent = `Procesando ${i + 1}/${slugs.length}...`;
     const clientes = await loadShard(slugs[i]);
     for (const c of clientes) {
-      // Estado = ACTIVO es obligatorio: no se muestran empresas de baja/suspendidas
       if (c.estado !== 'ACTIVO') continue;
       if (provincias.length > 0 && !provincias.includes(c.provincia)) continue;
       if (distritos.length > 0 && !distritos.includes(c.distrito)) continue;
       if (sectores.length > 0 && !sectores.includes(c.sector_economico)) continue;
       if (ciius.length > 0 && !ciius.includes(c.ciiu_desc)) continue;
-      const matching = c.vehiculos.filter(v =>
-        !v.atipico &&
-        clasesActivas.includes(v.clase) &&
-        v.peso_bruto != null && v.peso_bruto >= pesoMin && v.peso_bruto <= pesoMax
-      );
-      if (matching.length === 0) continue;
-      out.push({ ruc: c.ruc, razon: c.razon, sector: c.sector_economico, ciiu: c.ciiu_desc, vehiculos: matching });
+
+      const elegibles = unidadesElegibles(c.vehiculos, clase, banda);
+      if (elegibles.length === 0) continue; // Eje 0: no elegible
+
+      const urgencia = calcularUrgencia(elegibles);
+      const { score: afinidad, motivo } = calcularAfinidad(elegibles, marca, banda);
+      const scoreFinal = Math.round((urgencia * afinidad) / 100 * 10) / 10;
+      const tamano = tamanoCuenta(c.vehiculos.length);
+
+      out.push({
+        ruc: c.ruc, razon: c.razon, sector: c.sector_economico,
+        scoreFinal, urgencia: Math.round(urgencia * 10) / 10, afinidad, motivo,
+        tamano, unidadesTotales: c.vehiculos.length,
+        unidadesElegibles: elegibles,
+      });
     }
   }
   statusMsg.textContent = '';
-  out.sort((a, b) => b.vehiculos.length - a.vehiculos.length);
   CURRENT_RESULTS = out;
-  renderResults(out);
+  ordenarYRenderizar();
 });
 
-function buildYearBreakdown(vehiculos) {
-  const byYear = {};
-  for (const v of vehiculos) {
-    const y = v.anio || 'S/D';
-    if (!byYear[y]) byYear[y] = {};
-    const m = v.marca || 'SIN MARCA';
-    byYear[y][m] = (byYear[y][m] || 0) + 1;
-  }
-  const years = Object.keys(byYear).sort((a, b) => {
-    if (a === 'S/D') return 1;
-    if (b === 'S/D') return -1;
-    return b - a; // descendente: más reciente primero
-  });
-  return years.map(y => ({
-    year: y,
-    total: Object.values(byYear[y]).reduce((s, n) => s + n, 0),
-    marcas: Object.entries(byYear[y]).sort((a, b) => b[1] - a[1])
-  }));
+function ordenarYRenderizar() {
+  const key = SORT_MODE === 'final' ? 'scoreFinal' : SORT_MODE;
+  const ordenados = [...CURRENT_RESULTS].sort((a, b) => b[key] - a[key]);
+  renderResults(ordenados);
 }
 
 function renderResults(out) {
   const results = document.getElementById('results');
   if (out.length === 0) {
-    results.innerHTML = '<div class="no-results">No hay clientes que coincidan con estos filtros.</div>';
+    results.innerHTML = '<div class="no-results">No hay clientes elegibles con estos filtros.</div>';
     return;
   }
   results.innerHTML = `
     <div class="results-header">
-      <span class="results-count">${out.length.toLocaleString()}</span> clientes encontrados
+      <div class="results-count-wrap">
+        <span class="results-count">${out.length.toLocaleString()}</span> clientes elegibles
+      </div>
+      <div class="sort-controls">
+        <span class="sort-label">Ordenar por:</span>
+        <button class="sort-btn ${SORT_MODE === 'final' ? 'active' : ''}" data-sort="final">Score final</button>
+        <button class="sort-btn ${SORT_MODE === 'urgencia' ? 'active' : ''}" data-sort="urgencia">Urgencia</button>
+        <button class="sort-btn ${SORT_MODE === 'afinidad' ? 'active' : ''}" data-sort="afinidad">Afinidad</button>
+      </div>
     </div>
     <div id="results-list"></div>
   `;
+
+  document.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      SORT_MODE = btn.dataset.sort;
+      ordenarYRenderizar();
+    });
+  });
+
   const list = document.getElementById('results-list');
   out.forEach((c, idx) => {
     const row = document.createElement('div');
@@ -690,9 +931,26 @@ function renderResults(out) {
         <span class="client-toggle">&#9654;</span>
         <div class="client-info">
           <div class="client-razon">${c.razon}</div>
-          <div class="client-ruc">RUC ${c.ruc}${c.sector && c.sector !== 'SIN DATOS' ? ' · ' + c.sector : ''}</div>
+          <div class="client-meta-row">
+            <span class="client-ruc">RUC ${c.ruc}</span>
+            <span class="size-tag ${c.tamano.cls}">${c.tamano.label}</span>
+            ${c.sector && c.sector !== 'SIN DATOS' ? `<span class="client-ruc">${c.sector}</span>` : ''}
+          </div>
         </div>
-        <span class="client-units">${c.vehiculos.length}</span>
+        <div class="score-grid">
+          <div class="score-item">
+            <div class="score-item-label">Urg.</div>
+            <div class="score-item-value ${scoreClass(c.urgencia)}">${c.urgencia}</div>
+          </div>
+          <div class="score-item">
+            <div class="score-item-label">Afin.</div>
+            <div class="score-item-value ${scoreClass(c.afinidad)}">${c.afinidad}</div>
+          </div>
+          <div class="score-item score-final">
+            <div class="score-item-label">Score</div>
+            <div class="score-item-value">${c.scoreFinal}</div>
+          </div>
+        </div>
       </div>
       <div class="client-detail" id="detail-${idx}"></div>
     `;
@@ -707,21 +965,18 @@ function renderResults(out) {
       const isOpen = detail.classList.toggle('open');
       toggle.classList.toggle('open', isOpen);
       if (isOpen && !detail.dataset.loaded) {
-        const breakdown = buildYearBreakdown(CURRENT_RESULTS[idx].vehiculos);
-        detail.innerHTML = breakdown.map(yb => `
-          <div class="year-block">
-            <div class="year-header">
-              <span class="year-label">${yb.year}</span>
-              <span class="year-count">${yb.total} unidad${yb.total !== 1 ? 'es' : ''}</span>
+        const c = out[idx];
+        const unidadesOrdenadas = [...c.unidadesElegibles].sort((a, b) => (b.anio || 0) - (a.anio || 0));
+        detail.innerHTML = `
+          <div class="explica-box">${c.motivo}</div>
+          <div class="detail-section-title">Unidades que calzaron el filtro (${c.unidadesElegibles.length} de ${c.unidadesTotales} totales)</div>
+          ${unidadesOrdenadas.map(v => `
+            <div class="unidad-row">
+              <span>${v.anio || 'S/D'} — ${v.marca} <span class="peso-tag">${v.origen}</span></span>
+              <span class="peso-tag">${v.peso_bruto ? Math.round(v.peso_bruto).toLocaleString() + ' kg' : ''}</span>
             </div>
-            ${yb.marcas.map(([marca, count]) => `
-              <div class="marca-row">
-                <span>${marca}</span>
-                <span class="marca-count">${count}</span>
-              </div>
-            `).join('')}
-          </div>
-        `).join('');
+          `).join('')}
+        `;
         detail.dataset.loaded = '1';
       }
     });
