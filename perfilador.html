@@ -781,18 +781,24 @@ function calcularAfinidad(unidades, marcaEvaluada, banda) {
     .filter(v => typeof v.anio === 'number')
     .sort((a, b) => a.anio - b.anio || (a.placa || '').localeCompare(b.placa || ''));
 
-  let scoreBruto, motivo;
-
-  // Paso 1: ¿ya es cliente nuestro?
+  // Paso 1: ¿ya es cliente nuestro? Es un hecho directo (compró o no compró la marca),
+  // no una inferencia estadística como los pasos 2-4 -- por eso NO pasa por el amortiguador
+  // de confianza (antes, con 1 sola unidad, se aplastaba a 50 sin importar la señal real).
+  // Piso en 60 (no 50): una compra vieja de la marca sigue siendo informacion positiva,
+  // nunca cae a neutral puro. Techo en 95 si la compra fue muy reciente.
   const propias = unidades.filter(v => v.marca === marcaEvaluada);
   if (propias.length > 0) {
     const conAnio = propias.filter(v => typeof v.anio === 'number');
     const anioReciente = conAnio.length ? Math.max(...conAnio.map(v => v.anio)) : null;
     const anios = anioReciente !== null ? Math.max(0, ANIO_ACTUAL - anioReciente) : 5;
     const factorRecencia = Math.max(0, 1 - anios / 5);
-    scoreBruto = 50 + factorRecencia * (95 - 50);
-    motivo = `Ya compró ${MARCA_LABELS[marcaEvaluada] || marcaEvaluada} (última hace ${anios} año${anios !== 1 ? 's' : ''})`;
-  } else {
+    const scoreBruto = 60 + factorRecencia * (95 - 60);
+    const motivo = `Ya compró ${MARCA_LABELS[marcaEvaluada] || marcaEvaluada} (última hace ${anios} año${anios !== 1 ? 's' : ''})`;
+    return { score: Math.round(scoreBruto * 10) / 10, motivo };
+  }
+
+  let scoreBruto, motivo;
+  {
     // Paso 2: monomarca de un competidor puntual (>=80% del peso ponderado)
     const porMarca = {};
     unidades.forEach((v, i) => { porMarca[v.marca] = (porMarca[v.marca] || 0) + pesos[i]; });

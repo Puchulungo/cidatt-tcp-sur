@@ -1040,17 +1040,20 @@ function calcularAfinidadScore(unidades, marcaEvaluada, banda) {
     .filter(v => typeof v.anio === 'number')
     .sort((a, b) => a.anio - b.anio || (a.placa || '').localeCompare(b.placa || ''));
 
-  let scoreBruto, motivo;
-
+  // Paso 1: hecho directo (compró o no la marca) -- sin amortiguar, piso en 60.
   const propias = unidades.filter(v => v.marca === marcaEvaluada);
   if (propias.length > 0) {
     const conAnio = propias.filter(v => typeof v.anio === 'number');
     const anioReciente = conAnio.length ? Math.max(...conAnio.map(v => v.anio)) : null;
     const anios = anioReciente !== null ? Math.max(0, ANIO_ACTUAL_SCORE - anioReciente) : 5;
     const factorRecencia = Math.max(0, 1 - anios / 5);
-    scoreBruto = 50 + factorRecencia * (95 - 50);
-    motivo = `Ya compró ${MARCA_LABELS_SCORE[marcaEvaluada] || marcaEvaluada} (última hace ${anios} año${anios !== 1 ? 's' : ''})`;
-  } else {
+    const scoreBruto = 60 + factorRecencia * (95 - 60);
+    const motivo = `Ya compró ${MARCA_LABELS_SCORE[marcaEvaluada] || marcaEvaluada} (última hace ${anios} año${anios !== 1 ? 's' : ''})`;
+    return { score: Math.round(scoreBruto * 10) / 10, motivo };
+  }
+
+  let scoreBruto, motivo;
+  {
     const porMarca = {};
     unidades.forEach((v, i) => { porMarca[v.marca] = (porMarca[v.marca] || 0) + pesos[i]; });
     const marcaDominante = Object.entries(porMarca).sort((a, b) => b[1] - a[1])[0];
