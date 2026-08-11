@@ -362,6 +362,22 @@
     color: var(--accent-light);
   }
 
+  .ficha-meta-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px;
+  }
+  .size-tag {
+    font-size: 10px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    border: 1px solid var(--border);
+  }
+  .size-retail { color: var(--text-muted); }
+  .size-medium { color: #60a5fa; border-color: rgba(96,165,250,0.35); }
+  .size-big { color: var(--warn); border-color: rgba(245,158,11,0.35); }
+  .size-mega { color: #f472b6; border-color: rgba(244,114,182,0.4); }
+
   .info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -972,6 +988,22 @@ const MARCA_LABELS_SCORE = {
 };
 const CLASE_LABELS_SCORE = { CAMION: 'Camión', REMOLCADOR: 'Tracto' };
 
+// Tabla de distancia por bloque de origen -- ver comentario largo en perfilador.html
+// (misma constante, copiada 1:1, calibrada 2026-08-11 contra 6 casos reales + Servosa Gas).
+const DISTANCIA_ORIGEN_SCORE = {
+  'MAN':           { EUROPEO: 85, AMERICANO: 70, JAPONES: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
+  'VOLKSWAGEN':    { EUROPEO: 85, AMERICANO: 70, JAPONES: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
+  'INTERNATIONAL': { AMERICANO: 85, EUROPEO: 70, JAPONES: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
+  'UD TRUCKS':     { JAPONES: 85, EUROPEO: 70, AMERICANO: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
+  'DONGFENG':      { CHINO: 85, EUROPEO: 50, AMERICANO: 50, JAPONES: 50, COREANO: 50, OTRO: 50 },
+  'FAW':           { CHINO: 85, EUROPEO: 50, AMERICANO: 50, JAPONES: 50, COREANO: 50, OTRO: 50 },
+};
+function distanciaOrigenScore(marcaEvaluada, origen) {
+  const tabla = DISTANCIA_ORIGEN_SCORE[marcaEvaluada];
+  if (!tabla) return 50;
+  return (tabla[origen] ?? 50) / 100;
+}
+
 function unidadesElegiblesScore(vehiculos, clase, banda) {
   return vehiculos.filter(v => {
     if (v.clase !== clase || v.atipico) return false;
@@ -1054,7 +1086,9 @@ function calcularAfinidadScore(unidades, marcaEvaluada, banda) {
 
   let scoreBruto, motivo;
   {
-    const labels = ordenadas.map(v => v.origen === banda.bloque ? 'C' : 'N');
+    // Ver comentario largo en perfilador.html (2026-08-11): 'C' ahora es distancia >= 70%,
+    // no bloque exacto binario.
+    const labels = ordenadas.map(v => distanciaOrigenScore(marcaEvaluada, v.origen) >= 0.7 ? 'C' : 'N');
     let pivote = null;
     if (labels.length > 0) {
       const labelFinal = labels[labels.length - 1];
@@ -1078,9 +1112,9 @@ function calcularAfinidadScore(unidades, marcaEvaluada, banda) {
     }
 
     if (!pivote) {
-      const pesoCompatible = unidades.reduce((s, v, i) => s + (v.origen === banda.bloque ? pesos[i] : 0), 0);
+      const pesoCompatible = unidades.reduce((s, v, i) => s + pesos[i] * distanciaOrigenScore(marcaEvaluada, v.origen), 0);
       scoreBruto = pesoTotal > 0 ? (pesoCompatible / pesoTotal) * 100 : 50;
-      motivo = `${Math.round(scoreBruto)}% de su flota en esta banda es del bloque ${banda.bloque}`;
+      motivo = `${Math.round(scoreBruto)}% ponderado por cercanía de origen a ${MARCA_LABELS_SCORE[marcaEvaluada] || marcaEvaluada}`;
     }
 
     // Paso 2 (rediseñado 2026-08-11, ver comentario largo en perfilador.html): descuento
@@ -1293,6 +1327,13 @@ function formatAntiguedad(fechaIso) {
   return `${anos} año${anos !== 1 ? 's' : ''} (desde ${fechaTexto})`;
 }
 
+function tamanoCuentaDirectorio(n) {
+  if (n <= 5) return { label: 'Retail', cls: 'size-retail' };
+  if (n <= 29) return { label: 'Medium Fish', cls: 'size-medium' };
+  if (n <= 99) return { label: 'Big Fish', cls: 'size-big' };
+  return { label: 'Mega Fish', cls: 'size-mega' };
+}
+
 async function seleccionar(ruc) {
   const c = CLIENTES.find(x => x.ruc === ruc);
   if (!c) return;
@@ -1313,6 +1354,7 @@ async function seleccionar(ruc) {
   const provincia = enriched ? enriched.provincia : (c.provincia || 'SIN DATOS');
   const distrito = c.distrito || 'SIN DATOS';
   const total = enriched ? enriched.vehiculos.filter(v => !v.atipico).length : getTotalUnidades(c);
+  const tamano = tamanoCuentaDirectorio(total);
   const treeHtml = enriched ? renderTreeEnriched(buildTreeEnriched(enriched.vehiculos)) : renderTree(buildTree(c.vehiculos));
   const scoreHtml = renderScoreSection(enriched);
 
@@ -1345,7 +1387,10 @@ async function seleccionar(ruc) {
       <button class="back-btn" onclick="volverLista()">&#8592; Volver</button>
       <div class="ficha-header">
         <div class="ficha-razon">${c.razon}</div>
-        <div class="ficha-ruc">RUC ${c.ruc}</div>
+        <div class="ficha-meta-row">
+          <span class="ficha-ruc">RUC ${c.ruc}</span>
+          <span class="size-tag ${tamano.cls}">${tamano.label}</span>
+        </div>
         ${nombreComercialHtml}
       </div>
       <div class="info-grid">

@@ -493,6 +493,32 @@ const MARCA_LABELS = {
 };
 const CLASE_LABELS = { CAMION: 'Camión (volquete)', REMOLCADOR: 'Tractocamión (remolcador)' };
 
+// Tabla de distancia por bloque de origen (2026-08-11, calibrada a mano con el usuario contra
+// 6 casos reales de duopolio/monomarca + el caso Servosa Gas, 100% flota china evaluada para
+// UD/MAN/VW). Reemplaza el binario "compatible/no-compatible" de antes (100/0) -- ese binario
+// generaba ceros en seco para clientes con flota 100% de un bloque distinto al evaluado (caso
+// real: Servosa evaluado para UD daba Afinidad 0 por tener flota 100% Volkswagen/Europeo, sin
+// ninguna unidad Japonés). La lógica de negocio real no es geografía, es cercanía de precio:
+// el bloque propio de la marca evaluada es lo más cercano después de la marca exacta (Paso 1),
+// el resto de marcas "premium" (Europeo/Americano/Japonés/Coreano/Otro) se mueven en un rango
+// de precio parecido entre sí, y Chino es la excepción lejana por el salto de precio -- excepto
+// para Dongfeng/FAW, que SON la marca económica, así que ahí Chino es lo cercano y todo lo demás
+// queda lejos por igual. Nunca baja de 50 a propósito (ver Paso 1: mismo criterio de no aplastar
+// a neutral puro ni más abajo).
+const DISTANCIA_ORIGEN = {
+  'MAN':           { EUROPEO: 85, AMERICANO: 70, JAPONES: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
+  'VOLKSWAGEN':    { EUROPEO: 85, AMERICANO: 70, JAPONES: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
+  'INTERNATIONAL': { AMERICANO: 85, EUROPEO: 70, JAPONES: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
+  'UD TRUCKS':     { JAPONES: 85, EUROPEO: 70, AMERICANO: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
+  'DONGFENG':      { CHINO: 85, EUROPEO: 50, AMERICANO: 50, JAPONES: 50, COREANO: 50, OTRO: 50 },
+  'FAW':           { CHINO: 85, EUROPEO: 50, AMERICANO: 50, JAPONES: 50, COREANO: 50, OTRO: 50 },
+};
+function distanciaOrigen(marcaEvaluada, origen) {
+  const tabla = DISTANCIA_ORIGEN[marcaEvaluada];
+  if (!tabla) return 50;
+  return (tabla[origen] ?? 50) / 100;
+}
+
 /* ============================================================
    ESTADO GLOBAL
    ============================================================ */
@@ -799,9 +825,13 @@ function calcularAfinidad(unidades, marcaEvaluada, banda) {
 
   let scoreBruto, motivo;
   {
-    // Paso 3: pivote (compatible vs no-compatible a nivel de BLOQUE de origen — sigue sin
-    // distinguir marca dentro del bloque; rediseño a nivel marca queda pendiente a propósito).
-    const labels = ordenadas.map(v => v.origen === banda.bloque ? 'C' : 'N');
+    // Paso 3: pivote (2026-08-11, rediseñado a nivel de DISTANCIA por marca en vez de bloque
+    // binario). Antes: 'C' solo si origen===banda.bloque exacto, 'N' cualquier otra cosa por
+    // igual -- eso hacía que Servosa (100% Chino) evaluado para MAN nunca disparara pivote
+    // real y Zuñiga (89% Volvo + 1 Kenworth) disparara un pivote "positivo" artificialmente
+    // alto. Ahora 'C' = distancia >= 70% (bloque propio o "resto" cercano), 'N' = distancia
+    // más baja (Chino para marcas premium, todo-menos-Chino para Dongfeng/FAW).
+    const labels = ordenadas.map(v => distanciaOrigen(marcaEvaluada, v.origen) >= 0.7 ? 'C' : 'N');
     let pivote = null;
     if (labels.length > 0) {
       const labelFinal = labels[labels.length - 1];
@@ -825,10 +855,10 @@ function calcularAfinidad(unidades, marcaEvaluada, banda) {
     }
 
     if (!pivote) {
-      // Paso 4: bloque de origen — % ponderado directo
-      const pesoCompatible = unidades.reduce((s, v, i) => s + (v.origen === banda.bloque ? pesos[i] : 0), 0);
+      // Paso 4: distancia de origen ponderada por marca evaluada (antes: bloque binario 100/0)
+      const pesoCompatible = unidades.reduce((s, v, i) => s + pesos[i] * distanciaOrigen(marcaEvaluada, v.origen), 0);
       scoreBruto = pesoTotal > 0 ? (pesoCompatible / pesoTotal) * 100 : 50;
-      motivo = `${Math.round(scoreBruto)}% de su flota en esta banda es del bloque ${banda.bloque}`;
+      motivo = `${Math.round(scoreBruto)}% ponderado por cercanía de origen a ${MARCA_LABELS[marcaEvaluada] || marcaEvaluada}`;
     }
 
     // Paso 2 (rediseñado, 2026-08-11): antes exigía monomarca >=80% de una sola marca para
@@ -1020,7 +1050,7 @@ function renderResults(out) {
           <div class="detail-section-title">Unidades que calzaron el filtro (${c.unidadesElegibles.length} de ${c.unidadesTotales} totales)</div>
           ${unidadesOrdenadas.map(v => `
             <div class="unidad-row">
-              <span>${v.anio || 'S/D'} — ${v.marca} <span class="peso-tag">${v.origen}</span></span>
+              <span>${v.anio || 'S/D'} — ${v.marca} <span class="peso-tag">${v.origen}</span>${v.placa ? ` <span class="peso-tag">${v.placa}</span>` : ''}</span>
               <span class="peso-tag">${v.peso_bruto ? Math.round(v.peso_bruto).toLocaleString() + ' kg' : ''}</span>
             </div>
           `).join('')}
