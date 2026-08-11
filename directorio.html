@@ -1054,42 +1054,52 @@ function calcularAfinidadScore(unidades, marcaEvaluada, banda) {
 
   let scoreBruto, motivo;
   {
+    const labels = ordenadas.map(v => v.origen === banda.bloque ? 'C' : 'N');
+    let pivote = null;
+    if (labels.length > 0) {
+      const labelFinal = labels[labels.length - 1];
+      let magnitud = 0;
+      for (let i = labels.length - 1; i >= 0; i--) {
+        if (labels[i] === labelFinal) magnitud++;
+        else break;
+      }
+      const hayQuiebre = magnitud < labels.length;
+      if (hayQuiebre) {
+        const confianzaPivote = Math.min(1, Math.max(0, (magnitud - 1) / (3 - 1)));
+        if (labelFinal === 'C') {
+          scoreBruto = 50 + confianzaPivote * (85 - 50);
+          motivo = `Pivote positivo: volvió a comprar ${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
+        } else {
+          scoreBruto = 50 + confianzaPivote * (30 - 50);
+          motivo = `Pivote espejo: se pasó a un bloque no-${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
+        }
+        pivote = true;
+      }
+    }
+
+    if (!pivote) {
+      const pesoCompatible = unidades.reduce((s, v, i) => s + (v.origen === banda.bloque ? pesos[i] : 0), 0);
+      scoreBruto = pesoTotal > 0 ? (pesoCompatible / pesoTotal) * 100 : 50;
+      motivo = `${Math.round(scoreBruto)}% de su flota en esta banda es del bloque ${banda.bloque}`;
+    }
+
+    // Paso 2 (rediseñado 2026-08-11, ver comentario largo en perfilador.html): descuento
+    // continuo por concentración de marca dominante no evaluada, reemplaza el corte binario
+    // 80%->10. Se aplica también sobre el resultado del pivote (caso real: Transportes
+    // Zuñiga, 89% Volvo con 1 Kenworth de excepción disparaba pivote positivo score alto).
     const porMarca = {};
     unidades.forEach((v, i) => { porMarca[v.marca] = (porMarca[v.marca] || 0) + pesos[i]; });
     const marcaDominante = Object.entries(porMarca).sort((a, b) => b[1] - a[1])[0];
-    const pctDominante = pesoTotal > 0 ? marcaDominante[1] / pesoTotal : 0;
+    const pctDominante = pesoTotal > 0 && marcaDominante ? (marcaDominante[1] / pesoTotal) * 100 : 0;
 
-    if (marcaDominante && marcaDominante[0] !== marcaEvaluada && pctDominante >= 0.8) {
-      scoreBruto = 10;
-      motivo = `Monomarca: ${Math.round(pctDominante * 100)}% de su flota en esta banda es ${marcaDominante[0]}`;
-    } else {
-      const labels = ordenadas.map(v => v.origen === banda.bloque ? 'C' : 'N');
-      let pivote = null;
-      if (labels.length > 0) {
-        const labelFinal = labels[labels.length - 1];
-        let magnitud = 0;
-        for (let i = labels.length - 1; i >= 0; i--) {
-          if (labels[i] === labelFinal) magnitud++;
-          else break;
-        }
-        const hayQuiebre = magnitud < labels.length;
-        if (hayQuiebre) {
-          const confianzaPivote = Math.min(1, Math.max(0, (magnitud - 1) / (3 - 1)));
-          if (labelFinal === 'C') {
-            scoreBruto = 50 + confianzaPivote * (85 - 50);
-            motivo = `Pivote positivo: volvió a comprar ${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
-          } else {
-            scoreBruto = 50 + confianzaPivote * (30 - 50);
-            motivo = `Pivote espejo: se pasó a un bloque no-${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
-          }
-          pivote = true;
-        }
-      }
-      if (!pivote) {
-        const pesoCompatible = unidades.reduce((s, v, i) => s + (v.origen === banda.bloque ? pesos[i] : 0), 0);
-        scoreBruto = pesoTotal > 0 ? (pesoCompatible / pesoTotal) * 100 : 50;
-        motivo = `${Math.round(scoreBruto)}% de su flota en esta banda es del bloque ${banda.bloque}`;
-      }
+    const PISO_CONCENTRACION = 33, TECHO_CONCENTRACION = 90, FLOOR_PENALIZACION = 0.85;
+    const factorConcentracion = Math.min(1, Math.max(0,
+      (pctDominante - PISO_CONCENTRACION) / (TECHO_CONCENTRACION - PISO_CONCENTRACION)));
+    const penalizacionConcentracion = 1 - factorConcentracion * FLOOR_PENALIZACION;
+
+    if (pctDominante >= PISO_CONCENTRACION) {
+      scoreBruto = scoreBruto * penalizacionConcentracion;
+      motivo += ` (${Math.round(pctDominante)}% de su flota en esta banda es ${marcaDominante[0]}, se descuenta)`;
     }
   }
 

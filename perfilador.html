@@ -799,47 +799,69 @@ function calcularAfinidad(unidades, marcaEvaluada, banda) {
 
   let scoreBruto, motivo;
   {
-    // Paso 2: monomarca de un competidor puntual (>=80% del peso ponderado)
+    // Paso 3: pivote (compatible vs no-compatible a nivel de BLOQUE de origen — sigue sin
+    // distinguir marca dentro del bloque; rediseño a nivel marca queda pendiente a propósito).
+    const labels = ordenadas.map(v => v.origen === banda.bloque ? 'C' : 'N');
+    let pivote = null;
+    if (labels.length > 0) {
+      const labelFinal = labels[labels.length - 1];
+      let magnitud = 0;
+      for (let i = labels.length - 1; i >= 0; i--) {
+        if (labels[i] === labelFinal) magnitud++;
+        else break;
+      }
+      const hayQuiebre = magnitud < labels.length; // hubo al menos 1 distinto antes
+      if (hayQuiebre) {
+        const confianzaPivote = Math.min(1, Math.max(0, (magnitud - 1) / (3 - 1)));
+        if (labelFinal === 'C') {
+          scoreBruto = 50 + confianzaPivote * (85 - 50);
+          motivo = `Pivote positivo: volvió a comprar ${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
+        } else {
+          scoreBruto = 50 + confianzaPivote * (30 - 50);
+          motivo = `Pivote espejo: se pasó a un bloque no-${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
+        }
+        pivote = true;
+      }
+    }
+
+    if (!pivote) {
+      // Paso 4: bloque de origen — % ponderado directo
+      const pesoCompatible = unidades.reduce((s, v, i) => s + (v.origen === banda.bloque ? pesos[i] : 0), 0);
+      scoreBruto = pesoTotal > 0 ? (pesoCompatible / pesoTotal) * 100 : 50;
+      motivo = `${Math.round(scoreBruto)}% de su flota en esta banda es del bloque ${banda.bloque}`;
+    }
+
+    // Paso 2 (rediseñado, 2026-08-11): antes exigía monomarca >=80% de una sola marca para
+    // castigar con score fijo 10; el corte binario dejaba pasar "duopolios" de competidores
+    // (2 marcas rivales sin tocar la evaluada, ej. Volvo+Mercedes) con score pleno de bloque,
+    // y generaba un salto abrupto en el borde del 80% (78% de concentración = score ~100,
+    // 81% = score 10). Casos reales que expusieron esto: Grupo TTN, Pilars, Piscocalla,
+    // Olimpus, Transportes Zuñiga (backtest manual del usuario, 2026-08-11).
+    // Ahora: se calcula la concentración ponderada de la marca dominante que NO es la
+    // evaluada (a esta altura de la cascada, la evaluada ya tiene 0 unidades — Paso 1 la
+    // habría capturado antes) y se aplica como descuento CONTINUO sobre el score de Paso 3/4,
+    // en vez de un corte binario. Se aplica también sobre el resultado del pivote (no solo
+    // sobre el bloque de Paso 4) porque el pivote puede esconder el mismo problema: un cliente
+    // monomarca de una marca rival con una sola unidad vieja de otro bloque como "excepción"
+    // dispara un pivote positivo con score alto, cuando en realidad sigue siendo fiel a un
+    // único competidor (caso real: Transportes Zuñiga, 89% Volvo con 1 Kenworth de excepción).
     const porMarca = {};
     unidades.forEach((v, i) => { porMarca[v.marca] = (porMarca[v.marca] || 0) + pesos[i]; });
     const marcaDominante = Object.entries(porMarca).sort((a, b) => b[1] - a[1])[0];
-    const pctDominante = pesoTotal > 0 ? marcaDominante[1] / pesoTotal : 0;
+    const pctDominante = pesoTotal > 0 && marcaDominante ? (marcaDominante[1] / pesoTotal) * 100 : 0;
 
-    if (marcaDominante && marcaDominante[0] !== marcaEvaluada && pctDominante >= 0.8) {
-      scoreBruto = 10;
-      motivo = `Monomarca: ${Math.round(pctDominante * 100)}% de su flota en esta banda es ${marcaDominante[0]}`;
-    } else {
-      // Paso 3: pivote (compatible vs no-compatible, generalizado — cualquier bloque que no
-      // sea el nuestro cuenta como "no-compatible", sin distinguir rival de ruido)
-      const labels = ordenadas.map(v => v.origen === banda.bloque ? 'C' : 'N');
-      let pivote = null;
-      if (labels.length > 0) {
-        const labelFinal = labels[labels.length - 1];
-        let magnitud = 0;
-        for (let i = labels.length - 1; i >= 0; i--) {
-          if (labels[i] === labelFinal) magnitud++;
-          else break;
-        }
-        const hayQuiebre = magnitud < labels.length; // hubo al menos 1 distinto antes
-        if (hayQuiebre) {
-          const confianzaPivote = Math.min(1, Math.max(0, (magnitud - 1) / (3 - 1)));
-          if (labelFinal === 'C') {
-            scoreBruto = 50 + confianzaPivote * (85 - 50);
-            motivo = `Pivote positivo: volvió a comprar ${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
-          } else {
-            scoreBruto = 50 + confianzaPivote * (30 - 50);
-            motivo = `Pivote espejo: se pasó a un bloque no-${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
-          }
-          pivote = true;
-        }
-      }
+    // Anclajes (calibrados a mano contra 6 casos reales, 2026-08-11): piso 33% = reparto
+    // entre 3+ marcas sin dominancia clara, sin penalizar; techo 90% = prácticamente
+    // monomarca, penalización casi máxima; floor 0.85 = nunca descuenta más del 85% del
+    // score (deja un piso de ~15% del valor original, no lo anula del todo).
+    const PISO_CONCENTRACION = 33, TECHO_CONCENTRACION = 90, FLOOR_PENALIZACION = 0.85;
+    const factorConcentracion = Math.min(1, Math.max(0,
+      (pctDominante - PISO_CONCENTRACION) / (TECHO_CONCENTRACION - PISO_CONCENTRACION)));
+    const penalizacionConcentracion = 1 - factorConcentracion * FLOOR_PENALIZACION;
 
-      if (!pivote) {
-        // Paso 4: bloque de origen — % ponderado directo
-        const pesoCompatible = unidades.reduce((s, v, i) => s + (v.origen === banda.bloque ? pesos[i] : 0), 0);
-        scoreBruto = pesoTotal > 0 ? (pesoCompatible / pesoTotal) * 100 : 50;
-        motivo = `${Math.round(scoreBruto)}% de su flota en esta banda es del bloque ${banda.bloque}`;
-      }
+    if (pctDominante >= PISO_CONCENTRACION) {
+      scoreBruto = scoreBruto * penalizacionConcentracion;
+      motivo += ` (${Math.round(pctDominante)}% de su flota en esta banda es ${marcaDominante[0]}, se descuenta)`;
     }
   }
 
