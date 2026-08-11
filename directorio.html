@@ -680,6 +680,46 @@
     flex-shrink: 0;
     margin-left: 10px;
   }
+  .flota-row-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 14px 6px 46px;
+    font-size: 12px;
+    color: var(--steel);
+    border-top: 1px solid rgba(148,163,184,0.06);
+    cursor: pointer;
+  }
+  .flota-row-header:hover { background: rgba(148,163,184,0.04); }
+  .flota-row-left { display: flex; align-items: center; gap: 6px; }
+  .placas-toggle {
+    font-size: 9px;
+    color: var(--text-muted);
+    transition: transform 0.15s ease;
+    display: inline-block;
+  }
+  .placas-toggle.open { transform: rotate(90deg); }
+  .placas-grid {
+    display: none;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    padding: 8px 14px 10px 46px;
+    background: rgba(148,163,184,0.03);
+  }
+  .placas-grid.open { display: grid; }
+  @media (max-width: 640px) {
+    .placas-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+  }
+  .placa-chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--steel-light);
+    background: rgba(148,163,184,0.06);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 6px;
+    text-align: center;
+  }
 </style>
 </head>
 <body>
@@ -905,6 +945,13 @@ function toggleNode(id, header) {
   const body = document.getElementById(id);
   const toggle = header.querySelector('.tree-toggle');
   const isOpen = body.classList.toggle('open');
+  toggle.classList.toggle('open', isOpen);
+}
+
+function togglePlacas(id, header) {
+  const grid = document.getElementById(id);
+  const toggle = header.querySelector('.placas-toggle');
+  const isOpen = grid.classList.toggle('open');
   toggle.classList.toggle('open', isOpen);
 }
 
@@ -1257,7 +1304,9 @@ function buildTreeEnriched(vehiculos) {
     if (!tree[clase]) tree[clase] = {};
     if (!tree[clase][anio]) tree[clase][anio] = {};
     const key = marca + '|||' + cat;
-    tree[clase][anio][key] = (tree[clase][anio][key] || 0) + 1;
+    if (!tree[clase][anio][key]) tree[clase][anio][key] = { count: 0, placas: [] };
+    tree[clase][anio][key].count++;
+    if (v.placa) tree[clase][anio][key].placas.push(v.placa);
   }
   return tree;
 }
@@ -1272,7 +1321,7 @@ function renderTreeEnriched(tree) {
   for (const clase of Object.keys(tree).sort()) {
     const aniosData = tree[clase];
     const totalClase = Object.values(aniosData).reduce((s, filas) =>
-      s + Object.values(filas).reduce((a, b) => a + b, 0), 0);
+      s + Object.values(filas).reduce((a, f) => a + f.count, 0), 0);
     const claseClass = clase === 'CAMION' ? 'clase-camion' : 'clase-rem';
     const claseId = 'clase_' + Math.random().toString(36).slice(2);
 
@@ -1292,20 +1341,28 @@ function renderTreeEnriched(tree) {
 
     for (const anio of anios) {
       const filas = aniosData[anio];
-      const totalAnio = Object.values(filas).reduce((a, b) => a + b, 0);
+      const totalAnio = Object.values(filas).reduce((a, f) => a + f.count, 0);
 
       html += `<div class="flota-anio-header">
         <span class="flota-anio-label">${anio}</span>
         <span class="flota-anio-count">${totalAnio} unidad${totalAnio !== 1 ? 'es' : ''}</span>
       </div>`;
 
-      const filasOrdenadas = Object.entries(filas).sort((a, b) => b[1] - a[1]); // mayor cantidad primero
-      for (const [key, count] of filasOrdenadas) {
+      const filasOrdenadas = Object.entries(filas).sort((a, b) => b[1].count - a[1].count); // mayor cantidad primero
+      for (const [key, data] of filasOrdenadas) {
         const [marca, cat] = key.split('|||');
-        html += `<div class="flota-row">
-          <span class="flota-row-label">${marca} <span class="flota-row-rango">&mdash; ${rangoTexto(clase, cat)}</span></span>
-          <span class="flota-row-count">${count}</span>
-        </div>`;
+        const rowId = 'placas_' + Math.random().toString(36).slice(2);
+        const placasHtml = data.placas.length
+          ? data.placas.map(p => `<span class="placa-chip">${p}</span>`).join('')
+          : '<span class="placa-chip" style="opacity:0.5;">sin placa registrada</span>';
+        html += `<div class="flota-row-header" onclick="togglePlacas('${rowId}', this)">
+          <span class="flota-row-left">
+            <span class="placas-toggle">&#9654;</span>
+            <span class="flota-row-label">${marca} <span class="flota-row-rango">&mdash; ${rangoTexto(clase, cat)}</span></span>
+          </span>
+          <span class="flota-row-count">${data.count}</span>
+        </div>
+        <div class="placas-grid" id="${rowId}">${placasHtml}</div>`;
       }
     }
 
