@@ -5,18 +5,20 @@
 **Última actualización de este documento:** 2026-09-09 — se sumó la **sección 15**, el
 rediseño mayor: base de datos nueva del sitio, bandas de peso v2, ficha con modelo y
 carrocería, y el Perfilador reordenado por niveles. **La sección 15 manda sobre las
-secciones 6, 12 y 13 donde se contradigan** — todo el diseño está cerrado con el usuario
-pero NADA está implementado todavía. La sección 14 (seguridad) sigue en curso sin cerrar.
+secciones 6, 12 y 13 donde se contradigan.** Todo eso está **implementado y en producción**
+(commits `f9b13c7`, `5edc9be`, `3977357`). La sección 14 (seguridad) sigue en curso sin
+cerrar, y la 15.16 lista los pendientes de calibración.
 
 ---
 
 ## Estado actual (leer esto primero al retomar)
 
-> **Nota del 2026-09-09 — leer la sección 15 antes que este bloque.** Ese día se cerró un
-> rediseño completo (bandas de peso, ficha del Directorio, Perfilador por niveles) que deja
-> resueltos **en diseño** los pendientes 1, 2 y 3 de la lista de abajo, y cambia la base de
-> datos del sitio. Nada de eso está implementado todavía: el código en producción sigue siendo
-> el del checkpoint del 2026-08-11 que describe este bloque.
+> **Nota del 2026-09-09 — leer la sección 15 antes que este bloque.** Ese día se cerró y se
+> **implementó** un rediseño completo (base de datos nueva, bandas de peso, ficha del
+> Directorio, Perfilador por niveles), ya en producción. Con eso quedan **resueltos** los
+> pendientes 1, 2 y 3 de la lista de abajo, y el 4 (backtest de MAN) queda absorbido por el
+> backtest nuevo de la 15.15. El resto de la lista sigue vigente. Lo que este bloque describe
+> como "estado actual" es el checkpoint del 2026-08-11, superado por la sección 15.
 
 
 **Checkpoint de cierre de sesión — 2026-08-11 noche.** Sesión larga enfocada casi 100% en
@@ -277,6 +279,12 @@ LFS.
 ---
 
 ## 6. Motor de scoring del Perfilador — implementado (agosto 2026)
+
+> ⚠️ **Registro histórico.** El motor que describe esta sección fue reemplazado el 2026-09-09:
+> la tolerancia ya no es ±25% sino ±15%, la Afinidad ya no es una cascada sino cinco niveles,
+> el amortiguador de confianza ya no existe y el Eje 1 cambió antes, el 2026-08-08 (sección
+> 10). **Para el motor vigente, leer la sección 15.** Esta sección se conserva porque explica
+> el razonamiento y los datos con los que se diseñaron las bandas por marca, que siguen vivos.
 
 Objetivo: convertir el Perfilador en una herramienta de priorización real. Para cada
 combinación **cliente × marca × clase (Camión o Tractocamión/Remolcador)** se calculan 3
@@ -598,6 +606,17 @@ distribución de scores de 0 a 100 con mediana 40).
 17. `3163228` — Afinidad Paso 1: ventana de recencia de 5 a 6 años (fix parcial de la
     inversión Paso1/Paso4 detectada con el caso Volkswagen). Banda de UD Trucks ampliada
     con el Quester (núcleo 11.7-34t). Detalle en sección 13.
+18. `f9b13c7` — Base de datos v2: `data/perfilador/*.json` regenerado desde
+    `CIDATT_2026_BASE_SITIO.xlsx` con `carroceria` (normalizada), `carroceria_grupo` y la
+    `categoria_peso` de 4 bandas; se elimina `clasificacion_peso`. Ficha del Directorio pasa a
+    Segmento de peso → Año → Marca+Modelo+Carrocería+PBV → placas. Detalle en 15.1-15.5.
+19. `5edc9be` — Perfilador: Eje 0 a ±15% con ponderación piso 60%, Eje 2 reescrito de cascada
+    a niveles con rangos que no se solapan, escalera de bloques de 3 peldaños, pivote como
+    bonificación, piso de evidencia de 3 unidades, N5 al fondo, lista partida en secciones y
+    ficha nueva. Mismo motor portado al panel de Score del Directorio. Detalle en 15.6-15.13.
+20. `3977357` — Score final = posición dentro del nivel × Recurrencia (antes Afinidad cruda ×
+    Recurrencia, que dejaba a la Recurrencia decidiendo sola el orden interno), más cadena de
+    desempate Score → Recurrencia → tamaño de flota. Detalle en 15.11.
 
 ---
 
@@ -721,6 +740,10 @@ por volumen) queda identificado pero pendiente.
 
 ## 12. Afinidad — rediseño de Pasos 2, 3 y 4 (2026-08-11)
 
+> ⚠️ **Registro histórico.** Los Pasos 2, 3 y 4 dejaron de existir como cascada el 2026-09-09
+> (sección 15.8). Lo que sobrevive de aquí: el descuento continuo por concentración de marca
+> y la tabla de distancia por bloque, ambos con valores actualizados en la sección 15.9.
+
 Sesión distinta a la del 08-08: el usuario trajo 7 casos reales (revisando el Perfilador con
 MAN filtrado en Camión Volquete) donde el score de Afinidad no calzaba con lo que él veía a
 ojo en la flota real del cliente. Dos problemas de fondo, ambos con causa raíz en cómo el
@@ -826,6 +849,10 @@ Los 3 commits de esta sección: `8655e34`, `96f1467`, `695bed1`.
 ---
 
 ## 13. Ventana de recencia del Paso 1 (5→6 años) y banda de UD ampliada con el Quester (2026-08-11)
+
+> ⚠️ **Registro histórico.** La ventana del Paso 1 pasó de 6 a 8 años el 2026-09-09 y el piso
+> de 60 subió a 80, con lo que la inversión Paso 1 / Paso 4 que describe esta sección quedó
+> resuelta (sección 15.8). La banda de UD con el Quester sí sigue vigente, con tolerancia ±15%.
 
 Dos ajustes chicos, mismo día que la sección 12, después de que el usuario filtró por
 Volkswagen en el Perfilador y notó algo raro.
