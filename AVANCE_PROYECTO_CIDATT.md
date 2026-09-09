@@ -2,28 +2,90 @@
 
 **Repo:** https://github.com/Puchulungo/cidatt-tcp-sur
 **Producción:** https://cidatt-tcp-sur.vercel.app/
-**Última actualización de este documento:** 2026-08-08 (noche) — Eje 1 (Urgencia
-→ Recurrencia) y Afinidad Paso 1 corregidos y desplegados, ver secciones 10 y 11
+**Última actualización de este documento:** 2026-09-09 — se sumó la **sección 15**, el
+rediseño mayor: base de datos nueva del sitio, bandas de peso v2, ficha con modelo y
+carrocería, y el Perfilador reordenado por niveles. **La sección 15 manda sobre las
+secciones 6, 12 y 13 donde se contradigan** — todo el diseño está cerrado con el usuario
+pero NADA está implementado todavía. La sección 14 (seguridad) sigue en curso sin cerrar.
 
 ---
 
 ## Estado actual (leer esto primero al retomar)
 
-**Todo lo de las secciones 1-4 y 6 está implementado, pusheado a `main` y en producción.**
-No hay código pendiente de escribir salvo que el usuario pida algo nuevo. Lo único
-realmente abierto:
+> **Nota del 2026-09-09 — leer la sección 15 antes que este bloque.** Ese día se cerró un
+> rediseño completo (bandas de peso, ficha del Directorio, Perfilador por niveles) que deja
+> resueltos **en diseño** los pendientes 1, 2 y 3 de la lista de abajo, y cambia la base de
+> datos del sitio. Nada de eso está implementado todavía: el código en producción sigue siendo
+> el del checkpoint del 2026-08-11 que describe este bloque.
 
-1. La fórmula de recencia del Paso 1 del Eje 2 (¿ya es cliente nuestro?) se implementó con
-   criterio propio porque el diseño original no la cerró del todo — ver el aviso al final
-   de la sección 6. No es un bug ni algo a medio hacer, es una decisión tomada que el
-   usuario todavía no confirmó viendo resultados reales.
-2. Lo de la sección 5 (Carterización de asesores, unificar Directorio+Perfilador
-   visualmente): son ideas a futuro, nunca se empezaron a construir.
-3. `clientes_v2.json` pesa ~91MB, por encima del límite recomendado de GitHub (nota
-   técnica en sección 4, no bloquea nada hoy).
-4. Fix de geo de 380 clientes y tabla de Score por marca en la ficha del Directorio
-   (sección 9) — implementados y pusheados hoy (commits `c455cdc` y `30dc394`), sin
-   validar aún visualmente en producción por el usuario.
+
+**Checkpoint de cierre de sesión — 2026-08-11 noche.** Sesión larga enfocada casi 100% en
+rediseñar Afinidad (Pasos 1, 2, 3 y 4), la banda de UD, y tres mejoras de UI (placas en
+Perfilador, placas+segmentación en Directorio). Todo pusheado a `main` (repo
+`Puchulungo/cidatt-tcp-sur`) en 5 commits (`8655e34`, `96f1467`, `695bed1`, y el último par
+`3163228`) y debería estar ya en producción vía redeploy automático de Vercel. **No hay
+ninguna tarea de código en curso ni a medias.** Además se creó
+`DISEÑO_SEGUIMIENTO_ASESORES.md` (carpeta del proyecto) — documento aparte, autocontenido,
+para retomar en un chat nuevo el tema de integrar seguimiento real de asesores (SIMA +
+Drive de carterización) al sistema. Detalle completo del rediseño de Afinidad de hoy en las
+secciones 12 y 13. Lo único realmente abierto ahora:
+
+1. **Afinidad Paso 1 — problema de volumen ("caso Concretos Supermix/Transaltisa"):**
+   sigue sin resolver, **no se tocó en esta sesión** (el usuario dijo explícitamente "esto
+   lo vemos después con calma" al arrancar). El Paso 1 (¿ya es cliente de la marca?) sigue
+   sin dar crédito por volumen, solo por recencia (ver sección 13 para el cambio que sí se
+   hizo hoy en la ventana de recencia). Ver sección 11 para el detalle del fix de piso 60.
+2. **Paso 1 vs. Paso 4 — inversión residual para compras muy viejas (5+ años):** hoy
+   (sección 13) se estiró la ventana de recencia del Paso 1 de 5 a 6 años para que un
+   dueño real de la marca no puntúe peor que un desconocido con flota "cercana" — pero
+   solo funciona bien hasta ~4-4.5 años de antigüedad de la última compra. A partir de ahí
+   el piso del Paso 1 (60) vuelve a quedar por debajo del escalón "resto" (70) del Paso 4
+   ya descontado. El usuario decidió no tocar el escalón 70 (le gusta tal cual), así que
+   esta inversión para compras muy antiguas queda como limitación conocida, sin resolver.
+3. **Pivote (Paso 3) — posible redundancia con el descuento por concentración de marca:**
+   desde el rediseño de ayer/hoy (sección 12), el pivote y el paso de bloque/concentración
+   comparten parcialmente la misma señal (`distanciaOrigen` + mismo descuento). Pregunta de
+   diseño abierta: ¿todavía aporta el pivote algo que el resto de la cascada no capture ya?
+4. **MAN tiene Afinidad promedio baja (11.6) en compradores reales del backtest** — es de
+   antes de todos los cambios de hoy. Valdría la pena correr de nuevo el backtest de las
+   293 ventas con la fórmula actual para ver si cambia (Paso 4 ya no da 0% en seco).
+5. **Backtest de un solo período**, más 7 casos reales puntuales de hoy (Grupo TTN,
+   Piscocalla, Pilars, Ausanta, Olimpus, Transportes Zuñiga, Servosa Gas) — no hay un
+   backtest formal de las 293 ventas con la fórmula nueva completa. El usuario va a
+   conseguir históricos de CIDATT de años anteriores — tarea del usuario, no de código.
+6. **Consulta MTC de flota por RUC:** sigue igual que el 08-08, no se retomó.
+7. **Hagemsa / Transaltisa / Barcino:** deben seguir apareciendo normal en Directorio y
+   Perfilador (decisión ya cerrada, no excluir — las gestiona Lima pero el usuario quiere
+   que sigan visibles).
+8. **Seguimiento de asesores (SIMA + Drive de carterización):** conversación de diseño
+   completa, sin código — ver `DISEÑO_SEGUIMIENTO_ASESORES.md` para todo el contexto y
+   los próximos pasos concretos (sección 9 de ese documento). El jefe del usuario no
+   quiere un CRM formal todavía; cualquier propuesta debe apoyarse en lo que ya existe.
+9. Carterización como feature del sitio (botón "CARTERAS TCP"), unificar visualmente
+   Directorio+Perfilador: ideas a futuro, nunca se empezaron a construir.
+10. `clientes_v2.json` pesa ~91MB, por encima del límite recomendado de GitHub (nota
+    técnica en sección 4, no bloquea nada hoy).
+11. **Restringir el acceso a CIDATT más allá del login básico de Microsoft — investigación
+    en curso, sin aplicar todavía en Azure (ver sección 14).** Disparado por un incidente
+    real (alguien externo pidiendo acceso repetidas veces a un Excel de Google Drive de
+    carteras de asesores — ese archivo en sí está bien protegido, cero fuga real ahí, pero
+    expuso que el login de CIDATT hoy acepta a cualquier persona con correo del tenant de
+    EUROMOTORS, sin distinguir quién específicamente debería entrar). Plan acordado con el
+    usuario: (a) restringir la app en Azure AD a una lista explícita de usuarios/grupo
+    asignado, y (b) exigir además que la conexión venga desde la red de la empresa (oficina
+    o VPN FortiClient), vía Conditional Access. Ya se recolectó la IP pública compartida por
+    las 4 sedes (190.116.0.98) — falta confirmar si es fija, confirmar la IP real de salida
+    del VPN (dato dudoso, puede haber salido por split-tunnel), y confirmar la licencia de
+    Microsoft 365 (Conditional Access requiere Azure AD Premium P1). Nada de esto se ha
+    tocado aún en el portal de Azure — es solo investigación/plan hasta ahora.
+
+**Documentos de referencia en esta misma carpeta:**
+- `BACKTEST_SCORING_2026.md` — metodología y resultados completos del backtest contra
+  ventas reales 2026 (secciones 1-6, incluye todo el detalle de Recurrencia y Afinidad
+  Paso 1).
+- `COMO_FUNCIONA_EL_SISTEMA.md` — explicación técnica completa del sistema (arquitectura,
+  seguridad, fórmulas de scoring), pensada para que el usuario la use al explicarle el
+  sistema a terceros (ej. su jefe).
 
 Si el usuario dice que algo de este documento ya está resuelto y el texto dice lo
 contrario, confiar en lo que dice el usuario y corregir el documento — no al revés.
@@ -514,6 +576,28 @@ distribución de scores de 0 a 100 con mediana 40).
    confianza), Score final = Urgencia×Afinidad con reordenamiento por eje individual,
    Tamaño de cuenta (Retail/Medium Fish/Big Fish/Mega Fish) y ficha auditable por cliente.
    Detalle completo del diseño y de la implementación en la sección 6.
+10. `c455cdc` — Fix de geo: 380 clientes con RUC ex-`XX` recuperan su Departamento/Provincia
+    real (eliminado el bucket "SIN DATO" singular, separado del "SIN DATOS" genérico). Detalle
+    en sección 9.
+11. `30dc394` — Score por marca (Score final/Recurrencia/Afinidad) agregado a la ficha del
+    Directorio, para las 6 marcas, calculado al vuelo con el mismo motor que el Perfilador.
+    Detalle en sección 9.
+12. `d81a9b1` — Eje 1 rediseñado de "Urgencia" (antigüedad) a "Recurrencia" (Frecuencia 85% +
+    Recencia 15%); Afinidad Paso 1 corregido (sin amortiguador, piso 60 en vez de 50). Detalle
+    en secciones 10 y 11.
+13. `649462f` — Solo documentación (backfill del fix de Afinidad Paso 1 en este archivo).
+14. `8655e34` — Afinidad Paso 2 rediseñado: descuento continuo por concentración de marca
+    dominante, reemplaza el corte binario 80%→10 (también aplicado sobre el resultado del
+    pivote). Detalle en sección 12.
+15. `96f1467` — Tabla `DISTANCIA_ORIGEN` por bloque de origen (reemplaza el binario
+    compatible/no-compatible en Pasos 3 y 4); placa visible en el detalle de unidades del
+    Perfilador; badge de segmentación (Retail/Medium/Big/Mega Fish) en la ficha del
+    Directorio. Detalle en sección 12.
+16. `695bed1` — Grilla de placas desplegable por fila de flota en el Directorio (5 columnas
+    en desktop, auto-ajustable en pantalla chica). Detalle en sección 12.
+17. `3163228` — Afinidad Paso 1: ventana de recencia de 5 a 6 años (fix parcial de la
+    inversión Paso1/Paso4 detectada con el caso Volkswagen). Banda de UD Trucks ampliada
+    con el Quester (núcleo 11.7-34t). Detalle en sección 13.
 
 ---
 
@@ -632,3 +716,605 @@ eligió 60 como mejor balance). Detalle completo, fórmulas y casos de validaci�
 No se tocó nada más del eje de Afinidad — el problema de clientes grandes con muchas unidades
 viejas de la marca (donde la recencia sigue siendo la única variable del Paso 1, sin crédito
 por volumen) queda identificado pero pendiente.
+
+---
+
+## 12. Afinidad — rediseño de Pasos 2, 3 y 4 (2026-08-11)
+
+Sesión distinta a la del 08-08: el usuario trajo 7 casos reales (revisando el Perfilador con
+MAN filtrado en Camión Volquete) donde el score de Afinidad no calzaba con lo que él veía a
+ojo en la flota real del cliente. Dos problemas de fondo, ambos con causa raíz en cómo el
+sistema definía "bloque de origen".
+
+### Problema 1 — el Paso 2 (monomarca) dejaba pasar duopolios y tenía un corte abrupto
+
+Casos reales: **Grupo TTN** (67% Volvo + 33% Mercedes, ninguna unidad MAN, Afinidad 100),
+**Piscocalla** (78.5% Mercedes ponderado, justo debajo del umbral, Afinidad 100), **Pilars**
+(71% Mercedes, Afinidad 100), **Olimpus** (72.5% Mercedes + Scania, Afinidad 98.1),
+**Transportes Zuñiga** (72-89% Volvo con una excepción vieja, Afinidad 98.1 vía un pivote
+"positivo" que en realidad escondía monomarca). El Paso 2 viejo solo miraba si **una sola
+marca** llegaba a 80% del peso ponderado — como estos casos reparten entre 2 marcas rivales
+(nunca la evaluada), ninguno cruzaba el 80%, así que caían al Paso 4 y se llevaban el score
+casi pleno del bloque, sin importar que fueran, en la práctica, fieles a 1-2 competidores
+puntuales. **Ausanta** (51% Volvo / 49% Scania, historial Volvo→Scania→Volvo) sí merecía
+quedar arriba de los demás — el usuario lo marcó explícitamente como "afín, pero no 100".
+
+**Fix (commit `8655e34`):** se eliminó el corte binario del Paso 2. Ahora se calcula la
+concentración ponderada de la marca dominante que no es la evaluada, y se aplica como
+descuento continuo — tanto sobre el resultado de Paso 4 (bloque) como sobre el de Paso 3
+(pivote), porque el pivote puede esconder el mismo problema (caso Zuñiga).
+
+```
+factorConcentracion = clamp((pctDominante − 33%) / (90% − 33%), 0, 1)
+penalizacion = 1 − factorConcentracion × 0.85
+scoreBruto_final = scoreBruto_pivoteOBloque × penalizacion   [solo si pctDominante >= 33%]
+```
+
+Anclajes calibrados a mano contra los 7 casos: piso 33% (reparto entre 3+ marcas, sin
+penalizar), techo 90% (casi monomarca, penalización casi máxima), floor 0.85 (nunca
+descuenta más del 85% — nunca cae a 0 del todo, mismo criterio que el piso 60 del Paso 1).
+
+Resultado validado corriendo el motor real extraído de `perfilador.html` contra los 7 RUCs
+(MAN, Camión): **Ausanta 73** (el más alto de los 6 originales, como pedía el usuario),
+**Grupo TTN 48.8 → 41.5** (con la tabla de distancia del problema 2, ver abajo), **Pilars
+42.8 → 36.4**, **Olimpus 41.1 → 35**, **Piscocalla 32.2 → 27.4**, **Zuñiga 30.3 → 25.8**
+(el pivote dejó de dispararse al filtrar por clase Camión real — el Kenworth que lo activaba
+es clase Remolcador).
+
+### Problema 2 — "bloque de origen" era binario, y eso rompía clientes con flota de un solo bloque distinto
+
+Caso real que lo expuso: **Servosa Gas S.A.C.** (Mega Fish, flota ~100% marcas chinas —
+Shacman, Dongfeng, FAW), evaluado para **UD** (bloque Japonés) daba **Afinidad 0 en seco**
+en producción (con el fix del problema 1 ya aplicado) — porque el Paso 4 calculaba "% de la
+flota que es exactamente del bloque evaluado" y Servosa tiene 0% Japonés, así que 0 × lo que
+sea sigue siendo 0.
+
+El usuario identificó el patrón real subyacente conversando marca por marca: no es geografía,
+es **distancia de precio**. Para las marcas premium (MAN, Volkswagen, International, UD) el
+bloque propio de la marca es lo más cercano, el resto de bloques "premium" (Europeo,
+Americano, Japonés, Coreano, Otro) están a distancia media entre sí, y Chino es la excepción
+lejana por el salto de precio. Para las marcas económicas chinas (Dongfeng, FAW) se invierte:
+Chino es lo cercano (es su propio bloque) y todo lo demás queda lejos por igual.
+
+**Fix (commit `96f1467`):** tabla `DISTANCIA_ORIGEN` que reemplaza el binario
+`origen === banda.bloque ? 100 : 0` tanto en el Paso 3 (etiquetas C/N del pivote, ahora
+`distancia >= 70% → 'C'`) como en el Paso 4 (% ponderado ya no es todo-o-nada, cada unidad
+aporta su peso según distancia):
+
+| Marca evaluada | Marca propia (Paso 1) | Bloque propio | Resto (Amer./Jap./Cor./Otro) | Chino |
+|---|---|---|---|---|
+| MAN / Volkswagen | 100 | Europeo: 85 | 70 | 50 |
+| International | 100 | Americano: 85 | 70 (incl. Europeo) | 50 |
+| UD | 100 | Japonés: 85 | 70 (incl. Europeo) | 50 |
+| Dongfeng / FAW | 100 | Chino: 85 | — | 50 (todo lo demás) |
+
+Nunca baja de 50 a propósito — mismo criterio de "nunca aplastar a 0" que el piso 60 del
+Paso 1 y el floor 0.85 del descuento de concentración.
+
+Validado: Servosa Gas × UD pasó de **0 a 12** (sigue bajo, con razón — 89% de su flota
+elegible en esa banda es Volkswagen, no Japonés — pero ya no es un cero que borra toda la
+información). Los 6 casos del problema 1 bajaron proporcionalmente de forma consistente
+(85% en vez de 100% por ser "mismo bloque, no marca exacta").
+
+**Pendiente identificado durante la sesión, sin resolver:** con este cambio, el pivote
+(Paso 3) y el descuento de concentración ahora comparten parcialmente la misma señal
+(`distanciaOrigen`) — vale la pena revisar si el pivote sigue aportando algo único o si
+conviene simplificar/fusionar más adelante (ver punto 2 de "Estado actual").
+
+### Mejoras de UI pedidas junto con el rediseño
+
+- **Placa por unidad en el Perfilador** (commit `96f1467`): en el detalle de "unidades que
+  calzaron el filtro" de cada cliente, ahora se muestra la placa junto al peso bruto.
+  Motivación del usuario: las placas inmatriculadas en Arequipa empiezan con "V", así que a
+  simple vista se puede notar si un cliente compra en AQP.
+- **Badge de segmentación en el Directorio** (commit `96f1467`): la ficha de cada cliente en
+  `directorio.html` ahora muestra el badge Retail/Medium Fish/Big Fish/Mega Fish junto al RUC,
+  mismos colores y cortes que ya usaba el Perfilador (CSS `size-tag` copiado 1:1).
+- **Grilla de placas desplegable en el Directorio** (commit `695bed1`): cada fila de flota
+  (Clase→Año→Marca+banda+cantidad) es clickeable y despliega una grilla de placas (solo la
+  placa, sin repetir marca/peso) en 5 columnas fijas en desktop, auto-ajustable
+  (`auto-fill`/`minmax`) en pantallas chicas — evita que un cliente con 56+ unidades de la
+  misma combinación reviente el layout con una placa por línea. `buildTreeEnriched` pasó de
+  guardar solo un conteo por combinación a guardar `{ count, placas: [] }`; de paso se
+  corrigieron 2 sumas (`totalClase`, `totalAnio`) que asumían valores numéricos y se rompían
+  con la estructura nueva (bug detectado y corregido en el mismo commit, antes de pushear,
+  con un cliente sintético de prueba de 65 unidades).
+- **Feedback del usuario sobre lo de las placas: "me encanta, sirve un montón montón."**
+
+Los 3 commits de esta sección: `8655e34`, `96f1467`, `695bed1`.
+
+---
+
+## 13. Ventana de recencia del Paso 1 (5→6 años) y banda de UD ampliada con el Quester (2026-08-11)
+
+Dos ajustes chicos, mismo día que la sección 12, después de que el usuario filtró por
+Volkswagen en el Perfilador y notó algo raro.
+
+### Paso 1 vs. Paso 4 — un dueño real perdía contra un desconocido
+
+Caso real: **Carrocerias Dueñas** (sí tiene 3 unidades Volkswagen, compradas hace 4 años)
+daba Afinidad **67** vía Paso 1. **M.C.M. Ingenieros** (nunca compró VW; su flota elegible
+es 60% Hino/Fuso Japonés + 40% Volvo Europeo) daba Afinidad **68.1** vía Paso 4 (76%
+ponderado por distancia, descontado por concentración de Hino al 40%) — **un desconocido
+le ganaba a un dueño real.**
+
+Causa: el piso del Paso 1 (60, alcanzado a los 5 años con la ventana vieja) quedó por
+debajo del escalón "resto" (70, Japonés/Americano/Coreano/Otro) que se introdujo el mismo
+día en la sección 12. Cualquier comprador real con más de ~2.3 años desde su última compra
+ya podía perder contra un desconocido con flota mixta "premium".
+
+**Decisión del usuario:** no tocar el escalón "resto" (70) — le gusta tal cual. En cambio,
+estirar la ventana de decaimiento del Paso 1 de 5 a 6 años, para que las compras de esos
+años extra (4-6 años atrás) sigan beneficiando al dueño real.
+
+```
+factorRecencia = max(0, 1 − años_desde_última_compra / 6)   [antes: / 5]
+score = 60 + factorRecencia × (95 − 60)
+```
+
+Con esto, Carrocerias Dueñas (4 años) sube de 67 a **71.7**, volviendo a ganarle a M.C.M.
+(68.1). También se ajustó el valor por defecto para unidades sin año registrado (antes 5,
+ahora 6, para que sigan cayendo exactamente en el piso).
+
+**Limitación conocida, explicada con números:** el fix funciona bien hasta ~4.3 años de
+antigüedad. A partir de 5 años, el score del Paso 1 vuelve a caer a 65.8, después 60 —
+otra vez por debajo de un no-dueño tipo M.C.M. (68.1). El usuario fue informado de esto
+explícitamente y decidió aceptarlo como límite conocido en vez de tocar el escalón "resto".
+
+Commit `3163228`.
+
+### Banda de UD ampliada con el Quester (34t)
+
+UD sumó el Quester (línea CWE) a su stock, con 34 toneladas de peso bruto — muy por encima
+del techo de tolerancia que tenía la banda de UD hasta hoy (23,125 kg). El usuario dio el
+peso real de las 4 líneas de la marca: MKE 11.7t, LKE 14.5t, PKE 18.5t, Quester/CWE 34t, y
+pidió que todo entre en **una sola banda** (núcleo 11.7-34t), aceptando que hay una brecha
+grande entre el PKE (18.5t) y el Quester (34t) — "ahí ya viene el talento del asesor" para
+convencer a los clientes con unidades intermedias.
+
+```
+BANDAS['UD TRUCKS'].CAMION = {
+  nucleoMin: 11700, nucleoMax: 34000,   // antes: nucleoMax 18500
+  tolMin: 8775, tolMax: 42500,          // antes: tolMax 23125
+  bloque: 'JAPONES'
+}
+```
+
+Misma metodología que el resto de las marcas (núcleo = rango real de modelos, tolerancia
+= núcleo ±25%). Esto amplía la cantidad de clientes elegibles para UD — antes el techo de
+23t dejaba afuera a cualquier cliente con flota más pesada. Commit `3163228` (mismo commit
+que el cambio de ventana de recencia).
+
+---
+
+## 14. Seguridad — restringir el acceso a CIDATT (investigación en curso, 2026-08-14)
+
+**Estado: solo investigación y plan acordado con el usuario. Nada de esto se aplicó todavía
+en el portal de Azure AD — no hay commits de código involucrados, es 100% configuración de
+Azure/red, fuera del repo.**
+
+### Qué lo disparó
+
+El usuario reportó que alguien externo a la empresa intentó varias veces (5 solicitudes en
+7 minutos, cuenta "Balber Ito ramos") pedir acceso a un archivo de Google Drive
+("CARTERA COMERCIAL TRATON.xlsx", cartera de un asesor). Se verificó ese archivo puntual:
+permisos de Drive muestran **solo al owner** (`asanchez@truckcenterperu.pe`), cero
+solicitudes aprobadas — no hubo fuga real ahí, el mecanismo de "solicitar acceso" de Drive
+ya está funcionando como debería (deniega por defecto).
+
+Ese susto llevó a la pregunta real y más importante: **el sitio CIDATT (Directorio +
+Perfilador, la data comercial más valiosa) usa login corporativo de Microsoft 365 / Azure AD
+(ver sección 1), pero ese login solo verifica que el correo pertenezca al tenant de
+EUROMOTORS S.A. — no distingue qué persona específica debería tener acceso.** Cualquiera con
+un correo válido del tenant entra igual, sea quien sea. El usuario lo resumió así: "no se
+puede discriminar, no se sabe quién es el que entra porque solo es un correo."
+
+### Plan acordado (dos capas, ninguna aplicada todavía)
+
+**Capa 1 — lista explícita de usuarios autorizados.** En Azure AD / Entra admin center →
+Enterprise Applications → `CIDATT-TCP-Sur` → Properties → activar "Assignment required? =
+Yes", y en "Users and groups" asignar solo a las personas (o un grupo de seguridad, ej.
+"CIDATT-Autorizados") que deben tener acceso. Sin esto, cualquiera del tenant entra; con
+esto, hay que estar en la lista explícita además de pasar el login/MFA.
+
+**Capa 2 — restricción por red de origen (Conditional Access → Named Locations).** Exigir
+que, además de estar en la lista de usuarios, la conexión venga desde la IP de la oficina o
+del VPN corporativo (FortiClient, gateway `vpn.euromotors.com.pe`) — mismo principio que ya
+usa el SIMA hoy (bloqueado fuera de la red de la empresa salvo por VPN). Esto bloquea el
+escenario que más le preocupa al usuario: que el link/correo/contraseña de CIDATT se filtre
+fuera de la empresa — sin la IP correcta, ni con credenciales válidas se puede entrar.
+
+Nota importante ya discutida con el usuario: el VPN usa SSO (usuario/contraseña vía
+navegador, según la captura de configuración de FortiClient — "Enable Single Sign On (SSO)
+for VPN Tunnel" activado), **no un certificado atado al equipo físico**. O sea, esta capa
+bloquea a cualquiera sin credenciales de VPN, pero no es un candado "solo esta laptop
+específica" — si las credenciales de VPN también se filtraran, técnicamente se podría
+instalar FortiClient en otra máquina. El usuario evaluó esto y lo considera suficiente para
+el riesgo real (asesores comerciales sin malicia, links que se filtran sin querer) — no se
+planteó ir a device-compliance/Intune por ahora.
+
+También se puede agregar una alerta (Log Analytics / Sentinel) sobre los Sign-in logs de
+Azure AD para notificar cuando alguien con correo válido intente entrar sin cumplir la
+condición de red — pendiente de diseño, no bloqueante para el resto del plan.
+
+### Datos recolectados hasta ahora
+
+- **IP pública de la red de oficina (las 4 sedes):** `190.116.0.98` (ISP América Móvil
+  Perú/Claro). Confirmado que **Administración, AQP Recepción, Almacén y Comercial Traton
+  salen las 4 por esta misma IP** — toda la empresa comparte un solo punto de salida a
+  internet centralizado. Falta confirmar si es **fija o dinámica** (llamar al proveedor y
+  preguntar directamente es el método más confiable; alternativa: ver si cambia con el
+  tiempo o al reiniciar el router, aunque eso no es 100% concluyente).
+- **IP con VPN conectado:** `179.6.144.230` — capturada una sola vez, desde la laptop del
+  usuario. **Dato dudoso, no confirmado todavía:** mismo ISP que la IP de oficina pero
+  ciudad distinta en la geolocalización, lo que podría indicar que el VPN está en modo
+  "split-tunnel" (solo el tráfico a recursos internos como el SIMA pasa por el túnel; la
+  navegación normal, incluida la prueba de "cuál es mi IP", seguiría saliendo por la
+  conexión personal del usuario, no por el gateway del VPN). Para confirmar de verdad: pedir
+  a 2-3 personas en ubicaciones bien distintas entre sí (casa, datos móviles, otra ciudad)
+  que se conecten al VPN y revisen su IP — si a todos les sale la misma IP, confirma que es
+  un punto de salida centralizado y confiable para usar en Azure; si a cada quien le sale
+  una IP distinta (parecida a su conexión personal), confirma split-tunnel y esta capa
+  necesitaría un enfoque distinto. **Esta prueba todavía no se hizo.**
+- **Licencia de Microsoft 365 del tenant:** no confirmada. Conditional Access (ambas capas
+  de restricción por usuario asignado y por red) requiere como mínimo Azure AD Premium P1
+  (incluido en Business Premium o E3, no en planes más básicos). Falta que el usuario
+  confirme el plan contratado (admin.microsoft.com → Facturación → Tus productos) o lo
+  consulte con quien administra esa cuenta/el Fortigate.
+
+### Próximos pasos (ninguno iniciado)
+
+1. Confirmar si `190.116.0.98` es IP fija.
+2. Hacer la prueba de VPN desde múltiples ubicaciones para confirmar (o descartar) split-
+   tunnel y la IP real de salida del VPN.
+3. Confirmar el plan de Microsoft 365 / licencia Azure AD Premium P1.
+4. Con los 3 datos anteriores confirmados: armar la Conditional Access Policy real en el
+   portal de Azure (Capa 1 + Capa 2 combinadas) — pasos exactos pendientes de escribir, se
+   harán cuando haya datos confirmados para no armar una regla con información dudosa que
+   termine bloqueando a todo el mundo o sin proteger nada.
+5. (Opcional, más adelante) Alerta sobre intentos de login bloqueados.
+
+**Quién administra el Fortigate/VPN y la cuenta de Microsoft 365:** no identificado en la
+conversación — el usuario no dijo si es alguien interno de sistemas o un proveedor externo.
+Dato a conseguir para acelerar los puntos 1-3.
+
+---
+
+## 15. Rediseño mayor: bandas de peso v2, ficha con modelo/carrocería, y Perfilador por grupos (2026-09-09)
+
+Sesión larga de diseño, **sin una línea de código todavía**. Se cerraron todas las decisiones
+con el usuario y se dejó la base de datos lista. Esta sección reemplaza, donde se contradiga,
+lo que dicen las secciones 6, 12 y 13.
+
+### 15.1 Base de datos nueva del sitio
+
+El sitio deja de alimentarse del CIDATT 2026 antiguo. La base oficial pasa a ser:
+
+`02_Datos_CIDATT/Carroceria_2026_Actualizada/CIDATT_2026_BASE_SITIO.xlsx` (hoja `Base`,
+285,632 filas, 17 columnas).
+
+Se generó a partir de `CIDATT_Estandar_2026_Carroceria_Actualizada.xlsx` (Carrocería cruzada
+con 2025, PBV corregido, Departamento/Provincia por RUC) aplicándole la normalización de
+Carrocería y las bandas de peso nuevas. Columnas: Placa, RUC, Nombre / Razon Social, Anio
+Fabricacion, Marca (Estandar), Modelo, Clase, **Carroceria** (canónica), **Carroceria_Grupo**,
+Peso Bruto (kg), **Categoria Peso Bruto** (bandas v2), Combustible, Origen Sugerido,
+Departamento, Provincia, metodo_carroceria_2026, Carroceria_Original.
+
+Se eliminaron `Anio Modelo` (estaba 100% vacía) y `Categoria_PBV_Anterior` /
+`Categoria Peso Bruto Clase` (criterios de peso viejos, ya superados).
+
+### 15.2 Auditoría de integridad de la base (hecha antes de aprobar el cambio)
+
+Limpio y usable: Placa 285,632 **únicas, cero duplicadas**, formato uniforme. RUC 100% de 11
+dígitos (prefijos 20: 169,993 / 10: 115,086 / 15: 331 / 17: 222). Marca (Estandar) 233 valores,
+sin espacios sobrantes ni minúsculas. Modelo 7,123 valores, ninguno vacío. Clase solo CAMION
+(222,329) y REMOLCADOR (63,303). Año 1946-2026, sin fechas futuras.
+
+Outliers conocidos que NO bloquean: 22 unidades con PBV sobre 60 t (una marca 300,000 kg,
+imposible); 1 unidad sin PBV; 966 unidades anteriores a 1970.
+
+### 15.3 Carrocería — normalización ortográfica y catálogo controlado
+
+**Problema encontrado:** la columna tenía 13 colisiones por tildes que afectaban **66,199
+unidades (23% de la base)** — FURGÓN 37,008 vs FURGON 13,712; FURGÓN FRIGORÍFICO 4,200 vs
+FURGON FRIGORIFICO 949 (más 2 variantes mixtas); CAMIÓN GRÚA 2,803 vs CAMION GRUA 1,328;
+FURGÓN ISOTÉRMICO 3,013 vs FURGON ISOTERMICO 1,507; más AUXILIO MECÁNICO/MECANICO,
+CAÑERO/CANERO, CIGÜEÑA/CIGUEÑA, TRACTO CAMIÓN/CAMION y dos casos de doble espacio. Esto rompía
+de raíz la ficha nueva, que agrupa por Marca+Modelo+Carrocería+PBV: la misma combinación se
+partía en dos filas.
+
+**Solución en dos niveles, ambos en el archivo:**
+
+1. **`Carroceria` (canónica).** Mismo texto del registro pero con ortografía corregida:
+   mayúsculas, espacios colapsados, tildes correctas por palabra (FURGON→FURGÓN,
+   ISOTERMICO→ISOTÉRMICO, GRUA→GRÚA, MECANICO→MECÁNICO...), mojibake arreglado (`CA?ERO` →
+   CAÑERO), abreviaturas con punto expandidas (`CAB.SIMPLE` → CABINA SIMPLE, `PLATAF.BARAN.
+   REBAT.` → PLATAFORMA BARANDA REBATIBLE) y errores de tipeo unificados (REVATIBLE /
+   REVERTIBLE / REBERTIBLE → REBATIBLE, MESCLADORA → MEZCLADORA, EMMALLADA → ENMALLADA,
+   ORMIGON → HORMIGÓN). Los valores basura (`-`, `* * * *`, `049`, `S/C`, `SIN TIPO DE
+   CARROCERIA`) y los vacíos van todos a **SIN DATO**. Resultado: 430 valores → **383**.
+2. **`Carroceria_Grupo` (catálogo controlado, 29 grupos).** El texto libre se clasifica en
+   familias por reglas de palabra clave con orden de prioridad — lo específico gana sobre lo
+   genérico, así `CISTERNA BARANDA` cae en CISTERNA y `GRÚA/BARANDA REBATIBLE` cae en GRÚA, no
+   en BARANDA. Sirve para agrupar y filtrar sin perder el texto original, que queda guardado en
+   `Carroceria_Original`.
+
+| Grupo | Unidades | | Grupo | Unidades |
+|---|---|---|---|---|
+| BARANDA | 93,463 | | AUXILIO MECÁNICO | 582 |
+| REMOLCADOR | 61,058 | | CAÑERO | 510 |
+| FURGÓN | 50,832 | | INTERCAMBIADOR | 496 |
+| VOLQUETE | 38,506 | | VALORES / CAUDALES | 415 |
+| CÁMARA FRIG. / ISOTERM. | 10,276 | | SANITARIO / SALUD | 394 |
+| CISTERNA | 7,300 | | TANQUE GLP / GAS | 305 |
+| PLATAFORMA | 5,054 | | ELEVADOR | 265 |
+| GRÚA / BRAZO HIDRÁULICO | 4,676 | | LUBRICADOR | 161 |
+| HORMIGONERA / CONCRETO | 3,336 | | TOLVA / GRANELERO | 160 |
+| SIN DATO | 2,267 | | USOS VIALES | 142 |
+| CABINA / CHASIS | 1,601 | | FACTORÍA / TALLER | 126 |
+| QUILLA | 1,419 | | PERFORADOR | 124 |
+| COMPACTADOR / RECOLECTOR | 1,253 | | EXPLOSIVOS | 74 |
+| OTROS USOS ESPECIALES | 779 | | CIGÜEÑA / VIVIENDA | 60 |
+
+El script vive en `~/audit/carroceria.py` en el entorno de trabajo; el catálogo completo
+(grupo → valor → unidades, y original → canónico) quedó en
+`Carroceria_Catalogo_Mapeo.xlsx`, misma carpeta, para revisión humana.
+
+### 15.4 Bandas de peso v2 — criterio DEFINITIVO
+
+Reemplaza al criterio de 5 bandas del 2026-09-08 (cortes 10/16/25/42) y a toda categoría de
+peso anterior. **Solo aplica a Clase = CAMION**; REMOLCADOR no se segmenta por peso.
+
+| Segmento | Rango | Unidades |
+|---|---|---|
+| LIGEROS | < 10 t | 104,841 |
+| MEDIANOS | 10 – <25 t | 56,018 |
+| PESADOS | 25 – <41 t | 44,784 |
+| SUPER PESADOS | ≥ 41 t | 16,685 |
+| SIN DATO DE PESO | (PBV inválido) | 1 |
+
+Ojo: esto NO tiene relación con las bandas del Eje 0 del Perfilador (núcleo por marca ±15%),
+que son otra cosa y conviven con esto.
+
+### 15.5 Ficha del Directorio — árbol nuevo
+
+Reemplaza al árbol actual (Clase → Año → Marca + banda + cantidad → placas).
+
+- **Nivel 1 —** hasta 5 grupos: los 4 segmentos de Camión con su rango de peso en el nombre
+  ("Camión — Pesados (25–41 t)") + **Remolcador** (sin banda, un click despliega todo). Se
+  muestran **solo los grupos donde el cliente tiene unidades**, nunca los 5 en seco. El grupo
+  "Camión — Sin dato de peso" aparece únicamente si el cliente tiene esa unidad (1 en toda la
+  base): nunca se mete a la fuerza en Ligeros.
+- **Nivel 2 —** Año.
+- **Nivel 3 —** fila agrupada por **Marca + Modelo + Carrocería + PBV**, con la **cantidad al
+  lado derecho**. Combinación idéntica → una fila con N. Cualquier diferencia en cualquiera de
+  los cuatro campos → filas separadas con 1 cada una. Carrocería vacía se muestra como
+  **SIN DATO**.
+- **Nivel 4 —** un click más: la grilla de placas, tal cual funciona hoy (commit `695bed1`).
+
+### 15.6 Perfilador — Eje 0: tolerancia de ±25% a ±15%
+
+Motivo: el usuario quiere listas más acotadas. `tolMin = núcleo_min × 0.85`,
+`tolMax = núcleo_max × 1.15`.
+
+| Marca | Clase | Núcleo | Banda ±25% (vieja) | **Banda ±15% (nueva)** |
+|---|---|---|---|---|
+| MAN / Dongfeng / FAW | Camión | 41,000–50,000 | 30,750–62,500 | **34,850–57,500** |
+| International | Camión | 30,000 (punto único) | 22,500–37,500 | **25,500–34,500** |
+| UD Trucks | Camión | 11,700–34,000 | 8,775–42,500 | **9,945–39,100** |
+| Volkswagen | Camión | 6,000–31,000 | 4,500–38,750 | **5,100–35,650** |
+| Todas | Tracto | sin banda | sin banda | sin banda |
+
+El núcleo de UD ya incluye el Quester/CWE de 34 t desde el commit `3163228` (sección 13) — no
+hay nada pendiente ahí.
+
+**Impacto medido antes de aprobarlo** (clientes elegibles, Camión):
+
+| Marca | ±25% | ±15% | Δ |
+|---|---|---|---|
+| MAN / Dongfeng / FAW | 12,843 | 8,517 | −33.7% |
+| International | 29,242 | 11,140 | −61.9% |
+| UD Trucks | 67,076 | 58,731 | −12.4% |
+| Volkswagen | 107,467 | 105,399 | −1.9% |
+
+**La ponderación núcleo-vs-tolerancia SE MANTIENE, pero suavizada.** El usuario propuso
+eliminarla (que la zona de tolerancia contara al 100%, ya que la banda es más angosta); se
+midió y la distorsión que la justificaba **sigue viva incluso a ±15%**: la tolerancia superior
+de MAN es 89% Chino contra un núcleo 59% Europeo; la tolerancia inferior de Volkswagen es 41%
+Chino + 28% Coreano contra un núcleo 44% Japonés; la inferior de UD es 60% Japonés contra un
+núcleo 46% Europeo. Decisión: conservarla pero subir el piso del decaimiento **de 30% a 60%**
+en el borde extremo, porque con la banda angosta el castigo doble era excesivo.
+
+```
+peso_unidad = 100% − (distancia_al_núcleo / ancho_de_la_zona_de_tolerancia) × 40%
+```
+
+### 15.7 Eje 1 — Recurrencia: CORRECCIÓN, no se toca
+
+**Durante la implementación se encontró que el diseño de esta subsección partía de una premisa
+equivocada.** Al discutirlo se describió el Eje 1 como "rampa lineal de antigüedad 0→5 años"
+(que es lo que dice la sección 6) y se acordó estirarla a 8. Pero la sección 6 quedó obsoleta el
+2026-08-08: la **sección 10** reemplazó esa rampa por
+`Recurrencia = 85% Frecuencia + 15% Recencia`, donde Frecuencia = cuántas unidades compró
+históricamente en la banda (tope en 5 unidades) y Recencia = qué tan reciente fue la última
+compra, **con ventana de 8 años ya desde entonces** (`calcularRecencia(unidades, ventana = 8)`).
+
+Ese cambio se hizo porque el backtest contra 293 ventas reales demostró que la rampa de
+antigüedad medía al revés: los compradores reales quedaban POR DEBAJO del promedio de su
+segmento (delta −22.5), porque un cliente con una sola unidad de 1988 marcaba 100 y uno que
+compra todos los años marcaba 20. Con la fórmula nueva el delta pasó a +48.9.
+
+**Decisión: el Eje 1 no se toca.** Volver a una rampa de antigüedad — aunque fuera de 8 años en
+vez de 5 — desharía un arreglo validado con datos reales. La ventana de recencia ya es de 8
+años, que era la intención del cambio pedido. Lo único que sí se movió es la **ventana del
+Paso 1 de Afinidad, de 6 a 8 años**, para que quede alineada con la Recencia del Eje 1 (ver
+15.8).
+
+### 15.8 Eje 2 — Afinidad: de cascada continua a niveles que no se pisan
+
+**El cambio de fondo de esta sesión.** Hoy la Afinidad es un solo número que sale de una cascada
+donde los anclajes de cada paso se solapan — de ahí el bug conocido de la sección 13 (un
+desconocido con flota mixta le ganaba a un dueño real de más de 5 años, 68.1 contra 60).
+
+Requisito del usuario, literal: *"quiero que a cada marca siempre en la parte de arriba salgan
+los clientes que tienen la marca × clase, luego los que son del bloque de origen de la marca,
+luego los de los bloques más lejanos"*. Eso no es una calibración, es un orden **lexicográfico**:
+primero el nivel, después el puntaje dentro del nivel. Los rangos se reparten sin solaparse, así
+que la regla queda garantizada por construcción y no por ajuste fino.
+
+| Nivel | Quién cae ahí | Rango | Qué ordena adentro |
+|---|---|---|---|
+| **N1** | Ya compró la marca (en esa clase) | 80–100 | Recencia (8 años) + participación de la marca en su flota |
+| **N2** | Mayoría de su flota en el bloque propio de la marca | 55–79 | % ponderado + bonificación de pivote |
+| **N3** | Flota en bloques más lejanos | 20–54 | Escalera de distancia (15.9) + bonificación de pivote |
+| **N4** | Fiel a un competidor puntual | 0–19 | Qué tan concentrado |
+| **N5** | Sin flota en la banda | sin score | Tamaño de cuenta |
+
+**Cambios por paso respecto de la sección 6:**
+
+- **Paso 0 (guardia).** Ya no da 50 neutro. Un 50 caía justo en medio del nivel de bloque, o sea
+  que un cliente **sin ninguna unidad relevante** quedaba por encima de un cliente real de la
+  competencia (que saca 10-30): premiaba la ausencia de información. Ahora esos clientes van al
+  **N5, al fondo**, con un switch para ocultarlos. Tampoco tienen Recurrencia calculable: no hay
+  ninguna compra en la banda que fechar.
+- **Paso 1 (ya es cliente).** El piso sube de 60 a **80** (piso de N1):
+  `score = 80 + factorRecencia × 20`, con `factorRecencia = max(0, 1 − años/8)`. Un dueño de hace
+  8 años saca 80 y **nunca puede ser alcanzado por un no-dueño**. Además el descuento por
+  concentración de marca ajena (sección 12) pasa a aplicarse **también dentro de N1**, acotado
+  para que nunca saque al cliente del nivel: así el que tiene 1 MAN y 20 Volvos cae al piso de
+  N1, debajo del que tiene 5 MAN y nada más. **Esto resuelve el pendiente viejo del caso
+  Supermix/Transaltisa** (Paso 1 sin crédito por volumen), abierto desde el 2026-08-08.
+- **Paso 2 (monomarca de competidor).** Sin cambios de fórmula. Queda explícito que la cascada
+  corta antes: un cliente que compró la marca aunque sea una vez entra a N1 y **nunca llega al
+  Paso 2** — intencional bajo la regla nueva, y compensado por el descuento dentro de N1.
+- **Paso 3 (pivote).** **Deja de ser un nivel propio y pasa a ser bonificación** dentro de N2/N3:
+  el que pivoteó hacia el bloque compatible sube dentro de su grupo, el que pivoteó en contra
+  baja, sin cambiar de grupo. **Esto resuelve el pendiente #3** (desde el rediseño del 2026-08-11
+  el pivote y el descuento por concentración compartían la señal `distanciaOrigen` y contaban dos
+  veces lo mismo).
+- **Paso 4 (bloque de origen).** Conceptualmente intacto: la tabla `DISTANCIA_ORIGEN` del commit
+  `96f1467` ya hacía exactamente lo que pedía el usuario. Lo único que cambia es que su salida se
+  comprime dentro de N2/N3 en vez de competir de igual a igual con N1, y que la escalera se
+  reduce a 3 peldaños (15.9).
+- **Paso 0.5 (amortiguador de confianza).** **Se elimina como amortiguador de score.** Empujar
+  hacia 50 sacaba a un cliente de N1 con 1 unidad y lo dejaba en medio de N3, contradiciendo
+  directamente la regla principal. Se reemplaza por una **etiqueta de confianza visible**
+  ("1 unidad — señal débil") que además funciona como desempate: a igual score, primero el que
+  tiene más unidades.
+
+### 15.9 Escalera de bloques — 3 peldaños, simétrica
+
+El usuario cerró que Coreano va junto a Europeo/Americano/Japonés (no es un peldaño intermedio),
+y que la escalera es **simétrica** (la distancia premium→chino es la misma que chino→premium).
+
+| | Marca premium (MAN, VW, International, UD) | Marca china (Dongfeng, FAW) |
+|---|---|---|
+| Cerca | Bloque propio — 85 | Chino — 85 |
+| Medio | Resto premium: Europeo, Americano, Japonés, Coreano — 70 | Otro (chinas de bajo costo) — 70 |
+| Lejos | Chino + Otro — 45 | Todo el bloque premium — 45 |
+
+**Corrección respecto de la tabla vieja:** el bloque `OTRO` deja de contar como premium. Se
+verificó que son marcas chinas de bajo costo mal clasificadas (KYC 379, Kama 283, Sitom 267,
+Strong 143, Autocraft 123) — 1,614 unidades que estaban en el escalón "resto = 70" al lado de
+Volvo y Freightliner.
+
+Composición real de cada bloque en la base (para futuras discusiones): EUROPEO 80,105 (Volvo
+47k, Mercedes 13k, Scania 11k, VW 5.9k, Iveco 2k) · JAPONES 76,163 (Fuso 27k, Isuzu 21k, Hino
+21k, Nissan 4.4k) · CHINO 53,860 (Foton 10k, JAC 10k, Sinotruk 7k, Dongfeng 6k, Shacman 3.6k) ·
+AMERICANO 39,597 (International 15k, Freightliner 11k, Kenworth 3.9k, Mack 3k) · COREANO 34,293
+(Hyundai 28.6k, Kia 5.6k) · OTRO 1,614.
+
+**Recencia dentro del bloque:** el porcentaje de bloque ya se calcula ponderado por recencia
+desde el diseño original, así que un cliente con 3 Volvo del 2024 y 3 Foton del 2012 pesa
+mayoritariamente como europeo — la pregunta del usuario sobre "si los Volvo son nuevos y los
+Foton antiguos" ya estaba resuelta. Se agrega mostrar en la ficha el **año de la última compra
+por bloque**, para que el asesor pueda auditar de dónde salió la clasificación.
+
+**Regla de corte N2 vs N3:** por **mayoría del peso ponderado**. Si más del 50% de la flota
+ponderada del cliente está en el bloque propio de la marca → N2; si no → N3. Se eligió sobre la
+alternativa de cortar por puntaje (ej. ≥75) porque es la regla que el asesor puede explicar en
+voz alta: "la mayoría de su flota es europea".
+
+### 15.10 Clientes de 1, 2 y 3 unidades — piso de evidencia
+
+Importa porque **ahí está el 96.6% de los clientes** (Retail 1-5 unidades). Al eliminar el
+amortiguador aparece un hueco: un cliente con 1 sola unidad Volvo tiene 100% de concentración en
+Volvo, y el descuento por concentración lo mandaría a N4 "fiel a un competidor" — absurdo, con
+una unidad no hay fidelidad, hay una compra. Antes eso lo tapaba el amortiguador.
+
+**Regla nueva:** para caer en N4 hacen falta **mínimo 3 unidades** en la banda. Con 1 o 2 no hay
+patrón que medir. El descuento por concentración también se aplica solo desde 3 unidades.
+
+| Unidades en la banda | ¿Tiene la marca? | Destino |
+|---|---|---|
+| 0 | — | N5, al fondo, sin score |
+| 1–2 | Sí | **N1** (es cliente real, solo que chico) |
+| 1–2 | No | **N3** por su bloque. Nunca N4 |
+| 3+ | Sí | N1, ordenado por recencia + participación |
+| 3+ | No | N2 / N3 / N4 según su patrón |
+
+Efecto práctico: un cliente con 1 MAN comprado el año pasado hoy sale con Afinidad 50 (el
+amortiguador lo aplasta) y queda enterrado; con el diseño nuevo sube a N1 — que es justo el
+cliente que ya compró uno y puede comprar el segundo. El badge de Tamaño de cuenta (Retail /
+Medium / Big / Mega Fish, sección 6) sigue ahí para que el asesor pese si le conviene ir.
+
+### 15.11 Presentación de resultados — lista agrupada, no plana
+
+`Score final = Urgencia × Afinidad` se mantiene, pero **deja de ser el orden de primer nivel**:
+por sí solo hundía a un dueño de la marca con urgencia baja, contradiciendo la regla principal.
+
+La lista de resultados sale **partida en secciones visibles** — "Ya son clientes MAN" / "Bloque
+europeo" / "Bloques lejanos" / "Fieles a un competidor" / "Sin flota en la banda" — y **dentro de
+cada sección** se ordena por Score final. Así el nivel manda en la estructura y la urgencia
+decide a quién llamar primero dentro del grupo. Los reordenamientos por solo Afinidad o solo
+Urgencia se mantienen como están.
+
+### 15.12 Ficha del cliente en el Perfilador
+
+Mismo árbol que el Directorio pero **sin el nivel de segmento de peso** (la lista ya viene
+filtrada por la banda de la marca): **Año → Marca + Modelo + Carrocería + PBV + bloque de origen
++ cantidad → click → placa(s)**. Se conservan el PBV y el bloque de origen, que es el dato del
+que depende el score y sin el cual la ficha no sirve para auditar.
+
+### 15.13 Limitación aceptada a conciencia: dueños fuera de su propia banda
+
+Al cerrar a ±15% se midió cuántos dueños de cada marca quedan fuera de la banda de esa marca
+(Camión): **Dongfeng 3,874 de 4,157 (93%)**, International 754 de 1,188, FAW 552 de 1,227, MAN 26
+de 76, Volkswagen 52 de 2,594, UD 4 de 454. El caso Dongfeng es extremo porque su banda es la
+línea volquete de 41-50 t mientras casi toda su flota en Perú es liviana.
+
+Se le planteó al usuario separar las dos preguntas (propiedad de la marca sobre toda la clase,
+análisis de bloque dentro de la banda). **Decisión: no separarlas — todo se sigue evaluando
+marca × clase dentro de la banda.** Queda como limitación conocida y documentada: un dueño de
+Dongfeng liviano no aparecerá arriba cuando se filtre Dongfeng-Camión.
+
+### 15.14 Plan de implementación
+
+1. ~~Recalcular bandas de peso y normalizar Carrocería~~ — **hecho**, ver 15.1 a 15.4.
+2. Clonar `Puchulungo/cidatt-tcp-sur` desde GitHub. La copia local en `04_App_Web_Fuente/` es del
+   2026-08-06 y está atrasada (sus shards ni siquiera traen `origen`). **El repo se lee sin token**
+   (probado: HEAD = `3163228`, el último commit del 2026-08-11); el token solo hace falta para el
+   push.
+3. Regenerar `data/perfilador/*.json` desde `CIDATT_2026_BASE_SITIO.xlsx`, sumando `modelo`,
+   `carroceria`, `carroceria_grupo` y `categoria_peso` a lo que ya traen.
+4. `directorio.html`: árbol nuevo de la ficha (15.5).
+5. `perfilador.html`: Eje 0 a ±15% con decaimiento 60%, Eje 1 a 8 años, Eje 2 por niveles,
+   escalera de 3 peldaños, piso de evidencia de 3 unidades, lista agrupada, ficha nueva.
+6. Backtest — ver abajo.
+
+### 15.15 Cómo se va a rehacer el backtest
+
+**La métrica vieja ya no sirve.** El backtest multianual (sección propia, `BACKTEST_MULTIANIO_
+2019_2026.md`) medía "los compradores reales puntúan por encima del promedio de su segmento",
+que es la pregunta correcta para un score continuo. El sistema nuevo es un **ordenamiento por
+grupos**, así que la pregunta pasa a ser: **¿en qué grupo cae el comprador real?**
+
+Métricas nuevas: (a) % de compradores reales que aparecen en N1 y N2 (recall por nivel);
+(b) cuántos clientes tiene que recorrer el asesor para llegar a ellos, contra una lista al azar
+(lift); (c) comparación motor viejo vs. motor nuevo sobre los mismos 7 pares de años.
+
+Data: los 8 snapshots estandarizados están en `02_Datos_CIDATT/Estandar/CIDATT_Estandar_<año>.
+xlsx` (2018-2026); los crudos originales en `00_Archivo_Historico/CIDATT/BBDD <mes> <año>/`.
+El proxy de compra sigue siendo "placa nueva por RUC entre dos snapshots consecutivos".
+**El puerto Python del motor ya no está en disco** — hay que rehacerlo (es mecánico: se porta
+1:1 desde `perfilador.html`, como se hizo la primera vez).

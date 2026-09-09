@@ -286,6 +286,59 @@
     color: var(--text-muted);
     margin-left: 6px;
   }
+
+  /* --- secciones por nivel de afinidad (2026-09-09) --- */
+  .nivel-section { margin-bottom: 18px; }
+  .nivel-header {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 9px 12px; border-radius: 6px 6px 0 0;
+    background: var(--surface); border: 1px solid var(--border); border-bottom: none;
+  }
+  .nivel-titulo { font-size: 12px; font-weight: 600; letter-spacing: 0.03em; }
+  .nivel-n1 .nivel-titulo { color: #4ade80; }
+  .nivel-n2 .nivel-titulo { color: #60a5fa; }
+  .nivel-n3 .nivel-titulo { color: #fbbf24; }
+  .nivel-n4 .nivel-titulo { color: #f87171; }
+  .nivel-n5 .nivel-titulo { color: var(--text-muted); }
+  .nivel-sub { font-size: 10px; color: var(--text-muted); }
+  .nivel-count {
+    margin-left: auto; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--text-muted);
+  }
+  .ver-mas {
+    display: block; width: 100%; padding: 8px; margin-top: 2px;
+    background: var(--surface); border: 1px dashed var(--border); border-radius: 0 0 6px 6px;
+    color: var(--steel); font-size: 11px; font-family: inherit; cursor: pointer;
+  }
+  .ver-mas:hover { background: var(--surface2); color: var(--text); }
+  .conf-tag {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    color: #fbbf24; border: 1px solid rgba(251,191,36,0.35);
+    border-radius: 3px; padding: 1px 5px; margin-left: 6px;
+  }
+  /* --- ficha del cliente: anio -> marca+modelo+carroceria+pbv -> placas --- */
+  .ficha-anio {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 9px 8px 5px; margin-top: 6px;
+    border-top: 1px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text);
+  }
+  .ficha-anio span:last-child { color: var(--text-muted); font-size: 10px; }
+  .ficha-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    padding: 5px 8px 5px 16px; font-size: 12px; color: var(--steel);
+    border-top: 1px solid rgba(148,163,184,0.06); cursor: pointer;
+  }
+  .ficha-row:hover { background: rgba(148,163,184,0.05); }
+  .ficha-row-count { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text); }
+  .ficha-placas { display: none; padding: 6px 8px 8px 16px; gap: 4px; flex-wrap: wrap; }
+  .ficha-placas.open { display: flex; }
+  .placa-chip {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    background: var(--navy); border: 1px solid var(--border);
+    border-radius: 3px; padding: 2px 6px; color: var(--steel);
+  }
+
   .explica-box {
     background: var(--navy);
     border: 1px solid var(--border);
@@ -465,28 +518,28 @@
    ============================================================ */
 const BANDAS = {
   'MAN': {
-    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 30750, tolMax: 62500, bloque: 'EUROPEO' },
+    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 34850, tolMax: 57500, bloque: 'EUROPEO' },
     REMOLCADOR: { bloque: 'EUROPEO' },
   },
   'DONGFENG': {
-    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 30750, tolMax: 62500, bloque: 'CHINO' },
+    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 34850, tolMax: 57500, bloque: 'CHINO' },
     REMOLCADOR: { bloque: 'CHINO' },
   },
   'FAW': {
-    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 30750, tolMax: 62500, bloque: 'CHINO' },
+    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 34850, tolMax: 57500, bloque: 'CHINO' },
     REMOLCADOR: { bloque: 'CHINO' },
   },
   'INTERNATIONAL': {
-    CAMION:     { nucleoMin: 30000, nucleoMax: 30000, tolMin: 22500, tolMax: 37500, bloque: 'AMERICANO' },
+    CAMION:     { nucleoMin: 30000, nucleoMax: 30000, tolMin: 25500, tolMax: 34500, bloque: 'AMERICANO' },
     REMOLCADOR: { bloque: 'AMERICANO' },
   },
   'UD TRUCKS': {
     // Nucleo ampliado 2026-08-11 (sesion 2): MKE 11.7t, LKE 14.5t, PKE 18.5t, Quester/CWE 34t
-    // (nuevo en stock). Tolerancia +-25% igual que el resto de marcas.
-    CAMION:     { nucleoMin: 11700, nucleoMax: 34000, tolMin: 8775, tolMax: 42500, bloque: 'JAPONES' },
+    // (nuevo en stock). Tolerancia +-15% (2026-09-09, seccion 15.6: antes +-25%).
+    CAMION:     { nucleoMin: 11700, nucleoMax: 34000, tolMin: 9945, tolMax: 39100, bloque: 'JAPONES' },
   },
   'VOLKSWAGEN': {
-    CAMION:     { nucleoMin: 6000, nucleoMax: 31000, tolMin: 4500, tolMax: 38750, bloque: 'EUROPEO' },
+    CAMION:     { nucleoMin: 6000, nucleoMax: 31000, tolMin: 5100, tolMax: 35650, bloque: 'EUROPEO' },
   },
 };
 const MARCA_LABELS = {
@@ -507,14 +560,38 @@ const CLASE_LABELS = { CAMION: 'Camión (volquete)', REMOLCADOR: 'Tractocamión 
 // para Dongfeng/FAW, que SON la marca económica, así que ahí Chino es lo cercano y todo lo demás
 // queda lejos por igual. Nunca baja de 50 a propósito (ver Paso 1: mismo criterio de no aplastar
 // a neutral puro ni más abajo).
+// Escalera de 3 peldanos (2026-09-09, seccion 15.9). Cambios respecto de la tabla de agosto:
+// COREANO sube al peldano medio junto a Europeo/Americano/Japones (antes ya estaba ahi, pero la
+// escalera tenia 4 escalones efectivos), el peldano lejano baja de 50 a 45, y OTRO deja de ser
+// premium: se verifico en la base que son marcas chinas de bajo costo mal clasificadas (KYC 379,
+// Kama 283, Sitom 267, Strong 143, Autocraft 123 -- 1,614 unidades que estaban al lado de Volvo
+// y Freightliner en el escalon "resto"). Para Dongfeng/FAW, OTRO pasa al peldano medio por el
+// mismo motivo: es su propio mercado de precio. La escalera es simetrica: la distancia
+// premium->chino es la misma que chino->premium.
 const DISTANCIA_ORIGEN = {
-  'MAN':           { EUROPEO: 85, AMERICANO: 70, JAPONES: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
-  'VOLKSWAGEN':    { EUROPEO: 85, AMERICANO: 70, JAPONES: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
-  'INTERNATIONAL': { AMERICANO: 85, EUROPEO: 70, JAPONES: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
-  'UD TRUCKS':     { JAPONES: 85, EUROPEO: 70, AMERICANO: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
-  'DONGFENG':      { CHINO: 85, EUROPEO: 50, AMERICANO: 50, JAPONES: 50, COREANO: 50, OTRO: 50 },
-  'FAW':           { CHINO: 85, EUROPEO: 50, AMERICANO: 50, JAPONES: 50, COREANO: 50, OTRO: 50 },
+  'MAN':           { EUROPEO: 85, AMERICANO: 70, JAPONES: 70, COREANO: 70, CHINO: 45, OTRO: 45 },
+  'VOLKSWAGEN':    { EUROPEO: 85, AMERICANO: 70, JAPONES: 70, COREANO: 70, CHINO: 45, OTRO: 45 },
+  'INTERNATIONAL': { AMERICANO: 85, EUROPEO: 70, JAPONES: 70, COREANO: 70, CHINO: 45, OTRO: 45 },
+  'UD TRUCKS':     { JAPONES: 85, EUROPEO: 70, AMERICANO: 70, COREANO: 70, CHINO: 45, OTRO: 45 },
+  'DONGFENG':      { CHINO: 85, OTRO: 70, EUROPEO: 45, AMERICANO: 45, JAPONES: 45, COREANO: 45 },
+  'FAW':           { CHINO: 85, OTRO: 70, EUROPEO: 45, AMERICANO: 45, JAPONES: 45, COREANO: 45 },
 };
+const DIST_MIN = 0.45, DIST_MAX = 0.85;
+
+// Niveles de Afinidad (2026-09-09, seccion 15.8). Rangos que NO se solapan: el nivel manda
+// sobre el puntaje, asi un cliente de un nivel inferior nunca puede superar a uno de arriba.
+const NIVELES = {
+  1: { titulo: 'Ya son clientes de {MARCA}',  sub: 'compraron la marca en esta clase',                 min: 80, max: 100 },
+  2: { titulo: 'Bloque de origen de {MARCA}', sub: 'la mayoria de su flota es del bloque de la marca', min: 55, max: 79  },
+  3: { titulo: 'Bloques mas lejanos',         sub: 'su flota esta en bloques distintos',               min: 20, max: 54  },
+  4: { titulo: 'Fieles a un competidor',      sub: '80% o mas de su flota en una sola marca rival',    min: 0,  max: 19  },
+  5: { titulo: 'Sin flota en la banda',       sub: 'no tienen unidades en el rango de peso de la marca', min: null, max: null },
+};
+const MIN_UNIDADES_PATRON = 3;   // piso de evidencia: con 1-2 unidades no se mide fidelidad
+const UMBRAL_MONOMARCA    = 80;  // % de una sola marca rival para caer en N4
+const VENTANA_RECENCIA    = 8;   // anios, alineada con la Recencia del Eje 1
+const BONIF_PIVOTE        = 0.15;// el pivote mueve dentro del nivel, nunca cambia de nivel
+
 function distanciaOrigen(marcaEvaluada, origen) {
   const tabla = DISTANCIA_ORIGEN[marcaEvaluada];
   if (!tabla) return 50;
@@ -739,7 +816,11 @@ function unidadesElegibles(vehiculos, clase, banda) {
   });
 }
 
-// Peso ponderado por unidad para Eje 2 (nucleo=100%, decae lineal a 30% en el borde de tolerancia).
+// Peso ponderado por unidad para Eje 2 (nucleo=100%, decae lineal a 60% en el borde de
+// tolerancia). 2026-09-09: el piso sube de 30% a 60% porque la banda se cerro a +-15% y el
+// castigo doble era excesivo. Se midio que los bordes SIGUEN siendo otro mercado incluso a
+// +-15% (tolerancia superior de MAN: 89% Chino contra un nucleo 59% Europeo), por eso la
+// ponderacion se mantiene en vez de eliminarse.
 function pesoEje2(v, banda) {
   if (!banda.nucleoMin) return 1; // Tracto: sin nucleo/tolerancia, todo pesa igual
   const p = v.peso_bruto;
@@ -748,12 +829,12 @@ function pesoEje2(v, banda) {
     const ancho = banda.nucleoMin - banda.tolMin;
     if (ancho <= 0) return 1;
     const dist = banda.nucleoMin - p;
-    return Math.max(0.3, 1 - (dist / ancho) * 0.7);
+    return Math.max(0.6, 1 - (dist / ancho) * 0.4);
   }
   const ancho = banda.tolMax - banda.nucleoMax;
   if (ancho <= 0) return 1;
   const dist = p - banda.nucleoMax;
-  return Math.max(0.3, 1 - (dist / ancho) * 0.7);
+  return Math.max(0.6, 1 - (dist / ancho) * 0.4);
 }
 
 // Eje 1: Recurrencia — Frecuencia (85%: cuantas unidades compro historicamente en esta
@@ -786,119 +867,125 @@ function calcularUrgencia(unidades) {
   return Math.round((0.85 * frecuencia + 0.15 * recencia) * 10) / 10;
 }
 
-// Amortiguador de confianza generico: 1 unidad -> 0% confianza (score->50), 4+ -> 100% confianza.
-function amortiguar(scoreCalculado, nUnidades, techo) {
-  const confianza = Math.min(1, Math.max(0, (nUnidades - 1) / (techo - 1)));
-  return 50 + confianza * (scoreCalculado - 50);
-}
-
-// Eje 2: cascada de Afinidad. Devuelve { score, motivo }.
+// Eje 2: Afinidad por NIVELES (2026-09-09, seccion 15.8 del AVANCE).
+// Antes era una cascada continua donde los anclajes de cada paso se pisaban entre si -- de ahi
+// el bug conocido de la seccion 13 (un desconocido con flota mixta le ganaba a un dueno real de
+// mas de 5 anios: 68.1 contra 60). Ahora cada nivel tiene su propio rango cerrado, asi que el
+// orden "primero los que ya tienen la marca, luego el bloque propio, luego los lejanos" queda
+// garantizado por construccion y no por calibracion fina.
+// Devuelve { nivel, score, motivo, nUnidades }.
 function calcularAfinidad(unidades, marcaEvaluada, banda) {
-  // Paso 0 (guardia)
-  if (unidades.length === 0) {
-    return { score: 50, motivo: 'Sin historial en esta banda' };
+  const label = MARCA_LABELS[marcaEvaluada] || marcaEvaluada;
+  const n = unidades.length;
+
+  // --- N5: sin unidades en la banda. Antes devolvia 50 neutro, que caia justo en medio del
+  // nivel de bloque: un cliente SIN ninguna unidad relevante quedaba por encima de un cliente
+  // real de la competencia. Ahora va al fondo, sin score.
+  if (n === 0) {
+    return { nivel: 5, score: null, motivo: 'No tiene unidades en el rango de peso de ' + label, nUnidades: 0 };
   }
 
-  // pesos por unidad (nucleo/tolerancia) para pasos 2 y 4
   const pesos = unidades.map(v => pesoEje2(v, banda));
-  const pesoTotal = pesos.reduce((a, b) => a + b, 0);
+  const pesoTotal = pesos.reduce((a, b) => a + b, 0) || 1;
 
-  // ordenar cronologicamente para Paso 3 (pivote)
-  const ordenadas = unidades
-    .map((v, i) => ({ ...v, _peso: pesos[i] }))
-    .filter(v => typeof v.anio === 'number')
-    .sort((a, b) => a.anio - b.anio || (a.placa || '').localeCompare(b.placa || ''));
+  // Concentracion de la marca dominante que NO es la evaluada.
+  const porMarcaAjena = {};
+  unidades.forEach((v, i) => {
+    if (v.marca !== marcaEvaluada) porMarcaAjena[v.marca] = (porMarcaAjena[v.marca] || 0) + pesos[i];
+  });
+  const dom = Object.entries(porMarcaAjena).sort((a, b) => b[1] - a[1])[0];
+  const marcaDominante = dom ? dom[0] : null;
+  const pctDominante = dom ? (dom[1] / pesoTotal) * 100 : 0;
 
-  // Paso 1: ¿ya es cliente nuestro? Es un hecho directo (compró o no compró la marca),
-  // no una inferencia estadística como los pasos 2-4 -- por eso NO pasa por el amortiguador
-  // de confianza (antes, con 1 sola unidad, se aplastaba a 50 sin importar la señal real).
-  // Piso en 60 (no 50): una compra vieja de la marca sigue siendo informacion positiva,
-  // nunca cae a neutral puro. Techo en 95 si la compra fue muy reciente.
+  // Piso de evidencia: con 1 o 2 unidades no hay patron que medir. Sin esto, un cliente con
+  // una sola unidad Volvo tendria 100% de "concentracion" y caeria en N4 como si fuera fiel a
+  // un competidor -- con una unidad no hay fidelidad, hay una compra.
+  const hayEvidencia = n >= MIN_UNIDADES_PATRON;
+  const PISO_CONC = 33, TECHO_CONC = 90, FLOOR_PEN = 0.85;
+  const factorConc = hayEvidencia
+    ? Math.min(1, Math.max(0, (pctDominante - PISO_CONC) / (TECHO_CONC - PISO_CONC))) : 0;
+  const penalizacion = 1 - factorConc * FLOOR_PEN;
+  const notaConc = (hayEvidencia && pctDominante >= PISO_CONC)
+    ? ' · ' + Math.round(pctDominante) + '% de su flota en la banda es ' + marcaDominante + ', se descuenta' : '';
+  const notaDebil = hayEvidencia ? '' : ' · solo ' + n + ' unidad' + (n !== 1 ? 'es' : '') + ' en la banda, senal debil';
+
+  // --- N1: ya compro la marca. Piso 80: ningun no-dueno puede alcanzarlo.
   const propias = unidades.filter(v => v.marca === marcaEvaluada);
   if (propias.length > 0) {
     const conAnio = propias.filter(v => typeof v.anio === 'number');
     const anioReciente = conAnio.length ? Math.max(...conAnio.map(v => v.anio)) : null;
-    const anios = anioReciente !== null ? Math.max(0, ANIO_ACTUAL - anioReciente) : 6;
-    const factorRecencia = Math.max(0, 1 - anios / 6); // ventana 6 anios (antes 5), 2026-08-11 sesion 2
-    const scoreBruto = 60 + factorRecencia * (95 - 60);
-    const motivo = `Ya compró ${MARCA_LABELS[marcaEvaluada] || marcaEvaluada} (última hace ${anios} año${anios !== 1 ? 's' : ''})`;
-    return { score: Math.round(scoreBruto * 10) / 10, motivo };
+    const anios = anioReciente !== null ? Math.max(0, ANIO_ACTUAL - anioReciente) : VENTANA_RECENCIA;
+    const factorRecencia = Math.max(0, 1 - anios / VENTANA_RECENCIA);
+    // El descuento por concentracion ajena tambien se aplica aca (acotado al nivel): asi el que
+    // tiene 1 unidad de la marca y 20 de un rival cae al piso de N1, debajo del que tiene 5 de
+    // la marca y nada mas. Esto resuelve el caso Supermix/Transaltisa (Paso 1 sin crédito por volumen).
+    const pos = Math.max(0, Math.min(1, factorRecencia * penalizacion));
+    const nv = NIVELES[1];
+    return {
+      nivel: 1,
+      score: Math.round((nv.min + pos * (nv.max - nv.min)) * 10) / 10,
+      motivo: 'Ya compro ' + label + ': ' + propias.length + ' unidad' + (propias.length !== 1 ? 'es' : '') +
+              ', ultima hace ' + anios + ' anio' + (anios !== 1 ? 's' : '') + notaConc,
+      nUnidades: n,
+    };
   }
 
-  let scoreBruto, motivo;
-  {
-    // Paso 3: pivote (2026-08-11, rediseñado a nivel de DISTANCIA por marca en vez de bloque
-    // binario). Antes: 'C' solo si origen===banda.bloque exacto, 'N' cualquier otra cosa por
-    // igual -- eso hacía que Servosa (100% Chino) evaluado para MAN nunca disparara pivote
-    // real y Zuñiga (89% Volvo + 1 Kenworth) disparara un pivote "positivo" artificialmente
-    // alto. Ahora 'C' = distancia >= 70% (bloque propio o "resto" cercano), 'N' = distancia
-    // más baja (Chino para marcas premium, todo-menos-Chino para Dongfeng/FAW).
-    const labels = ordenadas.map(v => distanciaOrigen(marcaEvaluada, v.origen) >= 0.7 ? 'C' : 'N');
-    let pivote = null;
-    if (labels.length > 0) {
-      const labelFinal = labels[labels.length - 1];
-      let magnitud = 0;
-      for (let i = labels.length - 1; i >= 0; i--) {
-        if (labels[i] === labelFinal) magnitud++;
-        else break;
-      }
-      const hayQuiebre = magnitud < labels.length; // hubo al menos 1 distinto antes
-      if (hayQuiebre) {
-        const confianzaPivote = Math.min(1, Math.max(0, (magnitud - 1) / (3 - 1)));
-        if (labelFinal === 'C') {
-          scoreBruto = 50 + confianzaPivote * (85 - 50);
-          motivo = `Pivote positivo: volvió a comprar ${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
-        } else {
-          scoreBruto = 50 + confianzaPivote * (30 - 50);
-          motivo = `Pivote espejo: se pasó a un bloque no-${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
-        }
-        pivote = true;
-      }
-    }
+  // --- N4: fiel a un competidor puntual (requiere evidencia real).
+  if (hayEvidencia && pctDominante >= UMBRAL_MONOMARCA) {
+    const f = Math.min(1, (pctDominante - UMBRAL_MONOMARCA) / (100 - UMBRAL_MONOMARCA));
+    const nv = NIVELES[4];
+    return {
+      nivel: 4,
+      score: Math.round((nv.max - f * (nv.max - nv.min)) * 10) / 10,
+      motivo: 'Fiel a ' + marcaDominante + ': ' + Math.round(pctDominante) + '% de sus ' + n + ' unidades en la banda',
+      nUnidades: n,
+    };
+  }
 
-    if (!pivote) {
-      // Paso 4: distancia de origen ponderada por marca evaluada (antes: bloque binario 100/0)
-      const pesoCompatible = unidades.reduce((s, v, i) => s + pesos[i] * distanciaOrigen(marcaEvaluada, v.origen), 0);
-      scoreBruto = pesoTotal > 0 ? (pesoCompatible / pesoTotal) * 100 : 50;
-      motivo = `${Math.round(scoreBruto)}% ponderado por cercanía de origen a ${MARCA_LABELS[marcaEvaluada] || marcaEvaluada}`;
-    }
+  // --- Distancia ponderada por bloque de origen y share del bloque propio.
+  const distPond = unidades.reduce((s, v, i) => s + pesos[i] * distanciaOrigen(marcaEvaluada, v.origen), 0) / pesoTotal;
+  const pesoPropio = unidades.reduce((s, v, i) => s + (v.origen === banda.bloque ? pesos[i] : 0), 0);
+  const pctBloquePropio = (pesoPropio / pesoTotal) * 100;
 
-    // Paso 2 (rediseñado, 2026-08-11): antes exigía monomarca >=80% de una sola marca para
-    // castigar con score fijo 10; el corte binario dejaba pasar "duopolios" de competidores
-    // (2 marcas rivales sin tocar la evaluada, ej. Volvo+Mercedes) con score pleno de bloque,
-    // y generaba un salto abrupto en el borde del 80% (78% de concentración = score ~100,
-    // 81% = score 10). Casos reales que expusieron esto: Grupo TTN, Pilars, Piscocalla,
-    // Olimpus, Transportes Zuñiga (backtest manual del usuario, 2026-08-11).
-    // Ahora: se calcula la concentración ponderada de la marca dominante que NO es la
-    // evaluada (a esta altura de la cascada, la evaluada ya tiene 0 unidades — Paso 1 la
-    // habría capturado antes) y se aplica como descuento CONTINUO sobre el score de Paso 3/4,
-    // en vez de un corte binario. Se aplica también sobre el resultado del pivote (no solo
-    // sobre el bloque de Paso 4) porque el pivote puede esconder el mismo problema: un cliente
-    // monomarca de una marca rival con una sola unidad vieja de otro bloque como "excepción"
-    // dispara un pivote positivo con score alto, cuando en realidad sigue siendo fiel a un
-    // único competidor (caso real: Transportes Zuñiga, 89% Volvo con 1 Kenworth de excepción).
-    const porMarca = {};
-    unidades.forEach((v, i) => { porMarca[v.marca] = (porMarca[v.marca] || 0) + pesos[i]; });
-    const marcaDominante = Object.entries(porMarca).sort((a, b) => b[1] - a[1])[0];
-    const pctDominante = pesoTotal > 0 && marcaDominante ? (marcaDominante[1] / pesoTotal) * 100 : 0;
-
-    // Anclajes (calibrados a mano contra 6 casos reales, 2026-08-11): piso 33% = reparto
-    // entre 3+ marcas sin dominancia clara, sin penalizar; techo 90% = prácticamente
-    // monomarca, penalización casi máxima; floor 0.85 = nunca descuenta más del 85% del
-    // score (deja un piso de ~15% del valor original, no lo anula del todo).
-    const PISO_CONCENTRACION = 33, TECHO_CONCENTRACION = 90, FLOOR_PENALIZACION = 0.85;
-    const factorConcentracion = Math.min(1, Math.max(0,
-      (pctDominante - PISO_CONCENTRACION) / (TECHO_CONCENTRACION - PISO_CONCENTRACION)));
-    const penalizacionConcentracion = 1 - factorConcentracion * FLOOR_PENALIZACION;
-
-    if (pctDominante >= PISO_CONCENTRACION) {
-      scoreBruto = scoreBruto * penalizacionConcentracion;
-      motivo += ` (${Math.round(pctDominante)}% de su flota en esta banda es ${marcaDominante[0]}, se descuenta)`;
+  // --- Pivote: ya NO es un nivel propio, es una bonificacion DENTRO del nivel (seccion 15.8).
+  // Antes compartia la senal `distanciaOrigen` con el descuento por concentracion y contaba dos
+  // veces lo mismo; como bonificacion mueve al cliente dentro de su grupo sin sacarlo de el.
+  const ordenadas = unidades
+    .filter(v => typeof v.anio === 'number')
+    .sort((a, b) => a.anio - b.anio || (a.placa || '').localeCompare(b.placa || ''));
+  const labels = ordenadas.map(v => distanciaOrigen(marcaEvaluada, v.origen) >= 0.7 ? 'C' : 'N');
+  let ajustePivote = 0, notaPivote = '';
+  if (labels.length > 0) {
+    const labelFinal = labels[labels.length - 1];
+    let magnitud = 0;
+    for (let i = labels.length - 1; i >= 0; i--) { if (labels[i] === labelFinal) magnitud++; else break; }
+    if (magnitud < labels.length) { // hubo un quiebre antes
+      const confianzaPivote = Math.min(1, Math.max(0, (magnitud - 1) / (3 - 1)));
+      ajustePivote = (labelFinal === 'C' ? 1 : -1) * confianzaPivote * BONIF_PIVOTE;
+      notaPivote = labelFinal === 'C'
+        ? ' · pivote a favor: sus ultimas ' + magnitud + ' compras volvieron al bloque cercano'
+        : ' · pivote en contra: sus ultimas ' + magnitud + ' compras se alejaron del bloque';
     }
   }
 
-  const scoreFinal = amortiguar(scoreBruto, unidades.length, 4);
-  return { score: Math.round(scoreFinal * 10) / 10, motivo };
+  // Posicion normalizada 0..1 dentro del nivel, y mapeo al rango del nivel.
+  let pos = (distPond - DIST_MIN) / (DIST_MAX - DIST_MIN);
+  pos = Math.max(0, Math.min(1, pos)) * penalizacion;
+  pos = Math.max(0, Math.min(1, pos + ajustePivote));
+
+  const nivel = pctBloquePropio > 50 ? 2 : 3;
+  const nv = NIVELES[nivel];
+  const motivo = (nivel === 2
+      ? Math.round(pctBloquePropio) + '% de su flota en la banda es ' + banda.bloque.toLowerCase() + ', el bloque de ' + label
+      : 'Su flota esta en bloques lejanos a ' + label + ' (' + Math.round(distPond * 100) + '% de cercania ponderada)')
+    + notaConc + notaDebil + notaPivote;
+
+  return {
+    nivel,
+    score: Math.round((nv.min + pos * (nv.max - nv.min)) * 10) / 10,
+    motivo,
+    nUnidades: n,
+  };
 }
 
 function tamanoCuenta(vehiculosTotales) {
@@ -947,66 +1034,53 @@ document.getElementById('btn-buscar').addEventListener('click', async () => {
       if (sectores.length > 0 && !sectores.includes(c.sector_economico)) continue;
       if (ciius.length > 0 && !ciius.includes(c.ciiu_desc)) continue;
 
+      // 2026-09-09: los clientes sin unidades en la banda YA NO se descartan; van al nivel 5,
+      // al fondo de la lista y sin score (no tienen ninguna compra en la banda que fechar).
       const elegibles = unidadesElegibles(c.vehiculos, clase, banda);
-      if (elegibles.length === 0) continue; // Eje 0: no elegible
-
-      const urgencia = calcularUrgencia(elegibles);
-      const { score: afinidad, motivo } = calcularAfinidad(elegibles, marca, banda);
-      const scoreFinal = Math.round((urgencia * afinidad) / 100 * 10) / 10;
-      const tamano = tamanoCuenta(c.vehiculos.length);
+      const af = calcularAfinidad(elegibles, marca, banda);
+      const urgencia = elegibles.length > 0 ? calcularUrgencia(elegibles) : null;
+      const scoreFinal = (urgencia !== null && af.score !== null)
+        ? Math.round((urgencia * af.score) / 100 * 10) / 10 : null;
 
       out.push({
         ruc: c.ruc, razon: c.razon, sector: c.sector_economico,
-        scoreFinal, urgencia: Math.round(urgencia * 10) / 10, afinidad, motivo,
-        tamano, unidadesTotales: c.vehiculos.length,
+        nivel: af.nivel, afinidad: af.score, motivo: af.motivo, nUnidades: af.nUnidades,
+        urgencia: urgencia !== null ? Math.round(urgencia * 10) / 10 : null,
+        scoreFinal,
+        tamano: tamanoCuenta(c.vehiculos.length),
+        unidadesTotales: c.vehiculos.length,
         unidadesElegibles: elegibles,
       });
     }
   }
   statusMsg.textContent = '';
   CURRENT_RESULTS = out;
+  LIMITES = {};
   ordenarYRenderizar();
 });
 
+let LIMITES = {};              // cuantas filas se muestran por nivel
+const PASO_RENDER = 200;       // se agregan de a 200 con "ver mas"
+let FILAS_RENDER = [];         // filas efectivamente pintadas, para abrir el detalle
+
+// El NIVEL manda sobre el puntaje: primero se ordena por nivel, y recien dentro de cada nivel
+// por el criterio elegido (Score final por defecto). Asi un cliente de N2 nunca puede aparecer
+// por encima de uno de N1, que es la regla principal del rediseno.
 function ordenarYRenderizar() {
   const key = SORT_MODE === 'final' ? 'scoreFinal' : SORT_MODE;
-  const ordenados = [...CURRENT_RESULTS].sort((a, b) => b[key] - a[key]);
+  const val = c => (c[key] === null || c[key] === undefined) ? -1 : c[key];
+  const ordenados = [...CURRENT_RESULTS].sort((a, b) =>
+    (a.nivel - b.nivel) || (val(b) - val(a)) || (b.unidadesTotales - a.unidadesTotales));
   renderResults(ordenados);
 }
 
-function renderResults(out) {
-  const results = document.getElementById('results');
-  if (out.length === 0) {
-    results.innerHTML = '<div class="no-results">No hay clientes elegibles con estos filtros.</div>';
-    return;
-  }
-  results.innerHTML = `
-    <div class="results-header">
-      <div class="results-count-wrap">
-        <span class="results-count">${out.length.toLocaleString()}</span> clientes elegibles
-      </div>
-      <div class="sort-controls">
-        <span class="sort-label">Ordenar por:</span>
-        <button class="sort-btn ${SORT_MODE === 'final' ? 'active' : ''}" data-sort="final">Score final</button>
-        <button class="sort-btn ${SORT_MODE === 'urgencia' ? 'active' : ''}" data-sort="urgencia">Recurrencia</button>
-        <button class="sort-btn ${SORT_MODE === 'afinidad' ? 'active' : ''}" data-sort="afinidad">Afinidad</button>
-      </div>
-    </div>
-    <div id="results-list"></div>
-  `;
+function num(v) { return (v === null || v === undefined) ? '—' : v; }
 
-  document.querySelectorAll('.sort-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      SORT_MODE = btn.dataset.sort;
-      ordenarYRenderizar();
-    });
-  });
-
-  const list = document.getElementById('results-list');
-  out.forEach((c, idx) => {
-    const row = document.createElement('div');
-    row.className = 'client-row';
-    row.innerHTML = `
+function filaCliente(c, idx) {
+  const conf = (c.nivel !== 5 && c.nUnidades > 0 && c.nUnidades < MIN_UNIDADES_PATRON)
+    ? `<span class="conf-tag">${c.nUnidades} unidad${c.nUnidades !== 1 ? 'es' : ''} — senal debil</span>` : '';
+  return `
+    <div class="client-row">
       <div class="client-row-header" data-idx="${idx}">
         <span class="client-toggle">&#9654;</span>
         <div class="client-info">
@@ -1015,29 +1089,127 @@ function renderResults(out) {
             <span class="client-ruc">RUC ${c.ruc}</span>
             <span class="size-tag ${c.tamano.cls}">${c.tamano.label}</span>
             ${c.sector && c.sector !== 'SIN DATOS' ? `<span class="client-ruc">${c.sector}</span>` : ''}
+            ${conf}
           </div>
         </div>
         <div class="score-grid">
           <div class="score-item">
             <div class="score-item-label">Recur.</div>
-            <div class="score-item-value ${scoreClass(c.urgencia)}">${c.urgencia}</div>
+            <div class="score-item-value ${c.urgencia !== null ? scoreClass(c.urgencia) : ''}">${num(c.urgencia)}</div>
           </div>
           <div class="score-item">
             <div class="score-item-label">Afin.</div>
-            <div class="score-item-value ${scoreClass(c.afinidad)}">${c.afinidad}</div>
+            <div class="score-item-value ${c.afinidad !== null ? scoreClass(c.afinidad) : ''}">${num(c.afinidad)}</div>
           </div>
           <div class="score-item score-final">
             <div class="score-item-label">Score</div>
-            <div class="score-item-value">${c.scoreFinal}</div>
+            <div class="score-item-value">${num(c.scoreFinal)}</div>
           </div>
         </div>
       </div>
       <div class="client-detail" id="detail-${idx}"></div>
-    `;
-    list.appendChild(row);
-  });
+    </div>`;
+}
 
-  list.querySelectorAll('.client-row-header').forEach(header => {
+// Ficha: Anio -> Marca + Modelo + Carroceria + PBV + bloque de origen -> placas.
+// Sin nivel de segmento de peso: la lista ya viene filtrada por la banda de la marca.
+function fichaUnidades(unidades) {
+  const porAnio = {};
+  for (const v of unidades) {
+    const a = (typeof v.anio === 'number') ? v.anio : 'S/D';
+    const key = [v.marca || 'SIN MARCA', v.modelo || 'SIN MODELO', v.carroceria || 'SIN DATO',
+                 v.origen || '—', (v.peso_bruto === null || v.peso_bruto === undefined) ? '' : v.peso_bruto].join('|||');
+    if (!porAnio[a]) porAnio[a] = {};
+    if (!porAnio[a][key]) porAnio[a][key] = { count: 0, placas: [] };
+    porAnio[a][key].count++;
+    if (v.placa) porAnio[a][key].placas.push(v.placa);
+  }
+  const anios = Object.keys(porAnio).sort((a, b) => {
+    if (a === 'S/D') return 1;
+    if (b === 'S/D') return -1;
+    return b - a;
+  });
+  let html = '';
+  for (const a of anios) {
+    const filas = porAnio[a];
+    const totalAnio = Object.values(filas).reduce((s, f) => s + f.count, 0);
+    html += `<div class="ficha-anio"><span>${a}</span><span>${totalAnio} unidad${totalAnio !== 1 ? 'es' : ''}</span></div>`;
+    const ordenadas = Object.entries(filas).sort((x, y) => y[1].count - x[1].count || x[0].localeCompare(y[0]));
+    for (const [key, d] of ordenadas) {
+      const [marca, modelo, carroceria, origen, peso] = key.split('|||');
+      const pid = 'fp_' + Math.random().toString(36).slice(2);
+      const pesoTxt = (peso === '' || isNaN(peso)) ? 's/d' : Number(peso).toLocaleString('es-PE') + ' kg';
+      const chips = d.placas.length
+        ? d.placas.map(p => `<span class="placa-chip">${p}</span>`).join('')
+        : '<span class="placa-chip" style="opacity:0.5">sin placa</span>';
+      html += `<div class="ficha-row" onclick="document.getElementById('${pid}').classList.toggle('open')">
+          <span>${marca} ${modelo} <span class="peso-tag">${carroceria}</span> <span class="peso-tag">${pesoTxt}</span> <span class="peso-tag">${origen}</span></span>
+          <span class="ficha-row-count">${d.count}</span>
+        </div>
+        <div class="ficha-placas" id="${pid}">${chips}</div>`;
+    }
+  }
+  return html;
+}
+
+function renderResults(out) {
+  const results = document.getElementById('results');
+  if (out.length === 0) {
+    results.innerHTML = '<div class="no-results">No hay clientes con estos filtros.</div>';
+    return;
+  }
+  const marcaLabel = MARCA_LABELS[document.getElementById('f-marca').value] || 'la marca';
+
+  const grupos = {};
+  out.forEach(c => { (grupos[c.nivel] = grupos[c.nivel] || []).push(c); });
+
+  let html = `
+    <div class="results-header">
+      <div class="results-count-wrap">
+        <span class="results-count">${out.length.toLocaleString()}</span> clientes
+      </div>
+      <div class="sort-controls">
+        <span class="sort-label">Dentro de cada grupo:</span>
+        <button class="sort-btn ${SORT_MODE === 'final' ? 'active' : ''}" data-sort="final">Score final</button>
+        <button class="sort-btn ${SORT_MODE === 'urgencia' ? 'active' : ''}" data-sort="urgencia">Recurrencia</button>
+        <button class="sort-btn ${SORT_MODE === 'afinidad' ? 'active' : ''}" data-sort="afinidad">Afinidad</button>
+      </div>
+    </div>`;
+
+  FILAS_RENDER = [];
+  for (const nivel of [1, 2, 3, 4, 5]) {
+    const grupo = grupos[nivel];
+    if (!grupo || grupo.length === 0) continue;
+    const nv = NIVELES[nivel];
+    const limite = LIMITES[nivel] || PASO_RENDER;
+    const visibles = grupo.slice(0, limite);
+    let filas = '';
+    for (const c of visibles) { FILAS_RENDER.push(c); filas += filaCliente(c, FILAS_RENDER.length - 1); }
+    const restantes = grupo.length - visibles.length;
+    html += `
+      <div class="nivel-section nivel-n${nivel}">
+        <div class="nivel-header">
+          <span class="nivel-titulo">${nv.titulo.replace('{MARCA}', marcaLabel)}</span>
+          <span class="nivel-sub">${nv.sub}</span>
+          <span class="nivel-count">${grupo.length.toLocaleString()}</span>
+        </div>
+        ${filas}
+        ${restantes > 0 ? `<button class="ver-mas" data-nivel="${nivel}">Ver ${Math.min(PASO_RENDER, restantes).toLocaleString()} mas (quedan ${restantes.toLocaleString()})</button>` : ''}
+      </div>`;
+  }
+  results.innerHTML = html;
+
+  results.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', () => { SORT_MODE = btn.dataset.sort; LIMITES = {}; ordenarYRenderizar(); });
+  });
+  results.querySelectorAll('.ver-mas').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const n = btn.dataset.nivel;
+      LIMITES[n] = (LIMITES[n] || PASO_RENDER) + PASO_RENDER;
+      ordenarYRenderizar();
+    });
+  });
+  results.querySelectorAll('.client-row-header').forEach(header => {
     header.addEventListener('click', () => {
       const idx = header.dataset.idx;
       const detail = document.getElementById(`detail-${idx}`);
@@ -1045,17 +1217,12 @@ function renderResults(out) {
       const isOpen = detail.classList.toggle('open');
       toggle.classList.toggle('open', isOpen);
       if (isOpen && !detail.dataset.loaded) {
-        const c = out[idx];
-        const unidadesOrdenadas = [...c.unidadesElegibles].sort((a, b) => (b.anio || 0) - (a.anio || 0));
+        const c = FILAS_RENDER[idx];
         detail.innerHTML = `
           <div class="explica-box">${c.motivo}</div>
-          <div class="detail-section-title">Unidades que calzaron el filtro (${c.unidadesElegibles.length} de ${c.unidadesTotales} totales)</div>
-          ${unidadesOrdenadas.map(v => `
-            <div class="unidad-row">
-              <span>${v.anio || 'S/D'} — ${v.marca} <span class="peso-tag">${v.origen}</span>${v.placa ? ` <span class="peso-tag">${v.placa}</span>` : ''}</span>
-              <span class="peso-tag">${v.peso_bruto ? Math.round(v.peso_bruto).toLocaleString() + ' kg' : ''}</span>
-            </div>
-          `).join('')}
+          ${c.unidadesElegibles.length === 0 ? '' : `
+            <div class="detail-section-title">Unidades que calzaron el filtro (${c.unidadesElegibles.length} de ${c.unidadesTotales} totales)</div>
+            ${fichaUnidades(c.unidadesElegibles)}`}
         `;
         detail.dataset.loaded = '1';
       }

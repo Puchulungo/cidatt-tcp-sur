@@ -271,6 +271,7 @@
 
   .score-na { color: var(--text-muted); font-size: 11px; padding: 4px 0; }
 
+  .score-nivel-cell { font-size: 10px; color: var(--text-muted); }
   .score-motivo {
     font-size: 11px;
     color: var(--text-muted);
@@ -1007,28 +1008,28 @@ const ANIO_ACTUAL_SCORE = new Date().getFullYear();
 
 const BANDAS = {
   'MAN': {
-    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 30750, tolMax: 62500, bloque: 'EUROPEO' },
+    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 34850, tolMax: 57500, bloque: 'EUROPEO' },
     REMOLCADOR: { bloque: 'EUROPEO' },
   },
   'DONGFENG': {
-    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 30750, tolMax: 62500, bloque: 'CHINO' },
+    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 34850, tolMax: 57500, bloque: 'CHINO' },
     REMOLCADOR: { bloque: 'CHINO' },
   },
   'FAW': {
-    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 30750, tolMax: 62500, bloque: 'CHINO' },
+    CAMION:     { nucleoMin: 41000, nucleoMax: 50000, tolMin: 34850, tolMax: 57500, bloque: 'CHINO' },
     REMOLCADOR: { bloque: 'CHINO' },
   },
   'INTERNATIONAL': {
-    CAMION:     { nucleoMin: 30000, nucleoMax: 30000, tolMin: 22500, tolMax: 37500, bloque: 'AMERICANO' },
+    CAMION:     { nucleoMin: 30000, nucleoMax: 30000, tolMin: 25500, tolMax: 34500, bloque: 'AMERICANO' },
     REMOLCADOR: { bloque: 'AMERICANO' },
   },
   'UD TRUCKS': {
     // Nucleo ampliado 2026-08-11 (sesion 2): MKE 11.7t, LKE 14.5t, PKE 18.5t, Quester/CWE 34t
     // (nuevo en stock). Tolerancia +-25% igual que el resto de marcas.
-    CAMION:     { nucleoMin: 11700, nucleoMax: 34000, tolMin: 8775, tolMax: 42500, bloque: 'JAPONES' },
+    CAMION:     { nucleoMin: 11700, nucleoMax: 34000, tolMin: 9945, tolMax: 39100, bloque: 'JAPONES' },
   },
   'VOLKSWAGEN': {
-    CAMION:     { nucleoMin: 6000, nucleoMax: 31000, tolMin: 4500, tolMax: 38750, bloque: 'EUROPEO' },
+    CAMION:     { nucleoMin: 6000, nucleoMax: 31000, tolMin: 5100, tolMax: 35650, bloque: 'EUROPEO' },
   },
 };
 const MARCA_LABELS_SCORE = {
@@ -1039,14 +1040,28 @@ const CLASE_LABELS_SCORE = { CAMION: 'Camión', REMOLCADOR: 'Tracto' };
 
 // Tabla de distancia por bloque de origen -- ver comentario largo en perfilador.html
 // (misma constante, copiada 1:1, calibrada 2026-08-11 contra 6 casos reales + Servosa Gas).
+// Escalera de 3 peldanos (2026-09-09, seccion 15.9) — espejo exacto de perfilador.html.
 const DISTANCIA_ORIGEN_SCORE = {
-  'MAN':           { EUROPEO: 85, AMERICANO: 70, JAPONES: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
-  'VOLKSWAGEN':    { EUROPEO: 85, AMERICANO: 70, JAPONES: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
-  'INTERNATIONAL': { AMERICANO: 85, EUROPEO: 70, JAPONES: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
-  'UD TRUCKS':     { JAPONES: 85, EUROPEO: 70, AMERICANO: 70, COREANO: 70, OTRO: 70, CHINO: 50 },
-  'DONGFENG':      { CHINO: 85, EUROPEO: 50, AMERICANO: 50, JAPONES: 50, COREANO: 50, OTRO: 50 },
-  'FAW':           { CHINO: 85, EUROPEO: 50, AMERICANO: 50, JAPONES: 50, COREANO: 50, OTRO: 50 },
+  'MAN':           { EUROPEO: 85, AMERICANO: 70, JAPONES: 70, COREANO: 70, CHINO: 45, OTRO: 45 },
+  'VOLKSWAGEN':    { EUROPEO: 85, AMERICANO: 70, JAPONES: 70, COREANO: 70, CHINO: 45, OTRO: 45 },
+  'INTERNATIONAL': { AMERICANO: 85, EUROPEO: 70, JAPONES: 70, COREANO: 70, CHINO: 45, OTRO: 45 },
+  'UD TRUCKS':     { JAPONES: 85, EUROPEO: 70, AMERICANO: 70, COREANO: 70, CHINO: 45, OTRO: 45 },
+  'DONGFENG':      { CHINO: 85, OTRO: 70, EUROPEO: 45, AMERICANO: 45, JAPONES: 45, COREANO: 45 },
+  'FAW':           { CHINO: 85, OTRO: 70, EUROPEO: 45, AMERICANO: 45, JAPONES: 45, COREANO: 45 },
 };
+const DIST_MIN_SCORE = 0.45, DIST_MAX_SCORE = 0.85;
+const NIVELES_SCORE = {
+  1: { nombre: 'Ya es cliente',        min: 80, max: 100 },
+  2: { nombre: 'Bloque de la marca',   min: 55, max: 79  },
+  3: { nombre: 'Bloque lejano',        min: 20, max: 54  },
+  4: { nombre: 'Fiel a un competidor', min: 0,  max: 19  },
+  5: { nombre: 'Sin flota en la banda', min: null, max: null },
+};
+const MIN_UNIDADES_PATRON_SCORE = 3;
+const UMBRAL_MONOMARCA_SCORE = 80;
+const VENTANA_RECENCIA_SCORE = 8;
+const BONIF_PIVOTE_SCORE = 0.15;
+
 function distanciaOrigenScore(marcaEvaluada, origen) {
   const tabla = DISTANCIA_ORIGEN_SCORE[marcaEvaluada];
   if (!tabla) return 50;
@@ -1070,12 +1085,12 @@ function pesoEje2Score(v, banda) {
     const ancho = banda.nucleoMin - banda.tolMin;
     if (ancho <= 0) return 1;
     const dist = banda.nucleoMin - p;
-    return Math.max(0.3, 1 - (dist / ancho) * 0.7);
+    return Math.max(0.6, 1 - (dist / ancho) * 0.4);
   }
   const ancho = banda.tolMax - banda.nucleoMax;
   if (ancho <= 0) return 1;
   const dist = p - banda.nucleoMax;
-  return Math.max(0.3, 1 - (dist / ancho) * 0.7);
+  return Math.max(0.6, 1 - (dist / ancho) * 0.4);
 }
 
 // Eje 1: Recurrencia = Frecuencia (85%, cuantas unidades compro historicamente en esta
@@ -1105,89 +1120,95 @@ function calcularUrgenciaScore(unidades) {
   return Math.round((0.85 * frecuencia + 0.15 * recencia) * 10) / 10;
 }
 
-function amortiguarScore(scoreCalculado, nUnidades, techo) {
-  const confianza = Math.min(1, Math.max(0, (nUnidades - 1) / (techo - 1)));
-  return 50 + confianza * (scoreCalculado - 50);
-}
-
+// Eje 2: Afinidad por NIVELES (2026-09-09, seccion 15.8). Espejo exacto de perfilador.html:
+// si se cambia una formula aca hay que cambiarla alla, o los dos van a decir cosas distintas
+// del mismo cliente. Devuelve { nivel, score, motivo, nUnidades }.
 function calcularAfinidadScore(unidades, marcaEvaluada, banda) {
-  if (unidades.length === 0) {
-    return { score: 50, motivo: 'Sin historial en esta banda' };
-  }
-  const pesos = unidades.map(v => pesoEje2Score(v, banda));
-  const pesoTotal = pesos.reduce((a, b) => a + b, 0);
-  const ordenadas = unidades
-    .map((v, i) => ({ ...v, _peso: pesos[i] }))
-    .filter(v => typeof v.anio === 'number')
-    .sort((a, b) => a.anio - b.anio || (a.placa || '').localeCompare(b.placa || ''));
+  const label = MARCA_LABELS_SCORE[marcaEvaluada] || marcaEvaluada;
+  const n = unidades.length;
+  if (n === 0) return { nivel: 5, score: null, motivo: 'No tiene unidades en el rango de peso de ' + label, nUnidades: 0 };
 
-  // Paso 1: hecho directo (compró o no la marca) -- sin amortiguar, piso en 60.
+  const pesos = unidades.map(v => pesoEje2Score(v, banda));
+  const pesoTotal = pesos.reduce((a, b) => a + b, 0) || 1;
+
+  const porMarcaAjena = {};
+  unidades.forEach((v, i) => {
+    if (v.marca !== marcaEvaluada) porMarcaAjena[v.marca] = (porMarcaAjena[v.marca] || 0) + pesos[i];
+  });
+  const dom = Object.entries(porMarcaAjena).sort((a, b) => b[1] - a[1])[0];
+  const marcaDominante = dom ? dom[0] : null;
+  const pctDominante = dom ? (dom[1] / pesoTotal) * 100 : 0;
+
+  const hayEvidencia = n >= MIN_UNIDADES_PATRON_SCORE;
+  const PISO_CONC = 33, TECHO_CONC = 90, FLOOR_PEN = 0.85;
+  const factorConc = hayEvidencia
+    ? Math.min(1, Math.max(0, (pctDominante - PISO_CONC) / (TECHO_CONC - PISO_CONC))) : 0;
+  const penalizacion = 1 - factorConc * FLOOR_PEN;
+  const notaConc = (hayEvidencia && pctDominante >= PISO_CONC)
+    ? ` · ${Math.round(pctDominante)}% de su flota en la banda es ${marcaDominante}, se descuenta` : '';
+  const notaDebil = hayEvidencia ? '' : ` · solo ${n} unidad${n !== 1 ? 'es' : ''} en la banda, señal débil`;
+
   const propias = unidades.filter(v => v.marca === marcaEvaluada);
   if (propias.length > 0) {
     const conAnio = propias.filter(v => typeof v.anio === 'number');
     const anioReciente = conAnio.length ? Math.max(...conAnio.map(v => v.anio)) : null;
-    const anios = anioReciente !== null ? Math.max(0, ANIO_ACTUAL_SCORE - anioReciente) : 6;
-    const factorRecencia = Math.max(0, 1 - anios / 6); // ventana 6 anios (antes 5), 2026-08-11 sesion 2
-    const scoreBruto = 60 + factorRecencia * (95 - 60);
-    const motivo = `Ya compró ${MARCA_LABELS_SCORE[marcaEvaluada] || marcaEvaluada} (última hace ${anios} año${anios !== 1 ? 's' : ''})`;
-    return { score: Math.round(scoreBruto * 10) / 10, motivo };
+    const anios = anioReciente !== null ? Math.max(0, ANIO_ACTUAL_SCORE - anioReciente) : VENTANA_RECENCIA_SCORE;
+    const factorRecencia = Math.max(0, 1 - anios / VENTANA_RECENCIA_SCORE);
+    const pos = Math.max(0, Math.min(1, factorRecencia * penalizacion));
+    const nv = NIVELES_SCORE[1];
+    return {
+      nivel: 1,
+      score: Math.round((nv.min + pos * (nv.max - nv.min)) * 10) / 10,
+      motivo: `Ya compró ${label}: ${propias.length} unidad${propias.length !== 1 ? 'es' : ''}, última hace ${anios} año${anios !== 1 ? 's' : ''}${notaConc}`,
+      nUnidades: n,
+    };
   }
 
-  let scoreBruto, motivo;
-  {
-    // Ver comentario largo en perfilador.html (2026-08-11): 'C' ahora es distancia >= 70%,
-    // no bloque exacto binario.
-    const labels = ordenadas.map(v => distanciaOrigenScore(marcaEvaluada, v.origen) >= 0.7 ? 'C' : 'N');
-    let pivote = null;
-    if (labels.length > 0) {
-      const labelFinal = labels[labels.length - 1];
-      let magnitud = 0;
-      for (let i = labels.length - 1; i >= 0; i--) {
-        if (labels[i] === labelFinal) magnitud++;
-        else break;
-      }
-      const hayQuiebre = magnitud < labels.length;
-      if (hayQuiebre) {
-        const confianzaPivote = Math.min(1, Math.max(0, (magnitud - 1) / (3 - 1)));
-        if (labelFinal === 'C') {
-          scoreBruto = 50 + confianzaPivote * (85 - 50);
-          motivo = `Pivote positivo: volvió a comprar ${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
-        } else {
-          scoreBruto = 50 + confianzaPivote * (30 - 50);
-          motivo = `Pivote espejo: se pasó a un bloque no-${banda.bloque.toLowerCase()} (${magnitud} compra${magnitud !== 1 ? 's' : ''} confirman)`;
-        }
-        pivote = true;
-      }
-    }
+  if (hayEvidencia && pctDominante >= UMBRAL_MONOMARCA_SCORE) {
+    const f = Math.min(1, (pctDominante - UMBRAL_MONOMARCA_SCORE) / (100 - UMBRAL_MONOMARCA_SCORE));
+    const nv = NIVELES_SCORE[4];
+    return {
+      nivel: 4,
+      score: Math.round((nv.max - f * (nv.max - nv.min)) * 10) / 10,
+      motivo: `Fiel a ${marcaDominante}: ${Math.round(pctDominante)}% de sus ${n} unidades en la banda`,
+      nUnidades: n,
+    };
+  }
 
-    if (!pivote) {
-      const pesoCompatible = unidades.reduce((s, v, i) => s + pesos[i] * distanciaOrigenScore(marcaEvaluada, v.origen), 0);
-      scoreBruto = pesoTotal > 0 ? (pesoCompatible / pesoTotal) * 100 : 50;
-      motivo = `${Math.round(scoreBruto)}% ponderado por cercanía de origen a ${MARCA_LABELS_SCORE[marcaEvaluada] || marcaEvaluada}`;
-    }
+  const distPond = unidades.reduce((s, v, i) => s + pesos[i] * distanciaOrigenScore(marcaEvaluada, v.origen), 0) / pesoTotal;
+  const pesoPropio = unidades.reduce((s, v, i) => s + (v.origen === banda.bloque ? pesos[i] : 0), 0);
+  const pctBloquePropio = (pesoPropio / pesoTotal) * 100;
 
-    // Paso 2 (rediseñado 2026-08-11, ver comentario largo en perfilador.html): descuento
-    // continuo por concentración de marca dominante no evaluada, reemplaza el corte binario
-    // 80%->10. Se aplica también sobre el resultado del pivote (caso real: Transportes
-    // Zuñiga, 89% Volvo con 1 Kenworth de excepción disparaba pivote positivo score alto).
-    const porMarca = {};
-    unidades.forEach((v, i) => { porMarca[v.marca] = (porMarca[v.marca] || 0) + pesos[i]; });
-    const marcaDominante = Object.entries(porMarca).sort((a, b) => b[1] - a[1])[0];
-    const pctDominante = pesoTotal > 0 && marcaDominante ? (marcaDominante[1] / pesoTotal) * 100 : 0;
-
-    const PISO_CONCENTRACION = 33, TECHO_CONCENTRACION = 90, FLOOR_PENALIZACION = 0.85;
-    const factorConcentracion = Math.min(1, Math.max(0,
-      (pctDominante - PISO_CONCENTRACION) / (TECHO_CONCENTRACION - PISO_CONCENTRACION)));
-    const penalizacionConcentracion = 1 - factorConcentracion * FLOOR_PENALIZACION;
-
-    if (pctDominante >= PISO_CONCENTRACION) {
-      scoreBruto = scoreBruto * penalizacionConcentracion;
-      motivo += ` (${Math.round(pctDominante)}% de su flota en esta banda es ${marcaDominante[0]}, se descuenta)`;
+  const ordenadas = unidades
+    .filter(v => typeof v.anio === 'number')
+    .sort((a, b) => a.anio - b.anio || (a.placa || '').localeCompare(b.placa || ''));
+  const labels = ordenadas.map(v => distanciaOrigenScore(marcaEvaluada, v.origen) >= 0.7 ? 'C' : 'N');
+  let ajustePivote = 0, notaPivote = '';
+  if (labels.length > 0) {
+    const labelFinal = labels[labels.length - 1];
+    let magnitud = 0;
+    for (let i = labels.length - 1; i >= 0; i--) { if (labels[i] === labelFinal) magnitud++; else break; }
+    if (magnitud < labels.length) {
+      const confianzaPivote = Math.min(1, Math.max(0, (magnitud - 1) / (3 - 1)));
+      ajustePivote = (labelFinal === 'C' ? 1 : -1) * confianzaPivote * BONIF_PIVOTE_SCORE;
+      notaPivote = labelFinal === 'C'
+        ? ` · pivote a favor: sus últimas ${magnitud} compras volvieron al bloque cercano`
+        : ` · pivote en contra: sus últimas ${magnitud} compras se alejaron del bloque`;
     }
   }
 
-  const scoreFinal = amortiguarScore(scoreBruto, unidades.length, 4);
-  return { score: Math.round(scoreFinal * 10) / 10, motivo };
+  let pos = (distPond - DIST_MIN_SCORE) / (DIST_MAX_SCORE - DIST_MIN_SCORE);
+  pos = Math.max(0, Math.min(1, pos)) * penalizacion;
+  pos = Math.max(0, Math.min(1, pos + ajustePivote));
+
+  const nivel = pctBloquePropio > 50 ? 2 : 3;
+  const nv = NIVELES_SCORE[nivel];
+  const motivo = (nivel === 2
+      ? `${Math.round(pctBloquePropio)}% de su flota en la banda es ${banda.bloque.toLowerCase()}, el bloque de ${label}`
+      : `Su flota está en bloques lejanos a ${label} (${Math.round(distPond * 100)}% de cercanía ponderada)`)
+    + notaConc + notaDebil + notaPivote;
+
+  return { nivel, score: Math.round((nv.min + pos * (nv.max - nv.min)) * 10) / 10, motivo, nUnidades: n };
 }
 
 function scoreClassScore(v) {
@@ -1210,11 +1231,15 @@ function calcularScoresCliente(enriched) {
       const key = clase === 'CAMION' ? 'camion' : 'remolcador';
       if (!banda) { fila[key] = null; continue; }
       const elegibles = unidadesElegiblesScore(vehiculos, clase, banda);
-      if (elegibles.length === 0) { fila[key] = { na: true }; continue; }
+      const af = calcularAfinidadScore(elegibles, marca, banda);
+      if (af.nivel === 5) { fila[key] = { na: true, motivo: af.motivo }; continue; }
       const urgencia = calcularUrgenciaScore(elegibles);
-      const { score: afinidad, motivo } = calcularAfinidadScore(elegibles, marca, banda);
-      const scoreFinal = Math.round((urgencia * afinidad) / 100 * 10) / 10;
-      fila[key] = { score: scoreFinal, urg: Math.round(urgencia), afin: Math.round(afinidad), motivo };
+      const scoreFinal = urgencia !== null ? Math.round((urgencia * af.score) / 100 * 10) / 10 : null;
+      fila[key] = {
+        score: scoreFinal, urg: urgencia !== null ? Math.round(urgencia) : null,
+        afin: Math.round(af.score), nivel: af.nivel,
+        nivelNombre: NIVELES_SCORE[af.nivel].nombre, motivo: af.motivo,
+      };
     }
     out.push(fila);
   }
@@ -1222,13 +1247,14 @@ function calcularScoresCliente(enriched) {
 }
 
 function renderScoreRow(label, d) {
-  if (!d) return `<tr><td>${label}</td><td colspan="3" class="score-na">No aplica</td></tr>`;
-  if (d.na) return `<tr><td>${label}</td><td colspan="3" class="score-na">Sin unidades en esta banda</td></tr>`;
+  if (!d) return `<tr><td>${label}</td><td colspan="4" class="score-na">No aplica</td></tr>`;
+  if (d.na) return `<tr><td>${label}</td><td colspan="4" class="score-na">Sin unidades en esta banda</td></tr>`;
   return `<tr>
     <td>${label}</td>
-    <td class="score-final-cell ${scoreClassScore(d.score)}">${d.score}</td>
-    <td>${d.urg}</td>
+    <td class="score-final-cell ${scoreClassScore(d.score === null ? 0 : d.score)}">${d.score === null ? '—' : d.score}</td>
+    <td>${d.urg === null ? '—' : d.urg}</td>
     <td>${d.afin}</td>
+    <td class="score-nivel-cell">${d.nivelNombre}</td>
   </tr>`;
 }
 
@@ -1254,7 +1280,7 @@ function renderScoreSection(enriched) {
       </button>
       <div class="score-panel" id="${panelId}">
         <table class="score-table">
-          <tr><th></th><th>Score</th><th>Recur.</th><th>Afin</th></tr>
+          <tr><th></th><th>Score</th><th>Recur.</th><th>Afin</th><th>Grupo</th></tr>
           ${renderScoreRow('Camión', fila.camion)}
           ${renderScoreRow('Tracto', fila.remolcador)}
         </table>
