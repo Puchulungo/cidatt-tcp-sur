@@ -1275,84 +1275,90 @@ function toggleScorePanel(id, btn) {
   if (icon) icon.classList.toggle('open', isOpen);
 }
 
-const CATEGORIA_RANGOS = {
-  CAMION: {
-    'Ligero': 'hasta 7 t',
-    'Semiliviano': '7 – 10.5 t',
-    'Mediano': '10.5 – 25 t',
-    'Pesado': '25 – 33 t',
-    'Extra pesado': 'desde 33 t',
-  },
-  REMOLCADOR: {
-    'Estándar': 'hasta 25 t',
-    'Semipesado': '25 – 28 t',
-    'Pesado': '28 – 32 t',
-    'Extra pesado': 'desde 32 t',
-  },
+// --- Segmentos de peso v2 (2026-09-09): 4 bandas de Camion + Remolcador ---
+const SEG_ORDEN = ['LIGEROS', 'MEDIANOS', 'PESADOS', 'SUPER PESADOS', 'SIN DATO DE PESO', 'REMOLCADOR'];
+const SEG_INFO = {
+  'LIGEROS':          { label: 'Camión — Ligeros',          rango: 'menos de 10 t', cls: 'clase-camion' },
+  'MEDIANOS':         { label: 'Camión — Medianos',         rango: '10 a 25 t',     cls: 'clase-camion' },
+  'PESADOS':          { label: 'Camión — Pesados',          rango: '25 a 41 t',     cls: 'clase-camion' },
+  'SUPER PESADOS':    { label: 'Camión — Super Pesados',    rango: '41 t a más',    cls: 'clase-camion' },
+  'SIN DATO DE PESO': { label: 'Camión — Sin dato de peso', rango: '',              cls: 'clase-camion' },
+  'REMOLCADOR':       { label: 'Remolcador',                rango: '',              cls: 'clase-rem' },
 };
-function rangoCategoria(clase, cat) {
-  const r = (CATEGORIA_RANGOS[clase] || {})[cat];
-  return r ? ` (${r})` : '';
+
+function segmentoDe(v) {
+  if ((v.clase || '') === 'REMOLCADOR') return 'REMOLCADOR';
+  const c = v.categoria_peso;
+  return SEG_INFO[c] ? c : 'SIN DATO DE PESO';
 }
 
+function pesoTexto(p) {
+  if (p === null || p === undefined || p === '' || isNaN(p)) return 's/d';
+  return Number(p).toLocaleString('es-PE') + ' kg';
+}
+
+// Segmento -> Anio -> (Marca + Modelo + Carroceria + PBV) -> placas
 function buildTreeEnriched(vehiculos) {
   const tree = {};
   for (const v of vehiculos) {
     if (v.atipico) continue;
-    const clase = v.clase || 'OTRO';
+    const seg = segmentoDe(v);
     const anio = v.anio || 'S/D';
-    const marca = v.marca || 'SIN MARCA';
-    const cat = v.categoria_peso || 'SIN DATOS';
-    if (!tree[clase]) tree[clase] = {};
-    if (!tree[clase][anio]) tree[clase][anio] = {};
-    const key = marca + '|||' + cat;
-    if (!tree[clase][anio][key]) tree[clase][anio][key] = { count: 0, placas: [] };
-    tree[clase][anio][key].count++;
-    if (v.placa) tree[clase][anio][key].placas.push(v.placa);
+    const key = [
+      v.marca || 'SIN MARCA',
+      v.modelo || 'SIN MODELO',
+      v.carroceria || 'SIN DATO',
+      (v.peso_bruto === null || v.peso_bruto === undefined) ? '' : v.peso_bruto,
+    ].join('|||');
+    if (!tree[seg]) tree[seg] = {};
+    if (!tree[seg][anio]) tree[seg][anio] = {};
+    if (!tree[seg][anio][key]) tree[seg][anio][key] = { count: 0, placas: [] };
+    tree[seg][anio][key].count++;
+    if (v.placa) tree[seg][anio][key].placas.push(v.placa);
   }
   return tree;
 }
 
-function rangoTexto(clase, cat) {
-  const r = (CATEGORIA_RANGOS[clase] || {})[cat];
-  return r || cat;
-}
-
 function renderTreeEnriched(tree) {
   let html = '<div class="tree">';
-  for (const clase of Object.keys(tree).sort()) {
-    const aniosData = tree[clase];
-    const totalClase = Object.values(aniosData).reduce((s, filas) =>
+  // solo salen los segmentos donde el cliente tiene unidades, en orden fijo
+  for (const seg of SEG_ORDEN) {
+    const aniosData = tree[seg];
+    if (!aniosData) continue;
+    const info = SEG_INFO[seg];
+    const totalSeg = Object.values(aniosData).reduce((s, filas) =>
       s + Object.values(filas).reduce((a, f) => a + f.count, 0), 0);
-    const claseClass = clase === 'CAMION' ? 'clase-camion' : 'clase-rem';
-    const claseId = 'clase_' + Math.random().toString(36).slice(2);
+    const segId = 'seg_' + Math.random().toString(36).slice(2);
+    const rangoHtml = info.rango ? `<span class="flota-row-rango" style="margin-left:0">(${info.rango})</span>` : '';
 
     html += `<div class="tree-clase">
-      <div class="tree-clase-header" onclick="toggleNode('${claseId}', this)">
+      <div class="tree-clase-header" onclick="toggleNode('${segId}', this)">
         <span class="tree-toggle">&#9654;</span>
-        <span class="clase-label ${claseClass}">${clase}</span>
-        <span class="clase-count">${totalClase} unidades</span>
+        <span class="clase-label ${info.cls}">${info.label}</span>${rangoHtml}
+        <span class="clase-count">${totalSeg} unidad${totalSeg !== 1 ? 'es' : ''}</span>
       </div>
-      <div class="tree-clase-body" id="${claseId}">`;
+      <div class="tree-clase-body" id="${segId}">`;
 
     const anios = Object.keys(aniosData).sort((a, b) => {
       if (a === 'S/D') return 1;
       if (b === 'S/D') return -1;
-      return b - a; // año descendente: mas reciente primero
+      return b - a; // mas reciente primero
     });
 
     for (const anio of anios) {
       const filas = aniosData[anio];
       const totalAnio = Object.values(filas).reduce((a, f) => a + f.count, 0);
-
       html += `<div class="flota-anio-header">
         <span class="flota-anio-label">${anio}</span>
         <span class="flota-anio-count">${totalAnio} unidad${totalAnio !== 1 ? 'es' : ''}</span>
       </div>`;
 
-      const filasOrdenadas = Object.entries(filas).sort((a, b) => b[1].count - a[1].count); // mayor cantidad primero
+      const filasOrdenadas = Object.entries(filas).sort((a, b) => {
+        if (b[1].count !== a[1].count) return b[1].count - a[1].count;
+        return a[0].localeCompare(b[0]);
+      });
       for (const [key, data] of filasOrdenadas) {
-        const [marca, cat] = key.split('|||');
+        const [marca, modelo, carroceria, peso] = key.split('|||');
         const rowId = 'placas_' + Math.random().toString(36).slice(2);
         const placasHtml = data.placas.length
           ? data.placas.map(p => `<span class="placa-chip">${p}</span>`).join('')
@@ -1360,14 +1366,13 @@ function renderTreeEnriched(tree) {
         html += `<div class="flota-row-header" onclick="togglePlacas('${rowId}', this)">
           <span class="flota-row-left">
             <span class="placas-toggle">&#9654;</span>
-            <span class="flota-row-label">${marca} <span class="flota-row-rango">&mdash; ${rangoTexto(clase, cat)}</span></span>
+            <span class="flota-row-label">${marca} ${modelo}<span class="flota-row-rango"> &mdash; ${carroceria} &mdash; ${pesoTexto(peso)}</span></span>
           </span>
           <span class="flota-row-count">${data.count}</span>
         </div>
         <div class="placas-grid" id="${rowId}">${placasHtml}</div>`;
       }
     }
-
     html += `</div></div>`;
   }
   html += '</div>';
