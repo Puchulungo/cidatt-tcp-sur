@@ -988,6 +988,22 @@ function calcularAfinidad(unidades, marcaEvaluada, banda) {
   };
 }
 
+// Posicion del cliente DENTRO de su nivel, de 0 a 1 (2026-09-09, ajuste posterior).
+// Por que existe: los rangos de nivel son angostos a proposito (N1 solo se mueve entre 80 y
+// 100), asi que al multiplicar Afinidad x Recurrencia la Recurrencia -- que va de 0 a 100 --
+// decidia practicamente sola el orden dentro del grupo. Caso real que lo destapo: AYSA BARRA
+// compro MAN hace 2 anios (Afinidad 95) y quedaba en Score final 10.7, debajo de un cliente
+// que compro hace 12 anios (Afinidad 80) pero con flota grande, Score final 78.5 -- al reves
+// de la regla principal. Normalizando la Afinidad a su posicion dentro del nivel, las dos
+// senales pesan parejo y el orden interno vuelve a respetar la recencia.
+function posEnNivel(nivel, score) {
+  const nv = NIVELES[nivel];
+  if (!nv || nv.min === null || score === null) return 0;
+  const ancho = nv.max - nv.min;
+  if (ancho <= 0) return 1;
+  return Math.max(0, Math.min(1, (score - nv.min) / ancho));
+}
+
 function tamanoCuenta(vehiculosTotales) {
   const n = vehiculosTotales;
   if (n <= 5) return { label: 'Retail', cls: 'size-retail' };
@@ -1039,8 +1055,10 @@ document.getElementById('btn-buscar').addEventListener('click', async () => {
       const elegibles = unidadesElegibles(c.vehiculos, clase, banda);
       const af = calcularAfinidad(elegibles, marca, banda);
       const urgencia = elegibles.length > 0 ? calcularUrgencia(elegibles) : null;
+      // Score final = posicion dentro del nivel (0-1) x Recurrencia, en vez de Afinidad cruda x
+      // Recurrencia: ver el comentario de posEnNivel().
       const scoreFinal = (urgencia !== null && af.score !== null)
-        ? Math.round((urgencia * af.score) / 100 * 10) / 10 : null;
+        ? Math.round(posEnNivel(af.nivel, af.score) * urgencia * 10) / 10 : null;
 
       out.push({
         ruc: c.ruc, razon: c.razon, sector: c.sector_economico,
@@ -1069,8 +1087,15 @@ let FILAS_RENDER = [];         // filas efectivamente pintadas, para abrir el de
 function ordenarYRenderizar() {
   const key = SORT_MODE === 'final' ? 'scoreFinal' : SORT_MODE;
   const val = c => (c[key] === null || c[key] === undefined) ? -1 : c[key];
+  // Desempates: al normalizar la Afinidad a la posicion dentro del nivel, todos los clientes
+  // fuera de la ventana de 8 anios quedan en posicion 0 y por lo tanto en Score final 0. Sin
+  // desempate se perderia el orden entre ellos, asi que despues del Score final manda la
+  // Recurrencia y, si tambien empata, el tamano de flota.
   const ordenados = [...CURRENT_RESULTS].sort((a, b) =>
-    (a.nivel - b.nivel) || (val(b) - val(a)) || (b.unidadesTotales - a.unidadesTotales));
+    (a.nivel - b.nivel)
+    || (val(b) - val(a))
+    || ((b.urgencia === null ? -1 : b.urgencia) - (a.urgencia === null ? -1 : a.urgencia))
+    || (b.unidadesTotales - a.unidadesTotales));
   renderResults(ordenados);
 }
 

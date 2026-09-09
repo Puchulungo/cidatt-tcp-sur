@@ -1220,6 +1220,22 @@ function scoreClassScore(v) {
 // Calcula, para un cliente ya enriquecido (con vehiculos peso/origen), el score
 // de cada marca x clase aplicable. Devuelve null para combinaciones sin catalogo
 // (UD/VW en Tracto) y { na: true } para combinaciones sin unidades elegibles.
+// Posicion del cliente DENTRO de su nivel, de 0 a 1 (2026-09-09, ajuste posterior).
+// Por que existe: los rangos de nivel son angostos a proposito (N1 solo se mueve entre 80 y
+// 100), asi que al multiplicar Afinidad x Recurrencia la Recurrencia -- que va de 0 a 100 --
+// decidia practicamente sola el orden dentro del grupo. Caso real que lo destapo: AYSA BARRA
+// compro MAN hace 2 anios (Afinidad 95) y quedaba en Score final 10.7, debajo de un cliente
+// que compro hace 12 anios (Afinidad 80) pero con flota grande, Score final 78.5 -- al reves
+// de la regla principal. Normalizando la Afinidad a su posicion dentro del nivel, las dos
+// senales pesan parejo y el orden interno vuelve a respetar la recencia.
+function posEnNivelScore(nivel, score) {
+  const nv = NIVELES_SCORE[nivel];
+  if (!nv || nv.min === null || score === null) return 0;
+  const ancho = nv.max - nv.min;
+  if (ancho <= 0) return 1;
+  return Math.max(0, Math.min(1, (score - nv.min) / ancho));
+}
+
 function calcularScoresCliente(enriched) {
   const vehiculos = enriched.vehiculos || [];
   const out = [];
@@ -1234,7 +1250,8 @@ function calcularScoresCliente(enriched) {
       const af = calcularAfinidadScore(elegibles, marca, banda);
       if (af.nivel === 5) { fila[key] = { na: true, motivo: af.motivo }; continue; }
       const urgencia = calcularUrgenciaScore(elegibles);
-      const scoreFinal = urgencia !== null ? Math.round((urgencia * af.score) / 100 * 10) / 10 : null;
+      const scoreFinal = urgencia !== null
+        ? Math.round(posEnNivelScore(af.nivel, af.score) * urgencia * 10) / 10 : null;
       fila[key] = {
         score: scoreFinal, urg: urgencia !== null ? Math.round(urgencia) : null,
         afin: Math.round(af.score), nivel: af.nivel,

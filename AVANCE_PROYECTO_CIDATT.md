@@ -1269,6 +1269,26 @@ cada sección** se ordena por Score final. Así el nivel manda en la estructura 
 decide a quién llamar primero dentro del grupo. Los reordenamientos por solo Afinidad o solo
 Urgencia se mantienen como están.
 
+**Ajuste posterior del mismo día — el Score final se calcula sobre la posición dentro del
+nivel, no sobre la Afinidad cruda.** Al probar el motor contra datos reales apareció que los
+rangos angostos de nivel (N1 solo se mueve entre 80 y 100) dejaban ciega a la multiplicación:
+la Recurrencia, que va de 0 a 100, decidía sola el orden dentro del grupo. Caso real (MAN, sur):
+
+| Cliente | Compró MAN | Afinidad | Recurrencia | Score viejo | Score nuevo |
+|---|---|---|---|---|---|
+| Gruas y Transportes San Lorenzo | hace 12 años | 80 | 98.1 | 78.5 | 0 |
+| AYSA Barra Alipio | hace 2 años | 95 | 11.3 | 10.7 | 8.5 |
+
+El comprador reciente quedaba enterrado debajo del frío, al revés de la regla principal. Se
+corrigió normalizando la Afinidad a su **posición dentro del nivel** (0 a 1) antes de
+multiplicar: `Score final = posEnNivel(nivel, afinidad) × Recurrencia`. Así las dos señales
+pesan parejo en todos los grupos, no solo en N1.
+
+Efecto lateral aceptado: todo cliente fuera de la ventana de 8 años queda en posición 0 y por
+lo tanto en Score final 0, lo que borraría el orden entre ellos. Se agregó una cadena de
+desempate — **Score final → Recurrencia → tamaño de flota** — para que entre los fríos siga
+adelante el de flota más grande.
+
 ### 15.12 Ficha del cliente en el Perfilador
 
 Mismo árbol que el Directorio pero **sin el nivel de segmento de peso** (la lista ya viene
@@ -1313,8 +1333,40 @@ Métricas nuevas: (a) % de compradores reales que aparecen en N1 y N2 (recall po
 (b) cuántos clientes tiene que recorrer el asesor para llegar a ellos, contra una lista al azar
 (lift); (c) comparación motor viejo vs. motor nuevo sobre los mismos 7 pares de años.
 
+**Decisión del usuario (2026-09-09): el backtest se corre contra los CIDATT históricos, NO
+contra el archivo de ventas de la empresa** (`INCAPESA - Venta VN.xlsx`, 293 ventas) — esa
+muestra queda chica para validar un sistema de ordenamiento por grupos. Queda para una sesión
+aparte.
+
 Data: los 8 snapshots estandarizados están en `02_Datos_CIDATT/Estandar/CIDATT_Estandar_<año>.
 xlsx` (2018-2026); los crudos originales en `00_Archivo_Historico/CIDATT/BBDD <mes> <año>/`.
 El proxy de compra sigue siendo "placa nueva por RUC entre dos snapshots consecutivos".
 **El puerto Python del motor ya no está en disco** — hay que rehacerlo (es mecánico: se porta
 1:1 desde `perfilador.html`, como se hizo la primera vez).
+
+### 15.16 Pendientes de calibración (identificados el 2026-09-09, ninguno decidido)
+
+**La Recurrencia se satura a las 5 unidades.** Medido sobre los clientes con unidades en la
+banda (MAN, sur): 1 unidad → Recurrencia media 6.3 · 2 → 29.8 · 3-4 → 59.4 · 5-9 → **94.7** ·
+10-29 → **95.4** · 30+ → **95.3**. De 5 unidades para arriba deja de discriminar: un cliente con
+5 camiones y uno con 60 sacan lo mismo. La causa es la forma de `calcularFrecuencia`
+(`(n−1)/4`, tope en 5 unidades), no el reparto 85/15. En la práctica hoy la Recurrencia mide
+"cantidad de unidades truncada en 5", que además duplica lo que ya dice el badge de Tamaño de
+cuenta.
+
+**Decisión del usuario: no tocar el 85/15 ni la forma de la Frecuencia hasta rehacer el
+backtest.** El 85/15 salió de un backtest real y cambiarlo a ojo sería el mismo error que
+motivó la corrección de 15.7. Hipótesis a medir cuando se corra: reemplazar el tope lineal de 5
+por una curva logarítmica que siga creciendo (1 → 0, 3 → 32, 10 → 68, 30 → 100), que separaría a
+los clientes grandes entre sí.
+
+**Otras tres ideas de calibración, planteadas y postergadas:**
+1. *Recurrencia real* — con los 8 snapshots se puede medir el intervalo de recompra observado
+   por RUC (cada cuánto agrega unidades) en vez del proxy de stock de una sola foto. Es la
+   mejora más grande disponible y la data ya está en la carpeta.
+2. *Panel de auditoría por RUC* — una pantalla que muestre todos los números intermedios (peso
+   de cada unidad, distancia de bloque, % dominante, posición, nivel) para diagnosticar en
+   segundos en vez de adivinar.
+3. *Registro de feedback del asesor* — pulgar arriba/abajo con motivo sobre cada cliente que
+   sale en la lista. Sin etiquetas reales no se puede pasar de reglas afinadas a mano a un
+   modelo estadístico, que es el destino que anota la sección 6.
