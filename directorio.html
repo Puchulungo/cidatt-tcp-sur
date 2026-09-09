@@ -1052,11 +1052,30 @@ const DISTANCIA_ORIGEN_SCORE = {
 const DIST_MIN_SCORE = 0.45, DIST_MAX_SCORE = 0.85;
 const NIVELES_SCORE = {
   1: { nombre: 'Ya es cliente',        min: 80, max: 100 },
-  2: { nombre: 'Bloque de la marca',   min: 55, max: 79  },
-  3: { nombre: 'Bloque lejano',        min: 20, max: 54  },
-  4: { nombre: 'Fiel a un competidor', min: 0,  max: 19  },
-  5: { nombre: 'Sin flota en la banda', min: null, max: null },
+  2: { nombre: 'Bloque de la marca',   min: 60, max: 79  },
+  3: { nombre: 'Bloque no lejano',     min: 40, max: 59  },
+  4: { nombre: 'Bloque lejano',        min: 20, max: 39  },
+  5: { nombre: 'Fiel a un competidor', min: 0,  max: 19  },
 };
+// Espejo de nivelPorBloque() del Perfilador: gana el peldano con mas peso; empate lo decide la
+// unidad mas nueva.
+function nivelPorBloqueScore(unidades, pesos, marcaEvaluada) {
+  const peso = { propio: 0, medio: 0, lejano: 0 };
+  const anio = { propio: -Infinity, medio: -Infinity, lejano: -Infinity };
+  unidades.forEach((v, i) => {
+    const d = distanciaOrigenScore(marcaEvaluada, v.origen);
+    const k = d >= 0.85 ? 'propio' : (d >= 0.70 ? 'medio' : 'lejano');
+    peso[k] += pesos[i];
+    const a = typeof v.anio === 'number' ? v.anio : -Infinity;
+    if (a > anio[k]) anio[k] = a;
+  });
+  let mejor = 'lejano';
+  for (const k of ['propio', 'medio', 'lejano']) {
+    if (peso[k] > peso[mejor] + 1e-9) mejor = k;
+    else if (Math.abs(peso[k] - peso[mejor]) <= 1e-9 && anio[k] > anio[mejor]) mejor = k;
+  }
+  return mejor === 'propio' ? 2 : (mejor === 'medio' ? 3 : 4);
+}
 const MIN_UNIDADES_PATRON_SCORE = 3;
 const UMBRAL_MONOMARCA_SCORE = 80;
 const VENTANA_RECENCIA_SCORE = 8;
@@ -1126,7 +1145,7 @@ function calcularUrgenciaScore(unidades) {
 function calcularAfinidadScore(unidades, marcaEvaluada, banda) {
   const label = MARCA_LABELS_SCORE[marcaEvaluada] || marcaEvaluada;
   const n = unidades.length;
-  if (n === 0) return { nivel: 5, score: null, motivo: 'No tiene unidades en el rango de peso de ' + label, nUnidades: 0 };
+  if (n === 0) return { nivel: 0, score: null, motivo: '', nUnidades: 0 };
 
   const pesos = unidades.map(v => pesoEje2Score(v, banda));
   const pesoTotal = pesos.reduce((a, b) => a + b, 0) || 1;
@@ -1166,9 +1185,9 @@ function calcularAfinidadScore(unidades, marcaEvaluada, banda) {
 
   if (hayEvidencia && pctDominante >= UMBRAL_MONOMARCA_SCORE) {
     const f = Math.min(1, (pctDominante - UMBRAL_MONOMARCA_SCORE) / (100 - UMBRAL_MONOMARCA_SCORE));
-    const nv = NIVELES_SCORE[4];
+    const nv = NIVELES_SCORE[5];
     return {
-      nivel: 4,
+      nivel: 5,
       score: Math.round((nv.max - f * (nv.max - nv.min)) * 10) / 10,
       motivo: `Fiel a ${marcaDominante}: ${Math.round(pctDominante)}% de sus ${n} unidades en la banda`,
       nUnidades: n,
@@ -1176,8 +1195,7 @@ function calcularAfinidadScore(unidades, marcaEvaluada, banda) {
   }
 
   const distPond = unidades.reduce((s, v, i) => s + pesos[i] * distanciaOrigenScore(marcaEvaluada, v.origen), 0) / pesoTotal;
-  const pesoPropio = unidades.reduce((s, v, i) => s + (v.origen === banda.bloque ? pesos[i] : 0), 0);
-  const pctBloquePropio = (pesoPropio / pesoTotal) * 100;
+  const nivel = nivelPorBloqueScore(unidades, pesos, marcaEvaluada);
 
   const ordenadas = unidades
     .filter(v => typeof v.anio === 'number')
@@ -1201,11 +1219,9 @@ function calcularAfinidadScore(unidades, marcaEvaluada, banda) {
   pos = Math.max(0, Math.min(1, pos)) * penalizacion;
   pos = Math.max(0, Math.min(1, pos + ajustePivote));
 
-  const nivel = pctBloquePropio > 50 ? 2 : 3;
   const nv = NIVELES_SCORE[nivel];
-  const motivo = (nivel === 2
-      ? `${Math.round(pctBloquePropio)}% de su flota en la banda es ${banda.bloque.toLowerCase()}, el bloque de ${label}`
-      : `Su flota está en bloques lejanos a ${label} (${Math.round(distPond * 100)}% de cercanía ponderada)`)
+  const etiqueta = nivel === 2 ? `el bloque de ${label}` : (nivel === 3 ? `un bloque no lejano a ${label}` : `un bloque lejano a ${label}`);
+  const motivo = `Su flota en la banda pesa sobre todo en ${etiqueta} (${Math.round(distPond * 100)}% de cercanía ponderada)`
     + notaConc + notaDebil + notaPivote;
 
   return { nivel, score: Math.round((nv.min + pos * (nv.max - nv.min)) * 10) / 10, motivo, nUnidades: n };
@@ -1248,7 +1264,7 @@ function calcularScoresCliente(enriched) {
       if (!banda) { fila[key] = null; continue; }
       const elegibles = unidadesElegiblesScore(vehiculos, clase, banda);
       const af = calcularAfinidadScore(elegibles, marca, banda);
-      if (af.nivel === 5) { fila[key] = { na: true, motivo: af.motivo }; continue; }
+      if (af.nivel === 0) { fila[key] = { na: true }; continue; }
       const urgencia = calcularUrgenciaScore(elegibles);
       const scoreFinal = urgencia !== null
         ? Math.round(posEnNivelScore(af.nivel, af.score) * urgencia * 10) / 10 : null;
@@ -1409,7 +1425,7 @@ function renderTreeEnriched(tree) {
         html += `<div class="flota-row-header" onclick="togglePlacas('${rowId}', this)">
           <span class="flota-row-left">
             <span class="placas-toggle">&#9654;</span>
-            <span class="flota-row-label">${marca} ${modelo}<span class="flota-row-rango"> &mdash; ${carroceria} &mdash; ${pesoTexto(peso)}</span></span>
+            <span class="flota-row-label">${marca} ${modelo}<span class="flota-row-rango"> // ${carroceria} // ${pesoTexto(peso)}</span></span>
           </span>
           <span class="flota-row-count">${data.count}</span>
         </div>

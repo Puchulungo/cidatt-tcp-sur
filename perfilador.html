@@ -293,13 +293,15 @@
     display: flex; align-items: baseline; gap: 10px;
     padding: 9px 12px; border-radius: 6px 6px 0 0;
     background: var(--surface); border: 1px solid var(--border); border-bottom: none;
+    /* se congela mientras se recorre el grupo y lo empuja el encabezado del siguiente */
+    position: sticky; top: 0; z-index: 5;
   }
   .nivel-titulo { font-size: 12px; font-weight: 600; letter-spacing: 0.03em; }
   .nivel-n1 .nivel-titulo { color: #4ade80; }
   .nivel-n2 .nivel-titulo { color: #60a5fa; }
   .nivel-n3 .nivel-titulo { color: #fbbf24; }
-  .nivel-n4 .nivel-titulo { color: #f87171; }
-  .nivel-n5 .nivel-titulo { color: var(--text-muted); }
+  .nivel-n4 .nivel-titulo { color: #fb923c; }
+  .nivel-n5 .nivel-titulo { color: #f87171; }
   .nivel-sub { font-size: 10px; color: var(--text-muted); }
   .nivel-count {
     margin-left: auto; font-family: 'IBM Plex Mono', monospace;
@@ -311,6 +313,13 @@
     color: var(--steel); font-size: 11px; font-family: inherit; cursor: pointer;
   }
   .ver-mas:hover { background: var(--surface2); color: var(--text); }
+  .sep { color: var(--text-muted); opacity: 0.55; margin: 0 2px; }
+  .estado-tag {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    color: #f87171; border: 1px solid rgba(248,113,113,0.4);
+    background: rgba(248,113,113,0.08);
+    border-radius: 3px; padding: 1px 5px; margin-left: 6px;
+  }
   .conf-tag {
     font-family: 'IBM Plex Mono', monospace; font-size: 9px;
     color: #fbbf24; border: 1px solid rgba(251,191,36,0.35);
@@ -578,15 +587,24 @@ const DISTANCIA_ORIGEN = {
 };
 const DIST_MIN = 0.45, DIST_MAX = 0.85;
 
-// Niveles de Afinidad (2026-09-09, seccion 15.8). Rangos que NO se solapan: el nivel manda
-// sobre el puntaje, asi un cliente de un nivel inferior nunca puede superar a uno de arriba.
+// Niveles de Afinidad (2026-09-09). Rangos que NO se solapan: el nivel manda sobre el puntaje,
+// asi un cliente de un nivel inferior nunca puede superar a uno de arriba.
+// 2026-09-09 (segunda vuelta): el nivel de "bloques lejanos" se parte en dos -- no es lo mismo
+// un cliente con un Hino que uno con un Foton, evaluando MAN -- y el de "sin flota en la banda"
+// se elimina (ocupaba pantalla sin aportar; esos clientes no aparecen).
 const NIVELES = {
-  1: { titulo: 'Ya son clientes de {MARCA}',  sub: 'compraron la marca en esta clase',                 min: 80, max: 100 },
-  2: { titulo: 'Bloque de origen de {MARCA}', sub: 'la mayoria de su flota es del bloque de la marca', min: 55, max: 79  },
-  3: { titulo: 'Bloques mas lejanos',         sub: 'su flota esta en bloques distintos',               min: 20, max: 54  },
-  4: { titulo: 'Fieles a un competidor',      sub: '80% o mas de su flota en una sola marca rival',    min: 0,  max: 19  },
-  5: { titulo: 'Sin flota en la banda',       sub: 'no tienen unidades en el rango de peso de la marca', min: null, max: null },
+  1: { titulo: 'Ya son clientes de {MARCA}', min: 80, max: 100 },
+  2: { titulo: 'Bloque de origen de {MARCA}', min: 60, max: 79  },
+  3: { titulo: 'Bloques no lejanos',          min: 40, max: 59  },
+  4: { titulo: 'Bloque lejano',               min: 20, max: 39  },
+  5: { titulo: 'Fieles a un competidor',      min: 0,  max: 19  },
 };
+// Que bloques caen en cada peldano de la escalera, segun la marca evaluada. Se deduce de
+// DISTANCIA_ORIGEN para que el subtitulo de cada grupo nunca se desincronice de la tabla.
+function bloquesDePeldano(marcaEvaluada, valor) {
+  const tabla = DISTANCIA_ORIGEN[marcaEvaluada] || {};
+  return Object.keys(tabla).filter(b => tabla[b] === valor).map(b => b.toLowerCase());
+}
 const MIN_UNIDADES_PATRON = 3;   // piso de evidencia: con 1-2 unidades no se mide fidelidad
 const UMBRAL_MONOMARCA    = 80;  // % de una sola marca rival para caer en N4
 const VENTANA_RECENCIA    = 8;   // anios, alineada con la Recencia del Eje 1
@@ -867,6 +885,30 @@ function calcularUrgencia(unidades) {
   return Math.round((0.85 * frecuencia + 0.15 * recencia) * 10) / 10;
 }
 
+// A que peldano de la escalera pertenece el cliente (2026-09-09, segunda vuelta).
+// Gana el peldano que concentra mas peso de su flota en la banda; si dos empatan, decide la
+// unidad MAS NUEVA. Ejemplo del usuario: un cliente con 1 Iveco y 1 Sinotruk evaluado para MAN
+// empata 50/50 entre el bloque propio y el lejano -- manda el que sea del ano mas reciente.
+// Con una sola unidad degenera en "su bloque", que es justo lo pedido: 1 chino -> lejano,
+// 1 japones/americano/coreano -> no lejano, 1 europeo -> bloque propio.
+function nivelPorBloque(unidades, pesos, marcaEvaluada) {
+  const peso = { propio: 0, medio: 0, lejano: 0 };
+  const anio = { propio: -Infinity, medio: -Infinity, lejano: -Infinity };
+  unidades.forEach((v, i) => {
+    const d = distanciaOrigen(marcaEvaluada, v.origen);
+    const k = d >= 0.85 ? 'propio' : (d >= 0.70 ? 'medio' : 'lejano');
+    peso[k] += pesos[i];
+    const a = typeof v.anio === 'number' ? v.anio : -Infinity;
+    if (a > anio[k]) anio[k] = a;
+  });
+  let mejor = 'lejano';
+  for (const k of ['propio', 'medio', 'lejano']) {
+    if (peso[k] > peso[mejor] + 1e-9) mejor = k;
+    else if (Math.abs(peso[k] - peso[mejor]) <= 1e-9 && anio[k] > anio[mejor]) mejor = k;
+  }
+  return { nivel: mejor === 'propio' ? 2 : (mejor === 'medio' ? 3 : 4), peldano: mejor };
+}
+
 // Eje 2: Afinidad por NIVELES (2026-09-09, seccion 15.8 del AVANCE).
 // Antes era una cascada continua donde los anclajes de cada paso se pisaban entre si -- de ahi
 // el bug conocido de la seccion 13 (un desconocido con flota mixta le ganaba a un dueno real de
@@ -878,12 +920,9 @@ function calcularAfinidad(unidades, marcaEvaluada, banda) {
   const label = MARCA_LABELS[marcaEvaluada] || marcaEvaluada;
   const n = unidades.length;
 
-  // --- N5: sin unidades en la banda. Antes devolvia 50 neutro, que caia justo en medio del
-  // nivel de bloque: un cliente SIN ninguna unidad relevante quedaba por encima de un cliente
-  // real de la competencia. Ahora va al fondo, sin score.
-  if (n === 0) {
-    return { nivel: 5, score: null, motivo: 'No tiene unidades en el rango de peso de ' + label, nUnidades: 0 };
-  }
+  // Sin unidades en la banda: el cliente no entra a la lista (Eje 0). Se devuelve nivel 0 para
+  // que el loop de busqueda lo descarte.
+  if (n === 0) return { nivel: 0, score: null, motivo: '', nUnidades: 0 };
 
   const pesos = unidades.map(v => pesoEje2(v, banda));
   const pesoTotal = pesos.reduce((a, b) => a + b, 0) || 1;
@@ -933,9 +972,9 @@ function calcularAfinidad(unidades, marcaEvaluada, banda) {
   // --- N4: fiel a un competidor puntual (requiere evidencia real).
   if (hayEvidencia && pctDominante >= UMBRAL_MONOMARCA) {
     const f = Math.min(1, (pctDominante - UMBRAL_MONOMARCA) / (100 - UMBRAL_MONOMARCA));
-    const nv = NIVELES[4];
+    const nv = NIVELES[5];
     return {
-      nivel: 4,
+      nivel: 5,
       score: Math.round((nv.max - f * (nv.max - nv.min)) * 10) / 10,
       motivo: 'Fiel a ' + marcaDominante + ': ' + Math.round(pctDominante) + '% de sus ' + n + ' unidades en la banda',
       nUnidades: n,
@@ -944,8 +983,7 @@ function calcularAfinidad(unidades, marcaEvaluada, banda) {
 
   // --- Distancia ponderada por bloque de origen y share del bloque propio.
   const distPond = unidades.reduce((s, v, i) => s + pesos[i] * distanciaOrigen(marcaEvaluada, v.origen), 0) / pesoTotal;
-  const pesoPropio = unidades.reduce((s, v, i) => s + (v.origen === banda.bloque ? pesos[i] : 0), 0);
-  const pctBloquePropio = (pesoPropio / pesoTotal) * 100;
+  const { nivel, peldano } = nivelPorBloque(unidades, pesos, marcaEvaluada);
 
   // --- Pivote: ya NO es un nivel propio, es una bonificacion DENTRO del nivel (seccion 15.8).
   // Antes compartia la senal `distanciaOrigen` con el descuento por concentracion y contaba dos
@@ -973,11 +1011,13 @@ function calcularAfinidad(unidades, marcaEvaluada, banda) {
   pos = Math.max(0, Math.min(1, pos)) * penalizacion;
   pos = Math.max(0, Math.min(1, pos + ajustePivote));
 
-  const nivel = pctBloquePropio > 50 ? 2 : 3;
   const nv = NIVELES[nivel];
-  const motivo = (nivel === 2
-      ? Math.round(pctBloquePropio) + '% de su flota en la banda es ' + banda.bloque.toLowerCase() + ', el bloque de ' + label
-      : 'Su flota esta en bloques lejanos a ' + label + ' (' + Math.round(distPond * 100) + '% de cercania ponderada)')
+  const dondePesa = peldano === 'propio'
+      ? 'Su flota en la banda pesa sobre todo en ' + bloquesDePeldano(marcaEvaluada, 85).join('/') + ', el bloque de ' + label
+      : (peldano === 'medio'
+          ? 'Su flota en la banda pesa sobre todo en ' + bloquesDePeldano(marcaEvaluada, 70).join('/') + ', no lejano a ' + label
+          : 'Su flota en la banda pesa sobre todo en ' + bloquesDePeldano(marcaEvaluada, 45).join('/') + ', lejano a ' + label);
+  const motivo = dondePesa + ' (' + Math.round(distPond * 100) + '% de cercania ponderada)'
     + notaConc + notaDebil + notaPivote;
 
   return {
@@ -1044,7 +1084,9 @@ document.getElementById('btn-buscar').addEventListener('click', async () => {
     statusMsg.textContent = `Procesando ${i + 1}/${slugs.length}...`;
     const clientes = await loadShard(slugs[i]);
     for (const c of clientes) {
-      if (c.estado !== 'ACTIVO') continue;
+      // 2026-09-09 (segunda vuelta): los RUC de baja/suspendidos YA NO se descartan. En Peru es
+      // comun que una empresa dada de baja siga operando, asi que el asesor tiene que poder
+      // verla; sale en su grupo normal con una etiqueta que dice su estado exacto.
       if (provincias.length > 0 && !provincias.includes(c.provincia)) continue;
       if (distritos.length > 0 && !distritos.includes(c.distrito)) continue;
       if (sectores.length > 0 && !sectores.includes(c.sector_economico)) continue;
@@ -1053,15 +1095,16 @@ document.getElementById('btn-buscar').addEventListener('click', async () => {
       // 2026-09-09: los clientes sin unidades en la banda YA NO se descartan; van al nivel 5,
       // al fondo de la lista y sin score (no tienen ninguna compra en la banda que fechar).
       const elegibles = unidadesElegibles(c.vehiculos, clase, banda);
+      if (elegibles.length === 0) continue; // Eje 0: sin unidades en la banda, no entra a la lista
       const af = calcularAfinidad(elegibles, marca, banda);
-      const urgencia = elegibles.length > 0 ? calcularUrgencia(elegibles) : null;
+      const urgencia = calcularUrgencia(elegibles);
       // Score final = posicion dentro del nivel (0-1) x Recurrencia, en vez de Afinidad cruda x
       // Recurrencia: ver el comentario de posEnNivel().
       const scoreFinal = (urgencia !== null && af.score !== null)
         ? Math.round(posEnNivel(af.nivel, af.score) * urgencia * 10) / 10 : null;
 
       out.push({
-        ruc: c.ruc, razon: c.razon, sector: c.sector_economico,
+        ruc: c.ruc, razon: c.razon, sector: c.sector_economico, estado: c.estado,
         nivel: af.nivel, afinidad: af.score, motivo: af.motivo, nUnidades: af.nUnidades,
         urgencia: urgencia !== null ? Math.round(urgencia * 10) / 10 : null,
         scoreFinal,
@@ -1091,8 +1134,12 @@ function ordenarYRenderizar() {
   // fuera de la ventana de 8 anios quedan en posicion 0 y por lo tanto en Score final 0. Sin
   // desempate se perderia el orden entre ellos, asi que despues del Score final manda la
   // Recurrencia y, si tambien empata, el tamano de flota.
+  // Tramo de evidencia: los de 1 unidad siempre al final de su grupo (estan indefinidos), los
+  // de 2 por encima de esos pero debajo de los que si tienen patron (3+).
+  const tramo = c => c.nUnidades >= MIN_UNIDADES_PATRON ? 2 : (c.nUnidades === 2 ? 1 : 0);
   const ordenados = [...CURRENT_RESULTS].sort((a, b) =>
     (a.nivel - b.nivel)
+    || (tramo(b) - tramo(a))
     || (val(b) - val(a))
     || ((b.urgencia === null ? -1 : b.urgencia) - (a.urgencia === null ? -1 : a.urgencia))
     || (b.unidadesTotales - a.unidadesTotales));
@@ -1102,8 +1149,10 @@ function ordenarYRenderizar() {
 function num(v) { return (v === null || v === undefined) ? '—' : v; }
 
 function filaCliente(c, idx) {
-  const conf = (c.nivel !== 5 && c.nUnidades > 0 && c.nUnidades < MIN_UNIDADES_PATRON)
-    ? `<span class="conf-tag">${c.nUnidades} unidad${c.nUnidades !== 1 ? 'es' : ''} — senal debil</span>` : '';
+  const conf = (c.nUnidades > 0 && c.nUnidades < MIN_UNIDADES_PATRON)
+    ? `<span class="conf-tag">${c.nUnidades} unidad${c.nUnidades !== 1 ? 'es' : ''} — señal débil</span>` : '';
+  const estado = (c.estado && c.estado !== 'ACTIVO')
+    ? `<span class="estado-tag" title="Estado del contribuyente en SUNAT">${c.estado}</span>` : '';
   return `
     <div class="client-row">
       <div class="client-row-header" data-idx="${idx}">
@@ -1114,7 +1163,7 @@ function filaCliente(c, idx) {
             <span class="client-ruc">RUC ${c.ruc}</span>
             <span class="size-tag ${c.tamano.cls}">${c.tamano.label}</span>
             ${c.sector && c.sector !== 'SIN DATOS' ? `<span class="client-ruc">${c.sector}</span>` : ''}
-            ${conf}
+            ${estado}${conf}
           </div>
         </div>
         <div class="score-grid">
@@ -1168,7 +1217,7 @@ function fichaUnidades(unidades) {
         ? d.placas.map(p => `<span class="placa-chip">${p}</span>`).join('')
         : '<span class="placa-chip" style="opacity:0.5">sin placa</span>';
       html += `<div class="ficha-row" onclick="document.getElementById('${pid}').classList.toggle('open')">
-          <span>${marca} ${modelo} <span class="peso-tag">${carroceria}</span> <span class="peso-tag">${pesoTxt}</span> <span class="peso-tag">${origen}</span></span>
+          <span>${marca} ${modelo} <span class="sep">//</span> <span class="peso-tag">${carroceria}</span> <span class="sep">//</span> <span class="peso-tag">${pesoTxt}</span> <span class="sep">//</span> <span class="peso-tag">${origen}</span></span>
           <span class="ficha-row-count">${d.count}</span>
         </div>
         <div class="ficha-placas" id="${pid}">${chips}</div>`;
@@ -1202,10 +1251,19 @@ function renderResults(out) {
     </div>`;
 
   FILAS_RENDER = [];
+  const marcaKey = document.getElementById('f-marca').value;
+  const SUBS = {
+    1: 'compraron la marca en esta clase',
+    2: bloquesDePeldano(marcaKey, 85).join(', '),
+    3: bloquesDePeldano(marcaKey, 70).join(', '),
+    4: bloquesDePeldano(marcaKey, 45).join(', '),
+    5: '80% o más de su flota en una sola marca rival',
+  };
   for (const nivel of [1, 2, 3, 4, 5]) {
     const grupo = grupos[nivel];
     if (!grupo || grupo.length === 0) continue;
     const nv = NIVELES[nivel];
+    const bajas = grupo.filter(c => c.estado && c.estado !== 'ACTIVO').length;
     const limite = LIMITES[nivel] || PASO_RENDER;
     const visibles = grupo.slice(0, limite);
     let filas = '';
@@ -1215,8 +1273,8 @@ function renderResults(out) {
       <div class="nivel-section nivel-n${nivel}">
         <div class="nivel-header">
           <span class="nivel-titulo">${nv.titulo.replace('{MARCA}', marcaLabel)}</span>
-          <span class="nivel-sub">${nv.sub}</span>
-          <span class="nivel-count">${grupo.length.toLocaleString()}</span>
+          <span class="nivel-sub">${SUBS[nivel]}</span>
+          <span class="nivel-count">${grupo.length.toLocaleString()}${bajas ? ` · ${bajas} de baja` : ''}</span>
         </div>
         ${filas}
         ${restantes > 0 ? `<button class="ver-mas" data-nivel="${nivel}">Ver ${Math.min(PASO_RENDER, restantes).toLocaleString()} mas (quedan ${restantes.toLocaleString()})</button>` : ''}

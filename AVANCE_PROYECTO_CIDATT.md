@@ -1192,10 +1192,13 @@ que la regla queda garantizada por construcción y no por ajuste fino.
 | Nivel | Quién cae ahí | Rango | Qué ordena adentro |
 |---|---|---|---|
 | **N1** | Ya compró la marca (en esa clase) | 80–100 | Recencia (8 años) + participación de la marca en su flota |
-| **N2** | Mayoría de su flota en el bloque propio de la marca | 55–79 | % ponderado + bonificación de pivote |
-| **N3** | Flota en bloques más lejanos | 20–54 | Escalera de distancia (15.9) + bonificación de pivote |
-| **N4** | Fiel a un competidor puntual | 0–19 | Qué tan concentrado |
-| **N5** | Sin flota en la banda | sin score | Tamaño de cuenta |
+| **N2** | Su flota pesa sobre todo en el bloque propio de la marca | 60–79 | Cercanía ponderada + bonificación de pivote |
+| **N3** | Su flota pesa sobre todo en un bloque no lejano | 40–59 | ídem |
+| **N4** | Su flota pesa sobre todo en el bloque lejano | 20–39 | ídem |
+| **N5** | Fiel a un competidor puntual | 0–19 | Qué tan concentrado |
+
+*(Rangos y reparto de niveles actualizados en la segunda vuelta del mismo día — ver 15.17. El
+diseño original tenía 4 niveles más uno de "sin flota en la banda", que se eliminó.)*
 
 **Cambios por paso respecto de la sección 6:**
 
@@ -1397,3 +1400,53 @@ los clientes grandes entre sí.
 3. *Registro de feedback del asesor* — pulgar arriba/abajo con motivo sobre cada cliente que
    sale en la lista. Sin etiquetas reales no se puede pasar de reglas afinadas a mano a un
    modelo estadístico, que es el destino que anota la sección 6.
+
+### 15.17 Segunda vuelta del mismo día — ajustes pedidos tras ver el motor andando
+
+**1. Se elimina el grupo "Sin flota en la banda".** Ocupaba pantalla sin aportar (18,617 de
+20,087 clientes en MAN). Los clientes sin unidades en el rango de peso de la marca vuelven a no
+aparecer, como antes del 2026-09-09.
+
+**2. El nivel de bloques se parte en dos.** No es lo mismo un cliente con un Hino que uno con un
+Foton, evaluando MAN. Los niveles quedan: marca propia (80-100) · bloque de origen (60-79) ·
+bloque no lejano (40-59) · bloque lejano (20-39) · fiel a un competidor (0-19). El subtítulo de
+cada grupo se deduce en vivo de `DISTANCIA_ORIGEN`, así que nunca se desincroniza de la tabla:
+para MAN dice "europeo" / "americano, japones, coreano" / "chino, otro"; para Dongfeng se
+invierte solo.
+
+**3. Regla nueva de asignación al grupo: manda el peldaño con más peso de su flota; si dos
+empatan, decide la unidad MÁS NUEVA.** Reemplaza al criterio anterior ("más del 50% en el bloque
+propio"), que mandaba cualquier empate al grupo lejano sin mirar años. Verificado con casos
+sintéticos evaluando MAN:
+
+| Flota del cliente | Grupo | Por qué |
+|---|---|---|
+| 1 Sinotruk | Lejano | su único bloque |
+| 1 Hino / 1 Freightliner / 1 Hyundai | No lejano | su único bloque |
+| 1 Iveco | Bloque de origen | su único bloque |
+| Iveco 2020 + Sinotruk 2023 | Lejano | empate 50/50, gana el más nuevo |
+| Iveco 2023 + Sinotruk 2020 | Bloque de origen | empate 50/50, gana el más nuevo |
+| 2 Foton 2015-16 + 1 Volvo 2024 | Lejano | no hay empate: la mayoría manda, la recencia no entra |
+
+**Corrección de otro error de lectura:** al discutir esto se afirmó que "el porcentaje de bloque
+ya se calcula ponderado por recencia". **Es falso** — `pesoEje2` pondera solo por posición en la
+banda de peso (núcleo 100%, borde 60%), el año no entra en ningún peso. La recencia solo aparece
+en el N1 (última compra de la marca), en el orden cronológico del pivote, y en el 15% del Eje 1.
+Esta regla del empate es lo primero que mete la recencia en la asignación de grupo.
+
+**4. Orden interno por tramo de evidencia.** Dentro de cada grupo: primero los de 3+ unidades,
+después los de 2, y al final los de 1 — y dentro de cada tramo, por Score final. Los de una sola
+unidad están indefinidos y no deben encabezar un grupo aunque su score salga alto. La etiqueta
+de "señal débil" se mantiene.
+
+**5. Los RUC de baja vuelven a aparecer.** Antes se filtraban con `estado !== 'ACTIVO'`. En Perú
+es común que una empresa dada de baja siga operando, así que el asesor tiene que poder verla:
+ahora sale en su grupo normal con una etiqueta roja que dice el estado exacto de SUNAT (BAJA DE
+OFICIO / SUSPENSIÓN TEMPORAL / BAJA DEFINITIVA / BAJA PROV. POR OFICIO), y el encabezado de cada
+grupo indica cuántos son. No se los castiga en el orden. Volumen real en el sur para MAN
+volquete: 94 de baja contra 1,470 activos.
+
+**6. UI.** El encabezado de cada grupo queda congelado arriba mientras se recorre el grupo y lo
+empuja el del grupo siguiente (`position: sticky`, el contenedor de resultados ya tenía su
+propio scroll). En la ficha del cliente, los campos de cada unidad se separan con `//`:
+`MARCA MODELO // CARROCERÍA // PESO // BLOQUE` — mismo formato en el Directorio.

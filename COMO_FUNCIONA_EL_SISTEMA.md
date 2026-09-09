@@ -125,10 +125,13 @@ UD y Volkswagen no tienen catálogo de Tractocamión, así que esa clase no apar
 para esas dos marcas. El núcleo de UD llega a 34 t porque incluye el Quester/CWE, que entró al
 stock en agosto de 2026.
 
-Un cliente sin ninguna unidad dentro de esa banda (de cualquier marca, no solo la evaluada) ya
-no se descarta: desde el 2026-09-09 aparece en el último grupo de la lista, "Sin flota en la
-banda", sin score. Antes se le daba un 50 neutro, lo que lo dejaba por encima de clientes
-reales de la competencia — premiaba la ausencia de información.
+Un cliente sin ninguna unidad dentro de esa banda (de cualquier marca, no solo la evaluada) no
+aparece en los resultados.
+
+**Los RUC dados de baja sí aparecen**, con una etiqueta roja que dice su estado exacto en SUNAT
+(baja de oficio, suspensión temporal, baja definitiva). En Perú es común que una empresa dada de
+baja siga operando, así que el asesor tiene que poder verla y decidir; el encabezado de cada
+grupo indica cuántos son.
 
 ## 6. El motor de scoring — Eje 1 (Recurrencia) y Eje 2 (Afinidad)
 
@@ -179,16 +182,24 @@ con flota mixta podía sacar 68 y un dueño real de la marca de hace 6 años sac
 el desconocido aparecía primero. Desde el 2026-09-09 la Afinidad se organiza en **cinco niveles
 con rangos que no se solapan**, así el orden queda garantizado por construcción:
 
-| Nivel | Quién cae ahí | Rango |
+| Nivel | Quién cae ahí (ejemplo evaluando MAN volquete) | Rango |
 |---|---|---|
 | 1 | **Ya compró la marca** en esa clase | 80–100 |
-| 2 | La **mayoría de su flota** (más del 50% ponderado) es del bloque de origen de la marca | 55–79 |
-| 3 | Su flota está en **bloques más lejanos** | 20–54 |
-| 4 | **Fiel a un competidor**: 80% o más de su flota en una sola marca rival | 0–19 |
-| 5 | **Sin flota en la banda** | sin score |
+| 2 | Su flota pesa sobre todo en el **bloque de origen** de la marca (europeo) | 60–79 |
+| 3 | Su flota pesa sobre todo en un **bloque no lejano** (americano, japonés, coreano) | 40–59 |
+| 4 | Su flota pesa sobre todo en el **bloque lejano** (chino) | 20–39 |
+| 5 | **Fiel a un competidor**: 80% o más de su flota en una sola marca rival | 0–19 |
+
+El grupo lo decide el peldaño que concentra más peso de su flota; **si dos peldaños empatan,
+decide la unidad más nueva**. Con una sola unidad esto degenera en "su bloque": un cliente con
+un solo camión chino va directo al grupo lejano, uno con un japonés al no lejano, uno con un
+europeo al bloque de origen. Un cliente sin ninguna unidad en la banda no aparece en la lista.
 
 Un cliente del nivel 2 nunca puede aparecer por encima de uno del nivel 1, sin importar sus
-otros números. Dentro de cada nivel el puntaje se mueve así:
+otros números. **Dentro de cada grupo se ordena por tramo de evidencia:** primero los clientes
+con 3 o más unidades en la banda, después los de 2, y al final los de 1 — un cliente con una
+sola unidad está indefinido y no debería encabezar un grupo aunque su puntaje salga alto.
+Dentro de cada tramo ordena el Score final. El puntaje se mueve así:
 
 - **Nivel 1:** por recencia de la última compra de la marca (ventana de 8 años, alineada con la
   Recencia del Eje 1), descontado por concentración de marca ajena. Así, quien tiene 1 unidad
