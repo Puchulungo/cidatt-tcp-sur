@@ -8,25 +8,26 @@
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
 
   :root {
-    --navy: #0a1628;
-    --navy-mid: #112240;
-    --navy-light: #1d3461;
-    --accent: #2563eb;
-    --accent-light: #3b82f6;
-    --steel: #94a3b8;
-    --steel-light: #cbd5e1;
-    --white: #f8fafc;
-    --surface: #0f1f3d;
-    --surface2: #162847;
-    --border: rgba(148,163,184,0.15);
-    --border-hover: rgba(59,130,246,0.4);
-    --camion: #2563eb;
-    --remolcador: #0891b2;
-    --text: #e2e8f0;
-    --text-muted: #64748b;
-    --success: #10b981;
-    --warn: #f59e0b;
-    --danger: #f87171;
+    /* Tema "Crema" — mismo tono cálido y bajo-contraste que Claude Desktop / seguimiento-visitas-externas. */
+    --navy: #F5F4EE;
+    --navy-mid: #ECEAE1;
+    --navy-light: #E4E1D7;
+    --accent: #C2622D;
+    --accent-light: #B75A2A;
+    --steel: #6B6A63;
+    --steel-light: #3D3D38;
+    --white: #141413;
+    --surface: #FFFFFF;
+    --surface2: #FAF9F5;
+    --border: #E4E1D7;
+    --border-hover: #C2622D;
+    --camion: #C2622D;
+    --remolcador: #0E7490;
+    --text: #141413;
+    --text-muted: #767568;
+    --success: #15803D;
+    --warn: #B45309;
+    --danger: #B91C1C;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -91,10 +92,10 @@
   }
   .filter-group { margin-bottom: 1.5rem; }
   .filter-group.required {
-    border: 1px solid rgba(37,99,235,0.35);
+    border: 1px solid rgba(194,98,45,0.35);
     border-radius: 10px;
     padding: 12px;
-    background: rgba(37,99,235,0.06);
+    background: rgba(194,98,45,0.06);
   }
   .filter-label {
     font-size: 11px;
@@ -186,7 +187,7 @@
     transition: all 0.15s;
   }
   .sort-btn.active {
-    background: rgba(37,99,235,0.2);
+    background: rgba(194,98,45,0.2);
     border-color: var(--accent);
     color: var(--accent-light);
   }
@@ -229,9 +230,9 @@
     border: 1px solid var(--border);
   }
   .size-retail { color: var(--text-muted); }
-  .size-medium { color: #60a5fa; border-color: rgba(96,165,250,0.35); }
-  .size-big { color: var(--warn); border-color: rgba(245,158,11,0.35); }
-  .size-mega { color: #f472b6; border-color: rgba(244,114,182,0.4); }
+  .size-medium { color: #1D4ED8; border-color: rgba(29,78,216,0.35); }
+  .size-big { color: var(--warn); border-color: rgba(180,83,9,0.35); }
+  .size-mega { color: #BE185D; border-color: rgba(190,24,91,0.4); }
 
   .score-grid {
     display: flex;
@@ -255,11 +256,11 @@
   .score-final .score-item-value {
     font-size: 16px;
     color: var(--white);
-    background: rgba(37,99,235,0.18);
+    background: rgba(194,98,45,0.18);
     border-radius: 6px;
     padding: 3px 8px;
   }
-  .score-hi { color: #34d399; }
+  .score-hi { color: #15803D; }
   .score-mid { color: var(--warn); }
   .score-lo { color: var(--danger); }
 
@@ -278,7 +279,7 @@
     padding: 5px 8px;
     font-size: 12px;
     color: var(--steel);
-    border-top: 1px solid rgba(148,163,184,0.06);
+    border-top: 1px solid rgba(107,106,99,0.06);
   }
   .unidad-row .peso-tag {
     font-family: 'IBM Plex Mono', monospace;
@@ -297,11 +298,11 @@
     position: sticky; top: 0; z-index: 5;
   }
   .nivel-titulo { font-size: 12px; font-weight: 600; letter-spacing: 0.03em; }
-  .nivel-n1 .nivel-titulo { color: #4ade80; }
-  .nivel-n2 .nivel-titulo { color: #60a5fa; }
-  .nivel-n3 .nivel-titulo { color: #fbbf24; }
-  .nivel-n4 .nivel-titulo { color: #fb923c; }
-  .nivel-n5 .nivel-titulo { color: #f87171; }
+  .nivel-n1 .nivel-titulo { color: #15803D; }
+  .nivel-n2 .nivel-titulo { color: #1D4ED8; }
+  .nivel-n3 .nivel-titulo { color: #B45309; }
+  .nivel-n4 .nivel-titulo { color: #C2410C; }
+  .nivel-n5 .nivel-titulo { color: #B91C1C; }
   .nivel-sub { font-size: 10px; color: var(--text-muted); }
   .nivel-count {
     margin-left: auto; font-family: 'IBM Plex Mono', monospace;
@@ -316,13 +317,13 @@
   .sep { color: var(--text-muted); opacity: 0.55; margin: 0 2px; }
   .estado-tag {
     font-family: 'IBM Plex Mono', monospace; font-size: 9px;
-    color: #f87171; border: 1px solid rgba(248,113,113,0.4);
-    background: rgba(248,113,113,0.08);
+    color: #B91C1C; border: 1px solid rgba(185,28,28,0.4);
+    background: rgba(185,28,28,0.08);
     border-radius: 3px; padding: 1px 5px; margin-left: 6px;
   }
   .conf-tag {
     font-family: 'IBM Plex Mono', monospace; font-size: 9px;
-    color: #fbbf24; border: 1px solid rgba(251,191,36,0.35);
+    color: #B45309; border: 1px solid rgba(180,83,9,0.35);
     border-radius: 3px; padding: 1px 5px; margin-left: 6px;
   }
   /* --- ficha del cliente: anio -> marca+modelo+carroceria+pbv -> placas --- */
@@ -336,9 +337,9 @@
   .ficha-row {
     display: flex; justify-content: space-between; align-items: center; gap: 8px;
     padding: 5px 8px 5px 16px; font-size: 12px; color: var(--steel);
-    border-top: 1px solid rgba(148,163,184,0.06); cursor: pointer;
+    border-top: 1px solid rgba(107,106,99,0.06); cursor: pointer;
   }
-  .ficha-row:hover { background: rgba(148,163,184,0.05); }
+  .ficha-row:hover { background: rgba(107,106,99,0.05); }
   .ficha-row-count { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text); }
   .ficha-placas { display: none; padding: 6px 8px 8px 16px; gap: 4px; flex-wrap: wrap; }
   .ficha-placas.open { display: flex; }
@@ -408,7 +409,7 @@
     font-family: 'IBM Plex Sans', sans-serif; transition: background 0.15s;
   }
   .auth-btn:hover { background: var(--accent-light); }
-  .auth-error { margin-top: 1rem; color: #f87171; font-size: 0.8rem; }
+  .auth-error { margin-top: 1rem; color: #B91C1C; font-size: 0.8rem; }
   .auth-loading { color: var(--steel); font-size: 0.85rem; }
   #app-content { display: none; }
 </style>

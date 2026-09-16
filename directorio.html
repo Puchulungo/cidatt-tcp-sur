@@ -8,23 +8,24 @@
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
 
   :root {
-    --navy: #0a1628;
-    --navy-mid: #112240;
-    --navy-light: #1d3461;
-    --accent: #2563eb;
-    --accent-light: #3b82f6;
-    --steel: #94a3b8;
-    --steel-light: #cbd5e1;
-    --white: #f8fafc;
-    --surface: #0f1f3d;
-    --surface2: #162847;
-    --border: rgba(148,163,184,0.15);
-    --border-hover: rgba(59,130,246,0.4);
-    --camion: #2563eb;
-    --remolcador: #0891b2;
-    --text: #e2e8f0;
-    --text-muted: #64748b;
-    --success: #10b981;
+    /* Tema "Crema" — mismo tono cálido y bajo-contraste que Claude Desktop / seguimiento-visitas-externas. */
+    --navy: #F5F4EE;
+    --navy-mid: #ECEAE1;
+    --navy-light: #E4E1D7;
+    --accent: #C2622D;
+    --accent-light: #B75A2A;
+    --steel: #6B6A63;
+    --steel-light: #3D3D38;
+    --white: #141413;
+    --surface: #FFFFFF;
+    --surface2: #FAF9F5;
+    --border: #E4E1D7;
+    --border-hover: #C2622D;
+    --camion: #C2622D;
+    --remolcador: #0E7490;
+    --text: #141413;
+    --text-muted: #767568;
+    --success: #15803D;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -187,15 +188,15 @@
     font-weight: 500;
   }
 
-  .badge-camion { background: rgba(37,99,235,0.2); color: #60a5fa; }
-  .badge-rem { background: rgba(8,145,178,0.2); color: #22d3ee; }
-  .badge-both { background: rgba(16,185,129,0.15); color: #34d399; }
-  .badge-baja { background: rgba(248,113,113,0.15); color: #f87171; }
+  .badge-camion { background: rgba(194,98,45,0.2); color: #1D4ED8; }
+  .badge-rem { background: rgba(14,116,144,0.2); color: #0E7490; }
+  .badge-both { background: rgba(21,128,61,0.15); color: #15803D; }
+  .badge-baja { background: rgba(185,28,28,0.15); color: #B91C1C; }
 
   .estado-tag { display: inline-flex; align-items: center; gap: 4px; }
   .estado-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-  .estado-activo { color: #34d399; }
-  .estado-baja { color: #f87171; }
+  .estado-activo { color: #15803D; }
+  .estado-baja { color: #B91C1C; }
 
   .ficha-columns {
     display: flex;
@@ -279,9 +280,9 @@
     line-height: 1.4;
   }
 
-  .score-hi { color: #34d399; }
-  .score-mid { color: #fbbf24; }
-  .score-lo { color: #f87171; }
+  .score-hi { color: #15803D; }
+  .score-mid { color: #B45309; }
+  .score-lo { color: #B91C1C; }
 
   .client-units {
     margin-left: auto;
@@ -375,9 +376,9 @@
     border: 1px solid var(--border);
   }
   .size-retail { color: var(--text-muted); }
-  .size-medium { color: #60a5fa; border-color: rgba(96,165,250,0.35); }
-  .size-big { color: var(--warn); border-color: rgba(245,158,11,0.35); }
-  .size-mega { color: #f472b6; border-color: rgba(244,114,182,0.4); }
+  .size-medium { color: #1D4ED8; border-color: rgba(29,78,216,0.35); }
+  .size-big { color: var(--warn); border-color: rgba(180,83,9,0.35); }
+  .size-mega { color: #BE185D; border-color: rgba(190,24,91,0.4); }
 
   .info-grid {
     display: grid;
@@ -479,8 +480,8 @@
     letter-spacing: 0.03em;
   }
 
-  .clase-camion { color: #60a5fa; }
-  .clase-rem { color: #22d3ee; }
+  .clase-camion { color: #1D4ED8; }
+  .clase-rem { color: #0E7490; }
 
   .clase-count {
     margin-left: auto;
@@ -583,13 +584,13 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: rgba(37,99,235,0.15);
-    border: 1px solid rgba(37,99,235,0.3);
+    background: rgba(194,98,45,0.15);
+    border: 1px solid rgba(194,98,45,0.3);
     border-radius: 4px;
     padding: 2px 8px;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
-    color: #60a5fa;
+    color: #1D4ED8;
     margin-bottom: 1rem;
   }
 
@@ -635,7 +636,7 @@
     font-family: 'IBM Plex Sans', sans-serif; transition: background 0.15s;
   }
   .auth-btn:hover { background: var(--accent-light); }
-  .auth-error { margin-top: 1rem; color: #f87171; font-size: 0.8rem; }
+  .auth-error { margin-top: 1rem; color: #B91C1C; font-size: 0.8rem; }
   .auth-loading { color: var(--steel); font-size: 0.85rem; }
   #app-content { display: none; }
 
@@ -665,7 +666,7 @@
     padding: 6px 14px 6px 46px;
     font-size: 12px;
     color: var(--steel);
-    border-top: 1px solid rgba(148,163,184,0.06);
+    border-top: 1px solid rgba(107,106,99,0.06);
   }
   .flota-row-label { color: var(--steel-light); }
   .flota-row-rango {
@@ -677,7 +678,7 @@
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
     font-weight: 600;
-    color: #60a5fa;
+    color: #1D4ED8;
     flex-shrink: 0;
     margin-left: 10px;
   }
@@ -688,10 +689,10 @@
     padding: 6px 14px 6px 46px;
     font-size: 12px;
     color: var(--steel);
-    border-top: 1px solid rgba(148,163,184,0.06);
+    border-top: 1px solid rgba(107,106,99,0.06);
     cursor: pointer;
   }
-  .flota-row-header:hover { background: rgba(148,163,184,0.04); }
+  .flota-row-header:hover { background: rgba(107,106,99,0.04); }
   .flota-row-left { display: flex; align-items: center; gap: 6px; }
   .placas-toggle {
     font-size: 9px;
@@ -705,7 +706,7 @@
     grid-template-columns: repeat(5, 1fr);
     gap: 5px;
     padding: 8px 14px 10px 46px;
-    background: rgba(148,163,184,0.03);
+    background: rgba(107,106,99,0.03);
   }
   .placas-grid.open { display: grid; }
   @media (max-width: 640px) {
@@ -715,7 +716,7 @@
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
     color: var(--steel-light);
-    background: rgba(148,163,184,0.06);
+    background: rgba(107,106,99,0.06);
     border: 1px solid var(--border);
     border-radius: 4px;
     padding: 3px 6px;
@@ -751,17 +752,17 @@
     <svg class="search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="buscar" type="text" placeholder="Buscar por RUC, razón social o nombre comercial..." autocomplete="off" spellcheck="false">
   </div>
-  <a href="perfilador.html" style="margin-left:12px; color:#94a3b8; text-decoration:none; font-size:12px; font-family:'IBM Plex Mono',monospace; padding:6px 12px; border:1px solid rgba(148,163,184,0.15); border-radius:6px; white-space:nowrap;">Perfilador &#8594;</a>
-  <a href="index.html" style="margin-left:6px; color:#94a3b8; text-decoration:none; font-size:12px; font-family:'IBM Plex Mono',monospace; padding:6px 12px; border:1px solid rgba(148,163,184,0.15); border-radius:6px; white-space:nowrap;">&#8962; Inicio</a>
+  <a href="perfilador.html" style="margin-left:12px; color:#6B6A63; text-decoration:none; font-size:12px; font-family:'IBM Plex Mono',monospace; padding:6px 12px; border:1px solid rgba(107,106,99,0.15); border-radius:6px; white-space:nowrap;">Perfilador &#8594;</a>
+  <a href="index.html" style="margin-left:6px; color:#6B6A63; text-decoration:none; font-size:12px; font-family:'IBM Plex Mono',monospace; padding:6px 12px; border:1px solid rgba(107,106,99,0.15); border-radius:6px; white-space:nowrap;">&#8962; Inicio</a>
 </header>
 
 <div class="stats-bar">
   <span class="stat-pill">
-    <span class="stat-dot" style="background:#60a5fa"></span>
+    <span class="stat-dot" style="background:#1D4ED8"></span>
     <span id="stat-total">Cargando...</span>
   </span>
   <span id="stat-filter" style="display:none" class="stat-pill">
-    <span class="stat-dot" style="background:#34d399"></span>
+    <span class="stat-dot" style="background:#15803D"></span>
     <span id="stat-filter-text"></span>
   </span>
 </div>
