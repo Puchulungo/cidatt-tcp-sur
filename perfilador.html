@@ -164,34 +164,6 @@
     font-weight: 600;
   }
 
-  .sort-controls {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-  .sort-label {
-    font-size: 11px;
-    color: var(--text-muted);
-    font-family: 'IBM Plex Mono', monospace;
-    margin-right: 2px;
-  }
-  .sort-btn {
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--steel-light);
-    border-radius: 6px;
-    padding: 5px 10px;
-    font-size: 11px;
-    font-family: 'IBM Plex Mono', monospace;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .sort-btn.active {
-    background: rgba(194,98,45,0.2);
-    border-color: var(--accent);
-    color: var(--accent-light);
-  }
-
   .client-row {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -624,7 +596,7 @@ let DEPTO_INDEX = [];
 let SECTOR_INDEX = [];
 let SHARD_CACHE = {};
 let CURRENT_RESULTS = [];
-let SORT_MODE = 'final'; // 'final' | 'urgencia' | 'afinidad'
+const SORT_MODE = 'final'; // fijo: los botones para cambiarlo se quitaron (no funcionaban)
 
 function getSelectedDeptos() { return Array.from(document.querySelectorAll('#f-departamento input:checked')).map(i => i.value); }
 function getSelectedProvincias() { return Array.from(document.querySelectorAll('#f-provincia input:checked')).map(i => i.value); }
@@ -1243,12 +1215,6 @@ function renderResults(out) {
       <div class="results-count-wrap">
         <span class="results-count">${out.length.toLocaleString()}</span> clientes
       </div>
-      <div class="sort-controls">
-        <span class="sort-label">Dentro de cada grupo:</span>
-        <button class="sort-btn ${SORT_MODE === 'final' ? 'active' : ''}" data-sort="final">Score final</button>
-        <button class="sort-btn ${SORT_MODE === 'urgencia' ? 'active' : ''}" data-sort="urgencia">Recurrencia</button>
-        <button class="sort-btn ${SORT_MODE === 'afinidad' ? 'active' : ''}" data-sort="afinidad">Afinidad</button>
-      </div>
     </div>`;
 
   FILAS_RENDER = [];
@@ -1283,9 +1249,6 @@ function renderResults(out) {
   }
   results.innerHTML = html;
 
-  results.querySelectorAll('.sort-btn').forEach(btn => {
-    btn.addEventListener('click', () => { SORT_MODE = btn.dataset.sort; LIMITES = {}; ordenarYRenderizar(); });
-  });
   results.querySelectorAll('.ver-mas').forEach(btn => {
     btn.addEventListener('click', () => {
       const n = btn.dataset.nivel;
