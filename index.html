@@ -8,19 +8,20 @@
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
 
   :root {
-    --navy: #0a1628;
-    --navy-mid: #112240;
-    --accent: #2563eb;
-    --accent-light: #3b82f6;
-    --steel: #94a3b8;
-    --steel-light: #cbd5e1;
-    --white: #f8fafc;
-    --surface: #0f1f3d;
-    --surface2: #162847;
-    --border: rgba(148,163,184,0.15);
-    --border-hover: rgba(59,130,246,0.4);
-    --text: #e2e8f0;
-    --text-muted: #64748b;
+    /* Tema "Crema" — mismo tono cálido y bajo-contraste que Claude Desktop / seguimiento-visitas-externas. */
+    --navy: #F5F4EE;
+    --navy-mid: #ECEAE1;
+    --accent: #C2622D;
+    --accent-light: #B75A2A;
+    --steel: #6B6A63;
+    --steel-light: #3D3D38;
+    --white: #141413;
+    --surface: #FFFFFF;
+    --surface2: #FAF9F5;
+    --border: #E4E1D7;
+    --border-hover: #C2622D;
+    --text: #141413;
+    --text-muted: #767568;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -50,7 +51,7 @@
     font-family: 'IBM Plex Sans', sans-serif; transition: background 0.15s;
   }
   .auth-btn:hover { background: var(--accent-light); }
-  .auth-error { margin-top: 1rem; color: #f87171; font-size: 0.8rem; }
+  .auth-error { margin-top: 1rem; color: #B91C1C; font-size: 0.8rem; }
   .auth-loading { color: var(--steel); font-size: 0.85rem; }
   #app-content { display: none; }
 
@@ -122,7 +123,7 @@
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.02em;
-    background: rgba(148,163,184,0.15);
+    background: rgba(107,106,99,0.12);
     color: var(--steel);
     border-radius: 20px;
     padding: 3px 10px;
